@@ -1,6 +1,9 @@
 # uQRCode
 uni-app 二维码生成插件
 
+![](/static/demo/1.jpg)![](/static/demo/2.jpg)![](/static/demo/3.jpg)
+![](/static/demo/4.jpg)![](/static/demo/5.jpg)![](/static/demo/6.jpg)
+
 ### 使用方式
 
 在 ``script`` 中引用组件
