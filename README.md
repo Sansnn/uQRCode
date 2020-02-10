@@ -182,4 +182,4 @@ export default {
 
 **Tips**
 - 示例项目中的图片采集于互联网，仅作为案例展示，不作为广告/商业，如有侵权，请告知删除。下载使用的用户，请勿把示例项目中的图片应用到你的项目；
-- uQRCode 二维码生成部分借鉴了 [jquery-qrcode](https://github.com/jeromeetienne/jquery-qrcode) 源码。
+- uQRCode 借鉴了 [jquery-qrcode](https://github.com/jeromeetienne/jquery-qrcode) 源码。
