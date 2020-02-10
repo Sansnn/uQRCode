@@ -1,7 +1,7 @@
 # uQRCode
 uni-app 二维码生成插件
 
-uQRCode 生成方式简单，可扩展性高，如有复杂需求可通过自定义组件或修改源码完成需求，自定义组件参考 ``/components/uni-qrcode/uni-qrcode.vue`` ，自定义组件使用案例参考 ``/pages/component/qrcode/qrcode.vue`` ，海报生成模板参考 ``/pages/poster/poster.vue``
+uQRCode 生成方式简单，可扩展性高，如有复杂需求可通过自定义组件或修改源码完成需求，本示例项目中的自定义组件旨在抛砖引玉，有其他需求的朋友可自行扩展，自定义组件参考 ``/components/uni-qrcode/uni-qrcode.vue`` ，自定义组件使用案例参考 ``/pages/component/qrcode/qrcode.vue`` ，海报生成模板参考 ``/pages/poster/poster.vue``
 
 ![](/static/demo/1.jpg)
 ![](/static/demo/2.jpg)
