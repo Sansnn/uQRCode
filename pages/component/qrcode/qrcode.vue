@@ -60,7 +60,7 @@
 </template>
 
 <script>
-	import uniQrcode from '@/components/uni-qrcode/uni-uqrcode'
+	import uniQrcode from '@/components/uni-qrcode/uni-qrcode'
 
 	export default {
 		components: {
