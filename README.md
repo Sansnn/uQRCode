@@ -87,12 +87,12 @@ export default {
 	<view class="content">
 		<view class="text">uQRCode二维码生成</view>
 		<view class="canvas">
-			<text>canvas</text>
 			<canvas canvas-id="qrcode" :style="{width: `${qrcodeSize}px`, height: `${qrcodeSize}px`}" />
+			<text>canvas</text>
 		</view>
 		<view class="image">
-			<text>image</text>
 			<image :src="qrcodeSrc" />
+			<text>image</text>
 		</view>
 		<input class="input" v-model="qrcodeText" placeholder="输入内容生成二维码" />
 		<button class="button" type="primary" @tap="make()">生成二维码</button>
@@ -106,7 +106,7 @@ export default {
 		data() {
 			return {
 				qrcodeText: 'uQRCode',
-				qrcodeSize: 215,
+				qrcodeSize: 129,
 				qrcodeSrc: ''
 			}
 		},
@@ -138,6 +138,10 @@ export default {
 </script>
 
 <style>
+	page {
+		background-color: #f0f0f0;
+	}
+
 	.content {
 		display: flex;
 		flex-direction: column;
@@ -148,9 +152,9 @@ export default {
 	.text {
 		display: flex;
 		justify-content: center;
-		margin-top: 30rpx;
+		margin-top: 50rpx;
 		font-size: 36rpx;
-		color: #8f8f94;
+		color: #666666;
 	}
 
 	.canvas {
@@ -159,29 +163,35 @@ export default {
 	}
 
 	.image {
-		width: 200rpx;
+		width: 258rpx;
 		margin-top: 50rpx;
 		text-align: center;
 	}
-	
+
 	.image image {
-		width: 200rpx;
-		height: 200rpx;
+		display: block;
+		width: 258rpx;
+		height: 258rpx;
 	}
 
 	.input {
 		width: 600rpx;
 		height: 40px;
-		margin-top: 50rpx;
+		margin: 50rpx 0;
 		padding: 0 20rpx;
 		border: 1px solid #b0b0b0;
-		border-radius: 10rpx;
+		border-radius: 5px;
+		background-color: #ffffff;
 		box-sizing: border-box;
 	}
 
 	.button {
 		width: 690rpx;
-		margin-top: 50rpx;
+		margin: 10rpx;
+	}
+	
+	.button:last-child {
+		margin-bottom: 50rpx;
 	}
 </style>
 ```
