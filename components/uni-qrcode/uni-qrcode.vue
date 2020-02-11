@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<canvas :canvas-id="id" :style="{width: `${size}px`, height: `${size}px`}" />
+		<canvas :id="cid" :canvas-id="cid" :style="{width: `${size}px`, height: `${size}px`}" />
 	</view>
 </template>
 
@@ -9,7 +9,7 @@
 
 	export default {
 		props: {
-			id: {
+			cid: {
 				type: String,
 				required: true
 			},
@@ -57,7 +57,7 @@
 		methods: {
 			make() {
 				var options = {
-					canvasId: this.id,
+					canvasId: this.cid,
 					componentInstance: this,
 					text: this.text,
 					size: this.size,
@@ -90,18 +90,15 @@
 				this.$emit('makeComplete', this.filePath)
 			},
 			async drawBackgroundImage(qrcode) {
-				var ctx = uni.createCanvasContext(this.id, this)
+				var ctx = uni.createCanvasContext(this.cid, this)
 
-				var backgroundImageInfo = await this.getImageInfo(this.backgroundImage)
-				var backgroundImagePath = backgroundImageInfo.path
-
-				ctx.drawImage(backgroundImagePath, 0, 0, this.size, this.size)
+				ctx.drawImage(this.backgroundImage, 0, 0, this.size, this.size)
 
 				ctx.drawImage(qrcode, 0, 0, this.size, this.size)
 
 				ctx.draw(false, () => {
 					uni.canvasToTempFilePath({
-						canvasId: this.id,
+						canvasId: this.cid,
 						success: (res) => {
 							this.filePath = res.tempFilePath
 						}
@@ -109,12 +106,10 @@
 				})
 			},
 			async drawLogo(qrcode) {
-				var ctx = uni.createCanvasContext(this.id, this)
+				var ctx = uni.createCanvasContext(this.cid, this)
 
 				ctx.drawImage(qrcode, 0, 0, this.size, this.size)
 
-				var logoInfo = await this.getImageInfo(this.logo)
-				var logoPath = logoInfo.path
 				var logoSize = this.size / 4
 				var logoX = this.size / 2 - logoSize / 2
 				var logoY = logoX
@@ -126,12 +121,12 @@
 				
 				this.fillRoundRect(ctx, borderRadius, borderX, borderY, borderSize, borderSize)
 				
-				ctx.drawImage(logoPath, logoX, logoY, logoSize, logoSize)
+				ctx.drawImage(this.logo, logoX, logoY, logoSize, logoSize)
 				// this.drawRoundImage(ctx, logoX, logoY, logoSize, logoSize, logoPath)
 
 				ctx.draw(false, () => {
 					uni.canvasToTempFilePath({
-						canvasId: this.id,
+						canvasId: this.cid,
 						success: (res) => {
 							this.filePath = res.tempFilePath
 						}
