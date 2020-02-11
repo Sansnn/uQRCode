@@ -4,7 +4,7 @@
 		<view class="block">
 			<view class="title">透明背景</view>
 			<view class="component" style="background-color: #d2e9ff;">
-				<uni-qrcode id="qrcode2243" text="uQRCode" backgroundColor="rgba(255,255,255,0)" makeOnLoad />
+				<uni-qrcode cid="qrcode2243" text="uQRCode" backgroundColor="rgba(255,255,255,0)" makeOnLoad />
 			</view>
 		</view>
 
@@ -14,7 +14,7 @@
 				<view class="tips">实现步骤，将二维码背景颜色设置为透明，再进行二次绘制</view>
 			</view>
 			<view class="component">
-				<uni-qrcode id="qrcode2302" text="uQRCode" foregroundColor="rgba(0,0,0,0.3)" backgroundImage="/static/background-image.jpg"
+				<uni-qrcode cid="qrcode2302" text="uQRCode" foregroundColor="rgba(0,0,0,0.3)" :backgroundImage="require('../../../static/background-image.jpg')"
 				 makeOnLoad />
 			</view>
 		</view>
@@ -25,14 +25,14 @@
 				<view class="tips">实现步骤，与图片背景同理，先获取到二维码文件资源，再进行二次绘制</view>
 			</view>
 			<view class="component">
-				<uni-qrcode id="qrcode2307" text="uQRCode" foregroundColor="#2b9939" logo="/static/logo.png" makeOnLoad />
+				<uni-qrcode cid="qrcode2307" text="uQRCode" foregroundColor="#2b9939" :logo="require('../../../static/logo.png')" makeOnLoad />
 			</view>
 		</view>
 
 		<view class="block">
 			<view class="title">事件触发生成</view>
 			<view class="component" style="background-color: #f0f0f0;">
-				<uni-qrcode id="qrcode2233" ref="qrcode2233" text="uQRCode" />
+				<uni-qrcode cid="qrcode2233" ref="qrcode2233" text="uQRCode" />
 			</view>
 			<view class="operate">
 				<button type="primary" size="mini" @click="qrcode2233Click()">点我</button>
@@ -45,14 +45,14 @@
 				<view class="tips">二维码实际尺寸会根据所设边距值进行缩放调整</view>
 			</view>
 			<view class="component" style="background-color: #f0f0f0;">
-				<uni-qrcode id="qrcode2218" text="uQRCode" :margin="10" makeOnLoad />
+				<uni-qrcode cid="qrcode2218" text="uQRCode" :margin="10" makeOnLoad />
 			</view>
 		</view>
 
 		<view class="block">
 			<view class="title">修改背景色和前景色</view>
 			<view class="component">
-				<uni-qrcode id="qrcode2229" text="uQRCode" backgroundColor="red" foregroundColor="blue" makeOnLoad @makeComplete="qrcode2229Complete" />
+				<uni-qrcode cid="qrcode2229" text="uQRCode" backgroundColor="red" foregroundColor="blue" makeOnLoad @makeComplete="qrcode2229Complete" />
 			</view>
 		</view>
 
