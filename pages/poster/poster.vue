@@ -46,15 +46,15 @@
 					canvasWidth: 500,
 					canvasHeight: 820,
 					thumbnailWidth: '54px',
-					thumbnailUrl: '/static/poster-template223001-thumb.jpg',
-					backgroundUrl: '/static/poster-template223001-background.jpg',
+					thumbnailUrl: require('../../static/poster-template223001-thumb.jpg'),
+					backgroundUrl: require('../../static/poster-template223001-background.jpg'),
 					checked: false
 				}, {
 					template: 'template223002',
 					canvasWidth: 500,
 					canvasHeight: 500,
 					thumbnailWidth: '88px',
-					thumbnailUrl: '/static/poster-template223002-thumb.jpg',
+					thumbnailUrl: require('../../static/poster-template223002-thumb.jpg'),
 					backgroundUrl: null,
 					checked: false
 				}]
@@ -107,7 +107,7 @@
 								canvasWidth: posterTemplate.canvasWidth,
 								canvasHeight: posterTemplate.canvasHeight,
 								backgroundSrc: posterTemplate.backgroundUrl,
-								logoSrc: '/static/logo.png',
+								logoSrc: require('../../static/logo.png'),
 								name: 'uQRCode',
 								text: '长按扫描二维码~',
 								QRCodeSrc: this.QRCodeSrc,
@@ -295,7 +295,13 @@
 		right: 0;
 		bottom: 0;
 		left: 0;
+		z-index: 10;
 		background-color: #4d4d4d;
+	}
+	
+	.page-container {
+		position: relative;
+		z-index: 20;
 	}
 
 	.qrcode-canvas {
@@ -336,6 +342,7 @@
 		right: 0;
 		bottom: 0;
 		left: 0;
+		z-index: 30;
 		background-color: #282828;
 	}
 
