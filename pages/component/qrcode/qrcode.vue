@@ -14,7 +14,7 @@
 				<view class="tips">实现步骤，将二维码背景颜色设置为透明，再进行二次绘制</view>
 			</view>
 			<view class="component">
-				<uni-qrcode cid="qrcode2302" text="uQRCode" foregroundColor="rgba(0,0,0,0.3)" :backgroundImage="require('../../../static/background-image.jpg')"
+				<uni-qrcode cid="qrcode2302" text="uQRCode" foregroundColor="rgba(0,0,0,0.3)" backgroundImage="/static/background-image.jpg"
 				 makeOnLoad />
 			</view>
 		</view>
@@ -25,7 +25,7 @@
 				<view class="tips">实现步骤，与图片背景同理，先获取到二维码文件资源，再进行二次绘制</view>
 			</view>
 			<view class="component">
-				<uni-qrcode cid="qrcode2307" text="uQRCode" foregroundColor="#2b9939" :logo="require('../../../static/logo.png')" makeOnLoad />
+				<uni-qrcode cid="qrcode2307" text="uQRCode" foregroundColor="#2b9939" logo="/static/logo.png" makeOnLoad />
 			</view>
 		</view>
 
