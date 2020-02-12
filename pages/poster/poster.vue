@@ -7,7 +7,7 @@
 		<view class="page-container">
 			<view class="content">
 				<view class="poster-image">
-					<image :src="posterSrc" mode="aspectFit"></image>
+					<image v-if="posterSrc" :src="posterSrc" mode="aspectFit"></image>
 				</view>
 				<canvas class="poster-canvas" canvas-id="poster" :style="{width: `${posterCanvasWidth}px`, height: `${posterCanvasHeight}px`}" />
 			</view>
@@ -46,15 +46,15 @@
 					canvasWidth: 500,
 					canvasHeight: 820,
 					thumbnailWidth: '54px',
-					thumbnailUrl: require('../../static/poster-template223001-thumb.jpg'),
-					backgroundUrl: require('../../static/poster-template223001-background.jpg'),
+					thumbnailUrl: '/static/poster-template223001-thumb.jpg',
+					backgroundUrl: '/static/poster-template223001-background.jpg',
 					checked: false
 				}, {
 					template: 'template223002',
 					canvasWidth: 500,
 					canvasHeight: 500,
 					thumbnailWidth: '88px',
-					thumbnailUrl: require('../../static/poster-template223002-thumb.jpg'),
+					thumbnailUrl: '/static/poster-template223002-thumb.jpg',
 					backgroundUrl: null,
 					checked: false
 				}]
@@ -107,7 +107,7 @@
 								canvasWidth: posterTemplate.canvasWidth,
 								canvasHeight: posterTemplate.canvasHeight,
 								backgroundSrc: posterTemplate.backgroundUrl,
-								logoSrc: require('../../static/logo.png'),
+								logoSrc: '/static/logo.png',
 								name: 'uQRCode',
 								text: '长按扫描二维码~',
 								QRCodeSrc: this.QRCodeSrc,
@@ -143,7 +143,7 @@
 					}
 				})
 			},
-			async template223001(options) {
+			template223001(options) {
 				let {
 					canvasWidth,
 					canvasHeight,
@@ -160,17 +160,16 @@
 				ctx.clearRect(0, 0, canvasWidth, canvasHeight)
 
 				// 获取背景图片信息
-				let backgroundImageInfo = await this.getImageInfo(backgroundSrc)
-				let backgroundPath = backgroundImageInfo.path
+				let backgroundImageInfo = {
+					"width": "500",
+					"height": "667"
+				}
 				// 设置背景图片宽高
 				let backgroundWidth = canvasWidth
 				let backgroundHeight = backgroundImageInfo.height * canvasWidth / backgroundImageInfo.width
 				// 填充背景图片
-				ctx.drawImage(backgroundPath, 0, 0, backgroundWidth, backgroundHeight)
+				ctx.drawImage(backgroundSrc, 0, 0, backgroundWidth, backgroundHeight)
 
-				// 获取标志图片信息
-				let logoImageInfo = await this.getImageInfo(logoSrc)
-				let logoPath = logoImageInfo.path
 				// 设置标志图片宽高坐标
 				let logoWidth = 80
 				let logoHeight = 80
@@ -185,7 +184,7 @@
 				// 画好了圆 剪切  原始画布中剪切任意形状和尺寸。一旦剪切了某个区域，则所有之后的绘图都会被限制在被剪切的区域内 这也是我们要save上下文的原因
 				ctx.clip()
 				// 填充标志图片
-				ctx.drawImage(logoPath, logoX, logoY, logoWidth, logoHeight)
+				ctx.drawImage(logoSrc, logoX, logoY, logoWidth, logoHeight)
 				// 恢复之前保存的绘图上下文 恢复之前保存的绘图上下午即状态 还可以继续绘制
 				ctx.restore()
 
@@ -213,9 +212,6 @@
 				// 填充分享文案到画布
 				ctx.fillText(text, textX, textY)
 
-				// 获取二维码图片信息
-				let QRCodeImageInfo = await this.getImageInfo(QRCodeSrc)
-				let QRCodePath = QRCodeImageInfo.path
 				// 设置二维码图片宽高
 				let QRCodeWidth = 100
 				let QRCodeHeight = 100
@@ -223,7 +219,7 @@
 				let QRCodeX = canvasWidth - QRCodeWidth - 36
 				let QRCodeY = backgroundHeight + (canvasHeight - backgroundHeight) / 2 - QRCodeHeight / 2
 				// 填充二维码图片
-				ctx.drawImage(QRCodePath, QRCodeX, QRCodeY, QRCodeWidth, QRCodeHeight)
+				ctx.drawImage(QRCodeSrc, QRCodeX, QRCodeY, QRCodeWidth, QRCodeHeight)
 
 				// 输出到画布中
 				ctx.draw(false, () => {
@@ -237,7 +233,7 @@
 					})
 				})
 			},
-			async template223002(options) {
+			template223002(options) {
 				let {
 					canvasWidth,
 					canvasHeight,
@@ -249,11 +245,8 @@
 				// 清除画布
 				ctx.clearRect(0, 0, canvasWidth, canvasHeight)
 
-				// 获取二维码图片信息
-				let QRCodeImageInfo = await this.getImageInfo(QRCodeSrc)
-				let QRCodePath = QRCodeImageInfo.path
 				// 填充二维码图片，并设置边距
-				ctx.drawImage(QRCodePath, 15, 15, canvasWidth - 30, canvasHeight - 30)
+				ctx.drawImage(QRCodeSrc, 15, 15, canvasWidth - 30, canvasHeight - 30)
 
 				// 输出到画布中
 				ctx.draw(false, () => {
@@ -266,29 +259,12 @@
 						}
 					})
 				})
-			},
-			async getImageInfo(src) {
-				return new Promise((resolve, reject) => {
-					uni.getImageInfo({
-						src: src,
-						success: image => {
-							resolve(image)
-						},
-						fail(error) {
-							uni.showToast({
-								icon: 'none',
-								title: '图片加载失败'
-							})
-							reject(error)
-						}
-					})
-				})
 			}
 		}
 	}
 </script>
 
-<style lang="scss">
+<style>
 	.page-background {
 		position: fixed;
 		top: 0;
@@ -382,6 +358,7 @@
 		justify-content: center;
 		align-items: center;
 		height: 50px;
+		margin-bottom: env(safe-area-inset-bottom);
 		background: #ffffff;
 		font-size: 16px;
 		font-weight: 500;
