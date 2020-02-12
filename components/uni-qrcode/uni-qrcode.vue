@@ -89,7 +89,7 @@
 			makeComplete() {
 				this.$emit('makeComplete', this.filePath)
 			},
-			async drawBackgroundImage(qrcode) {
+			drawBackgroundImage(qrcode) {
 				var ctx = uni.createCanvasContext(this.cid, this)
 
 				ctx.drawImage(this.backgroundImage, 0, 0, this.size, this.size)
@@ -105,7 +105,7 @@
 					})
 				})
 			},
-			async drawLogo(qrcode) {
+			drawLogo(qrcode) {
 				var ctx = uni.createCanvasContext(this.cid, this)
 
 				ctx.drawImage(qrcode, 0, 0, this.size, this.size)
@@ -122,7 +122,6 @@
 				this.fillRoundRect(ctx, borderRadius, borderX, borderY, borderSize, borderSize)
 				
 				ctx.drawImage(this.logo, logoX, logoY, logoSize, logoSize)
-				// this.drawRoundImage(ctx, logoX, logoY, logoSize, logoSize, logoPath)
 
 				ctx.draw(false, () => {
 					uni.canvasToTempFilePath({
@@ -149,41 +148,6 @@
 				ctx.setFillStyle('#ffffff') 
 				ctx.fill()
 				ctx.restore()
-			},
-			fillRound(ctx, x, y, w, h) {
-				ctx.save()
-				ctx.beginPath()
-				ctx.arc(w / 2 + x, h / 2 + y, w / 2, 0, Math.PI * 2, false)
-				ctx.closePath()
-				ctx.setFillStyle('#ffffff') 
-				ctx.fill()
-				ctx.restore()
-			},
-			drawRoundImage(ctx, x, y, w, h, img) {
-				ctx.save()
-				ctx.beginPath()
-				ctx.arc(w / 2 + x, h / 2 + y, w / 2, 0, Math.PI * 2, false)
-				ctx.closePath()
-				ctx.clip()
-				ctx.drawImage(img, x, y, w, h)
-				ctx.restore()
-			},
-			async getImageInfo(src) {
-				return new Promise((resolve, reject) => {
-					uni.getImageInfo({
-						src: src,
-						success: image => {
-							resolve(image)
-						},
-						fail(error) {
-							uni.showToast({
-								icon: 'none',
-								title: '图片加载失败'
-							})
-							reject(error)
-						}
-					})
-				})
 			}
 		}
 	}
