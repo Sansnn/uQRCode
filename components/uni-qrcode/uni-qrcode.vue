@@ -46,7 +46,7 @@
 		},
 		data() {
 			return {
-				filePath: ''
+				
 			}
 		},
 		mounted() {
@@ -55,79 +55,59 @@
 			}
 		},
 		methods: {
-			make() {
+			async make() {
 				var options = {
 					canvasId: this.cid,
 					componentInstance: this,
 					text: this.text,
 					size: this.size,
 					margin: this.margin,
-					backgroundColor: this.backgroundColor,
-					foregroundColor: this.foregroundColor,
-					success: res => {
-						this.filePath = res
-						this.makeComplete()
-					}
+					backgroundColor: this.backgroundImage ? 'rgba(255,255,255,0)' : this.backgroundColor,
+					foregroundColor: this.foregroundColor
 				}
+				var filePath = await this.makeSync(options)
 
 				if (this.backgroundImage) {
-					options.backgroundColor = 'rgba(255,255,255,0)'
-					options.success = res => {
-						this.drawBackgroundImage(res)
-					}
+					filePath = await this.drawBackgroundImageSync(filePath)
 				}
 
 				if (this.logo) {
-					options.backgroundColor = 'rgba(255,255,255,0)'
-					options.success = res => {
-						this.drawLogo(res)
-					}
+					filePath = await this.drawLogoSync(filePath)
 				}
 
-				uQRCode.make(options)
+				this.makeComplete(filePath)
 			},
-			makeComplete() {
-				this.$emit('makeComplete', this.filePath)
+			makeComplete(filePath) {
+				this.$emit('makeComplete', filePath)
 			},
-			drawBackgroundImage(qrcode) {
+			drawBackgroundImage(options) {
 				var ctx = uni.createCanvasContext(this.cid, this)
 
 				ctx.drawImage(this.backgroundImage, 0, 0, this.size, this.size)
 
-				ctx.drawImage(qrcode, 0, 0, this.size, this.size)
+				ctx.drawImage(options.filePath, 0, 0, this.size, this.size)
 
 				ctx.draw(false, () => {
 					uni.canvasToTempFilePath({
 						canvasId: this.cid,
-						success: (res) => {
-							this.filePath = res.tempFilePath
+						success: res => {
+							options.success && options.success(res.tempFilePath)
+						},
+						fail: error => {
+							options.fail && options.fail(error)
 						}
 					})
 				})
 			},
-			drawLogo(qrcode) {
-				var ctx = uni.createCanvasContext(this.cid, this)
-
-				ctx.drawImage(qrcode, 0, 0, this.size, this.size)
-
-				var logoSize = this.size / 4
-				var logoX = this.size / 2 - logoSize / 2
-				var logoY = logoX
-
-				var borderSize = logoSize + 10
-				var borderX = this.size / 2 - borderSize / 2
-				var borderY = borderX
-				var borderRadius = 5
-				
-				this.fillRoundRect(ctx, borderRadius, borderX, borderY, borderSize, borderSize)
-				
-				ctx.drawImage(this.logo, logoX, logoY, logoSize, logoSize)
-
-				ctx.draw(false, () => {
-					uni.canvasToTempFilePath({
-						canvasId: this.cid,
-						success: (res) => {
-							this.filePath = res.tempFilePath
+			async drawBackgroundImageSync(filePath) {
+				return new Promise((resolve, reject) => {
+					this.drawBackgroundImage({
+						filePath: filePath,
+						success: res => {
+							resolve(res)
+						},
+						fail: error => {
+							reject(error)
 						}
 					})
 				})
@@ -145,9 +125,71 @@
 				ctx.arc(w - r, r, r, Math.PI * 3 / 2, Math.PI * 2)
 				ctx.lineTo(w, h - r)
 				ctx.closePath()
-				ctx.setFillStyle('#ffffff') 
+				ctx.setFillStyle('#ffffff')
 				ctx.fill()
 				ctx.restore()
+			},
+			drawLogo(options) {
+				var ctx = uni.createCanvasContext(this.cid, this)
+
+				ctx.drawImage(options.filePath, 0, 0, this.size, this.size)
+
+				var logoSize = this.size / 4
+				var logoX = this.size / 2 - logoSize / 2
+				var logoY = logoX
+
+				var borderSize = logoSize + 10
+				var borderX = this.size / 2 - borderSize / 2
+				var borderY = borderX
+				var borderRadius = 5
+
+				this.fillRoundRect(ctx, borderRadius, borderX, borderY, borderSize, borderSize)
+
+				ctx.drawImage(this.logo, logoX, logoY, logoSize, logoSize)
+
+				ctx.draw(false, () => {
+					uni.canvasToTempFilePath({
+						canvasId: this.cid,
+						success: res => {
+							options.success && options.success(res.tempFilePath)
+						},
+						fail: error => {
+							options.fail && options.fail(error)
+						}
+					})
+				})
+			},
+			async drawLogoSync(filePath) {
+				return new Promise((resolve, reject) => {
+					this.drawLogo({
+						filePath: filePath,
+						success: res => {
+							resolve(res)
+						},
+						fail: error => {
+							reject(error)
+						}
+					})
+				})
+			},
+			async makeSync(options) {
+				return new Promise((resolve, reject) => {
+					uQRCode.make({
+						canvasId: options.canvasId,
+						componentInstance: options.componentInstance,
+						text: options.text,
+						size: options.size,
+						margin: options.margin,
+						backgroundColor: options.backgroundColor,
+						foregroundColor: options.foregroundColor,
+						success: res => {
+							resolve(res)
+						},
+						fail: error => {
+							reject(error)
+						}
+					})
+				})
 			}
 		}
 	}

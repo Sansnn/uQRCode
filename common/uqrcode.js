@@ -1,3 +1,7 @@
+//---------------------------------------------------------------------
+// github https://github.com/Sansnn/uQRCode
+//---------------------------------------------------------------------
+
 let uQRCode = {};
 
 (function() {
@@ -1354,8 +1358,8 @@ let uQRCode = {};
 								success: function(res) {
 									options.success && options.success(res.tempFilePath);
 								},
-								fail: function(res) {
-									options.fail && options.fail(res);
+								fail: function(error) {
+									options.fail && options.fail(error);
 								},
 								complete: function(res) {
 									options.complete && options.complete(res);

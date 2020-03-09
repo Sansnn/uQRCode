@@ -25,7 +25,7 @@
 				<view class="tips">实现步骤，与图片背景同理，先获取到二维码文件资源，再进行二次绘制</view>
 			</view>
 			<view class="component">
-				<uni-qrcode cid="qrcode2307" text="uQRCode" foregroundColor="#2b9939" logo="/static/logo.png" makeOnLoad />
+				<uni-qrcode cid="qrcode2307" text="uQRCode" foregroundColor="#2b9939" logo="/static/logo.png" makeOnLoad @makeComplete="qrcode2307Complete" />
 			</view>
 		</view>
 
@@ -76,6 +76,9 @@
 				this.$refs.qrcode2233.make()
 			},
 			qrcode2229Complete(e) {
+				console.log(e)
+			},
+			qrcode2307Complete(e) {
 				console.log(e)
 			}
 		}

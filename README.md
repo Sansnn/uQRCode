@@ -78,7 +78,7 @@ export default {
 |backgroundColor|String|否|背景色，若设置为透明背景， `fileType` 需设置为 `'png'` ， 然后设置背景色为 `'rgba(255,255,255,0)'` 即可（默认：`'#ffffff'`）|
 |foregroundColor|String|否|前景色（默认：`'#000000'`）|
 |fileType|String|否|输出图片的类型，只支持 `'jpg'` 和 `'png'`（默认：`'png'`）|
-|correctLevel|Number|否|容错级别（默认：`3`）|
+|correctLevel|Number|否|容错级别，0-3（默认：`3`）|
 
 ### 完整示例
 
