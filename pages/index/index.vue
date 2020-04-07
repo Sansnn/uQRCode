@@ -11,8 +11,8 @@
 		</view>
 		<input class="input" v-model="qrcodeText" placeholder="输入内容生成二维码" />
 		<button class="button" type="primary" @tap="make()">生成二维码</button>
-		<button class="button" type="primary" @tap="component()">自定义组件</button>
-		<button class="button" type="primary" @tap="poster()">二维码海报</button>
+		<button class="button" type="primary" @tap="toComponent()">自定义组件</button>
+		<button class="button" type="primary" @tap="toPoster()">二维码海报</button>
 	</view>
 </template>
 
@@ -50,12 +50,12 @@
 					}
 				})
 			},
-			component() {
+			toComponent() {
 				uni.navigateTo({
 					url: '/pages/component/qrcode/qrcode'
 				})
 			},
-			poster() {
+			toPoster() {
 				uni.navigateTo({
 					url: '/pages/poster/poster'
 				})
@@ -90,6 +90,10 @@
 		text-align: center;
 	}
 
+	.canvas canvas {
+		margin: 0 auto;
+	}
+
 	.image {
 		width: 258rpx;
 		margin-top: 50rpx;
@@ -117,7 +121,7 @@
 		width: 690rpx;
 		margin: 10rpx;
 	}
-	
+
 	.button:last-child {
 		margin-bottom: 50rpx;
 	}
