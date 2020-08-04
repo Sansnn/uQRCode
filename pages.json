@@ -6,6 +6,11 @@
 				"navigationStyle": "custom"
 			}
 		}, {
+			"path": "pages/poster/poster",
+			"style": {
+				"navigationBarTitleText": "海报生成"
+			}
+		}, {
 			"path": "pages/component/qrcode/qrcode",
 			"style": {
 				"navigationBarTitleText": "组件测试"
