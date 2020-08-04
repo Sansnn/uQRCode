@@ -1287,13 +1287,15 @@ let uQRCode = {};
 
 	uQRCode = {
 		
+		errorCorrectLevel: QRErrorCorrectLevel,
+		
 		defaults: {
-			size: 258,
+			size: 256,
 			margin: 0,
 			backgroundColor: '#ffffff',
 			foregroundColor: '#000000',
 			fileType: 'png', // 'jpg', 'png'
-			correctLevel: 3,
+			errorCorrectLevel: QRErrorCorrectLevel.H,
 			typeNumber: -1
 		},
 
@@ -1307,7 +1309,7 @@ let uQRCode = {};
 				backgroundColor: this.defaults.backgroundColor,
 				foregroundColor: this.defaults.foregroundColor,
 				fileType: this.defaults.fileType,
-				correctLevel: this.defaults.correctLevel,
+				errorCorrectLevel: this.defaults.errorCorrectLevel,
 				typeNumber: this.defaults.typeNumber
 			};
 			if (options) {
@@ -1322,7 +1324,7 @@ let uQRCode = {};
 			}
 
 			function createCanvas() {
-				var qrcode = new QRCode(options.typeNumber, options.correctLevel);
+				var qrcode = new QRCode(options.typeNumber, options.errorCorrectLevel);
 				qrcode.addData(utf16To8(options.text));
 				qrcode.make();
 
@@ -1346,7 +1348,7 @@ let uQRCode = {};
 				}
 
 				setTimeout(function() {
-					ctx.draw(false, function() {
+					ctx.draw(false, (function() {
 						setTimeout(function() {
 							uni.canvasToTempFilePath({
 								canvasId: options.canvasId,
@@ -1366,7 +1368,7 @@ let uQRCode = {};
 								}
 							}, options.componentInstance);
 						}, options.text.length + 100);
-					});
+					})());
 				}, 150);
 			}
 			

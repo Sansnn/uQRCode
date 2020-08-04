@@ -1,14 +1,14 @@
 <template>
 	<view>
 
-		<view class="block">
+		<view class="block" v-if="type == 1">
 			<view class="title">透明背景</view>
 			<view class="component" style="background-color: #d2e9ff;">
 				<uni-qrcode cid="qrcode2243" text="uQRCode" backgroundColor="rgba(255,255,255,0)" makeOnLoad />
 			</view>
 		</view>
 
-		<view class="block">
+		<view class="block" v-if="type == 2">
 			<view class="title">
 				图片背景
 				<view class="tips">实现步骤，将二维码背景颜色设置为透明，再进行二次绘制</view>
@@ -19,7 +19,17 @@
 			</view>
 		</view>
 
-		<view class="block">
+		<view class="block" v-if="type == 3">
+			<view class="title">
+				设置边距
+				<view class="tips">二维码实际尺寸会根据所设边距值进行缩放调整</view>
+			</view>
+			<view class="component" style="background-color: #f0f0f0;">
+				<uni-qrcode cid="qrcode2218" text="uQRCode" :margin="20" makeOnLoad />
+			</view>
+		</view>
+
+		<view class="block" v-if="type == 4">
 			<view class="title">
 				在二维码上绘制本地图片
 				<view class="tips">实现步骤，与图片背景同理，先获取到二维码文件资源，再进行二次绘制</view>
@@ -29,7 +39,7 @@
 			</view>
 		</view>
 
-		<view class="block">
+		<view class="block" v-if="type == 5">
 			<view class="title">
 				在二维码上绘制网络图片
 				<view class="tips">实现步骤，与图片背景同理，先获取到二维码文件资源，再进行二次绘制</view>
@@ -39,7 +49,7 @@
 			</view>
 		</view>
 
-		<view class="block">
+		<view class="block" v-if="type == 6">
 			<view class="title">事件触发生成</view>
 			<view class="component" style="background-color: #f0f0f0;">
 				<uni-qrcode cid="qrcode2233" ref="qrcode2233" text="uQRCode" />
@@ -49,17 +59,7 @@
 			</view>
 		</view>
 
-		<view class="block">
-			<view class="title">
-				设置边距
-				<view class="tips">二维码实际尺寸会根据所设边距值进行缩放调整</view>
-			</view>
-			<view class="component" style="background-color: #f0f0f0;">
-				<uni-qrcode cid="qrcode2218" text="uQRCode" :margin="10" makeOnLoad />
-			</view>
-		</view>
-
-		<view class="block">
+		<view class="block" v-if="type == 7">
 			<view class="title">修改背景色和前景色</view>
 			<view class="component">
 				<uni-qrcode cid="qrcode2229" text="uQRCode" backgroundColor="red" foregroundColor="blue" makeOnLoad @makeComplete="qrcode2229Complete" />
@@ -78,21 +78,24 @@
 		},
 		data() {
 			return {
-
+				type: null
 			}
+		},
+		onLoad(options) {
+			this.type = options.type
 		},
 		methods: {
 			qrcode2233Click() {
 				this.$refs.qrcode2233.make()
 			},
 			qrcode2229Complete(e) {
-				console.log(e)
+				console.log('qrcode2229Complete', e)
 			},
 			qrcode2307Complete(e) {
-				console.log(e)
+				console.log('qrcode2307Complete', e)
 			},
 			qrcode1446Complete(e) {
-				console.log(e)
+				console.log('qrcode1446Complete', e)
 			}
 		}
 	}

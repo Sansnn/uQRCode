@@ -19,7 +19,7 @@
 			},
 			size: {
 				type: Number,
-				default: 129
+				default: 256
 			},
 			margin: {
 				type: Number,
@@ -46,7 +46,7 @@
 		},
 		data() {
 			return {
-				
+
 			}
 		},
 		mounted() {
@@ -146,7 +146,7 @@
 				this.fillRoundRect(ctx, borderRadius, borderX, borderY, borderSize, borderSize)
 
 				ctx.drawImage(this.logo, logoX, logoY, logoSize, logoSize)
-
+				
 				ctx.draw(false, () => {
 					uni.canvasToTempFilePath({
 						canvasId: this.cid,

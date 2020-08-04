@@ -11,8 +11,18 @@
 		</view>
 		<input class="input" v-model="qrcodeText" placeholder="输入内容生成二维码" />
 		<button class="button" type="primary" @tap="make()">生成二维码</button>
-		<button class="button" type="primary" @tap="toComponent()">自定义组件</button>
-		<button class="button" type="primary" @tap="toPoster()">二维码海报</button>
+		<view class="component">
+			<view class="component-title">自定义组件</view>
+			<view class="component-buttons">
+				<button class="button" type="default" @tap="toComponent(1)">透明背景</button>
+				<button class="button" type="default" @tap="toComponent(2)">图片背景</button>
+				<button class="button" type="default" @tap="toComponent(3)">设置边距</button>
+				<button class="button" type="default" @tap="toComponent(4)">在二维码上绘制本地图片</button>
+				<button class="button" type="default" @tap="toComponent(5)">在二维码上绘制网络图片</button>
+				<button class="button" type="default" @tap="toComponent(6)">事件触发生成</button>
+				<button class="button" type="default" @tap="toComponent(7)">修改背景色和前景色</button>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -22,12 +32,14 @@
 	export default {
 		data() {
 			return {
-				qrcodeText: 'uQRCode',
-				qrcodeSize: 129,
+				qrcodeText: 'uQRCode 更新时间：2020-08-04',
+				qrcodeSize: uni.upx2px(256),
 				qrcodeSrc: ''
 			}
 		},
 		onLoad() {
+			console.log('errorCorrectLevel', uQRCode.errorCorrectLevel)
+			console.log('defaults', uQRCode.defaults)
 			this.make()
 		},
 		methods: {
@@ -50,14 +62,9 @@
 					}
 				})
 			},
-			toComponent() {
+			toComponent(type) {
 				uni.navigateTo({
-					url: '/pages/component/qrcode/qrcode'
-				})
-			},
-			toPoster() {
-				uni.navigateTo({
-					url: '/pages/poster/poster'
+					url: '/pages/component/qrcode/qrcode?type=' + type
 				})
 			}
 		}
@@ -95,15 +102,15 @@
 	}
 
 	.image {
-		width: 258rpx;
+		width: 256rpx;
 		margin-top: 50rpx;
 		text-align: center;
 	}
 
 	.image image {
 		display: block;
-		width: 258rpx;
-		height: 258rpx;
+		width: 256rpx;
+		height: 256rpx;
 	}
 
 	.input {
@@ -124,5 +131,21 @@
 
 	.button:last-child {
 		margin-bottom: 50rpx;
+	}
+
+	.component {
+		margin-top: 30rpx;
+		text-align: center;
+	}
+
+	.component-title {
+		display: inline-block;
+		padding: 20rpx 40rpx;
+		border-bottom: 2px solid #d8d8d8;
+		font-size: 36rpx;
+	}
+
+	.component-buttons {
+		margin-top: 30rpx;
 	}
 </style>
