@@ -19,7 +19,7 @@
 			},
 			size: {
 				type: Number,
-				default: 256
+				default: uni.upx2px(1770/4)
 			},
 			margin: {
 				type: Number,
@@ -96,7 +96,7 @@
 						fail: error => {
 							options.fail && options.fail(error)
 						}
-					})
+					}, this)
 				})
 			},
 			async drawBackgroundImageSync(filePath) {
@@ -156,7 +156,7 @@
 						fail: error => {
 							options.fail && options.fail(error)
 						}
-					})
+					}, this)
 				})
 			},
 			async drawLogoSync(filePath) {

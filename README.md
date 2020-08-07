@@ -48,7 +48,7 @@ import uQRCode from '@/common/uqrcode.js'
 在 ``template`` 中创建 ``<canvas/>``
 
 ```html
-<canvas canvas-id="qrcode" style="width: 256px;height: 256px;" />
+<canvas canvas-id="qrcode" style="width: 258px;height: 258px;" />
 ```
 
 在 ``script`` 中调用 ``make()`` 方法
@@ -61,7 +61,7 @@ export default {
         canvasId: 'qrcode',
         componentInstance: this,
         text: 'uQRCode',
-        size: 256,
+        size: 258,
         margin: 10,
         backgroundColor: '#ffffff',
         foregroundColor: '#000000',
@@ -100,7 +100,7 @@ export default {
 |canvasId|String|是|画布标识，传入 `<canvas/>` 的 `canvas-id`|
 |componentInstance|Object|否|自定义组件实例 `this` ，表示在这个自定义组件下查找拥有 `canvas-id` 的 `<canvas/>` ，如果省略，则不在任何自定义组件内查找|
 |text|String|是|二维码内容|
-|size|Number|否|画布尺寸大小，请与 `<canvas/>` 所设 `width` ， `height` 保持一致（默认：`256`）|
+|size|Number|否|画布尺寸大小，请与 `<canvas/>` 所设 `width` ， `height` 保持一致（默认：`1770`）|
 |margin|Number|否|边距，二维码实际尺寸会根据所设边距值进行缩放调整（默认：`0`）|
 |backgroundColor|String|否|背景色，若设置为透明背景， `fileType` 需设置为 `'png'` ， 然后设置背景色为 `'rgba(255,255,255,0)'` 即可（默认：`'#ffffff'`）|
 |foregroundColor|String|否|前景色（默认：`'#000000'`）|
@@ -133,7 +133,7 @@ export default {
 		data() {
 			return {
 				qrcodeText: 'uQRCode',
-				qrcodeSize: uni.upx2px(256),
+				qrcodeSize: uni.upx2px(1770/4),
 				qrcodeSrc: ''
 			}
 		},

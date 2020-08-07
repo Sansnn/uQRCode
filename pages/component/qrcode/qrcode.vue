@@ -35,7 +35,8 @@
 				<view class="tips">实现步骤，与图片背景同理，先获取到二维码文件资源，再进行二次绘制</view>
 			</view>
 			<view class="component">
-				<uni-qrcode cid="qrcode2307" text="uQRCode" foregroundColor="#2b9939" logo="/static/logo.png" makeOnLoad @makeComplete="qrcode2307Complete" />
+				<uni-qrcode cid="qrcode2307" text="uQRCode" foregroundColor="#2b9939" logo="/static/logo.png" makeOnLoad
+				 @makeComplete="qrcode2307Complete" />
 			</view>
 		</view>
 
@@ -45,7 +46,8 @@
 				<view class="tips">实现步骤，与图片背景同理，先获取到二维码文件资源，再进行二次绘制</view>
 			</view>
 			<view class="component">
-				<uni-qrcode cid="qrcode1446" text="uQRCode" foregroundColor="#2b9939" logo="https://img-cdn-qiniu.dcloud.net.cn/uploads/avatar/000/72/20/93_avatar_max.jpg" makeOnLoad @makeComplete="qrcode1446Complete" />
+				<uni-qrcode cid="qrcode1446" text="uQRCode" foregroundColor="#2b9939" logo="https://img-cdn-qiniu.dcloud.net.cn/uploads/avatar/000/72/20/93_avatar_max.jpg"
+				 makeOnLoad @makeComplete="qrcode1446Complete" />
 			</view>
 		</view>
 
