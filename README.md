@@ -48,7 +48,7 @@ import uQRCode from '@/common/uqrcode.js'
 在 ``template`` 中创建 ``<canvas/>``
 
 ```html
-<canvas canvas-id="qrcode" style="width: 258px;height: 258px;" />
+<canvas canvas-id="qrcode" style="width: 354px;height: 354px;" />
 ```
 
 在 ``script`` 中调用 ``make()`` 方法
@@ -61,7 +61,7 @@ export default {
         canvasId: 'qrcode',
         componentInstance: this,
         text: 'uQRCode',
-        size: 258,
+        size: 354,
         margin: 10,
         backgroundColor: '#ffffff',
         foregroundColor: '#000000',
@@ -133,7 +133,7 @@ export default {
 		data() {
 			return {
 				qrcodeText: 'uQRCode',
-				qrcodeSize: uni.upx2px(354),
+				qrcodeSize: uni.upx2px(590),
 				qrcodeSrc: ''
 			}
 		},
@@ -190,15 +190,15 @@ export default {
 	}
 
 	.image {
-		width: 258rpx;
+		width: 354rpx;
 		margin-top: 50rpx;
 		text-align: center;
 	}
 
 	.image image {
 		display: block;
-		width: 258rpx;
-		height: 258rpx;
+		width: 354rpx;
+		height: 354rpx;
 	}
 
 	.input {

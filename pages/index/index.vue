@@ -109,15 +109,15 @@
 	}
 
 	.image {
-		width: 258rpx;
+		width: 354rpx;
 		margin-top: 50rpx;
 		text-align: center;
 	}
 
 	.image image {
 		display: block;
-		width: 258rpx;
-		height: 258rpx;
+		width: 354rpx;
+		height: 354rpx;
 	}
 
 	.input {
