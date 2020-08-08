@@ -1290,7 +1290,7 @@ let uQRCode = {};
 		errorCorrectLevel: QRErrorCorrectLevel,
 		
 		defaults: {
-			size: 1770,
+			size: 354,
 			margin: 0,
 			backgroundColor: '#ffffff',
 			foregroundColor: '#000000',

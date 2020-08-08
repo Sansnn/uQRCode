@@ -2,7 +2,7 @@
 	<view>
 		<view class="page-background"></view>
 
-		<canvas class="qrcode-canvas" canvas-id="qrcode" style="width: 200px;height: 200px;" />
+		<canvas class="qrcode-canvas" canvas-id="qrcode" :style="{width: QRCodeSize+'px', height: QRCodeSize+'px'}" />
 
 		<view class="page-container">
 			<view class="content">
@@ -24,7 +24,7 @@
 			<view class="tips">长按图片保存</view>
 			<!-- #endif -->
 			<!-- #ifndef H5 -->
-			<view class="tips" @tap="save()">保存到相册</view>
+			<view class="tips" @tap="save">保存到相册</view>
 			<!-- #endif -->
 		</view>
 	</view>
@@ -37,6 +37,7 @@
 		data() {
 			return {
 				QRCodeText: 'uQRCode',
+				QRCodeSize: uQRCode.defaults.size,
 				QRCodeSrc: '',
 				posterSrc: '',
 				posterCanvasWidth: 0, // 画布宽度
@@ -70,7 +71,6 @@
 			uQRCode.make({
 				canvasId: 'qrcode',
 				text: this.QRCodeText,
-				size: 200,
 				success: res => {
 					this.QRCodeSrc = res
 					// 默认生成第一张海报
@@ -109,7 +109,7 @@
 								backgroundSrc: posterTemplate.backgroundUrl,
 								logoSrc: '/static/logo.png',
 								name: 'uQRCode',
-								text: '长按扫描二维码~',
+								text: '长按识别二维码~',
 								QRCodeSrc: this.QRCodeSrc,
 								success: res => {
 									this.posterSrc = res

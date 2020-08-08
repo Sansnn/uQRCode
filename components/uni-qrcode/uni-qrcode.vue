@@ -19,7 +19,7 @@
 			},
 			size: {
 				type: Number,
-				default: uni.upx2px(1770/4)
+				default: uni.upx2px(590)
 			},
 			margin: {
 				type: Number,
