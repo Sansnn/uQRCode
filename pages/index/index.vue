@@ -22,6 +22,7 @@
 				<button class="button" type="default" @tap="toComponent(5)">在二维码上绘制网络图片</button>
 				<button class="button" type="default" @tap="toComponent(6)">事件触发生成</button>
 				<button class="button" type="default" @tap="toComponent(7)">修改背景色和前景色</button>
+				<button class="button" type="default" @tap="toComponent(8)">批量生成</button>
 			</view>
 		</view>
 	</view>
@@ -33,7 +34,7 @@
 	export default {
 		data() {
 			return {
-				qrcodeText: 'uQRCode 更新时间：2020-08-04',
+				qrcodeText: 'uQRCode 更新时间：2020-09-27',
 				qrcodeSize: uni.upx2px(590),
 				qrcodeSrc: ''
 			}
@@ -49,19 +50,33 @@
 					title: '二维码生成中',
 					mask: true
 				})
-
+			
+				// 回调方式
+				// uQRCode.make({
+				// 	canvasId: 'qrcode',
+				// 	text: this.qrcodeText,
+				// 	size: this.qrcodeSize,
+				// 	margin: 10,
+				// 	success: res => {
+				// 		console.log(res)
+				// 		this.qrcodeSrc = res
+				// 	},
+				// 	complete: () => {
+				// 		uni.hideLoading()
+				// 	}
+				// })
+			
+				// Promise
 				uQRCode.make({
 					canvasId: 'qrcode',
 					text: this.qrcodeText,
 					size: this.qrcodeSize,
-					margin: 10,
-					success: res => {
-						console.log(res)
-						this.qrcodeSrc = res
-					},
-					complete: () => {
-						uni.hideLoading()
-					}
+					margin: 10
+				}).then(res => {
+					console.log(res)
+					this.qrcodeSrc = res
+				}).finally(() => {
+					uni.hideLoading()
 				})
 			},
 			toComponent(type) {

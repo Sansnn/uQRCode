@@ -7,7 +7,7 @@ uQRCode 生成方式简单，可扩展性高，如有复杂需求可通过自定
 
 联系方式：QQ540000228。
 
-最近一次用于更新代码的 HBuilder X 版本为 2.8.3。
+最近一次用于更新代码的 HBuilder X 版本为 2.8.11。
 
 ![](https://github.com/Sansnn/uQRCode/blob/master/static/demo/1.jpg)
 ![](https://github.com/Sansnn/uQRCode/blob/master/static/demo/2.jpg)
@@ -56,7 +56,8 @@ import uQRCode from '@/common/uqrcode.js'
 ```javascript
 export default {
   methods: {
-    make() {
+    async make() {
+      // 回调方式
       uQRCode.make({
         canvasId: 'qrcode',
         componentInstance: this,
@@ -71,6 +72,35 @@ export default {
           console.log(res)
         }
       })
+
+      // Promise
+      uQRCode.make({
+        canvasId: 'qrcode',
+        componentInstance: this,
+        text: 'uQRCode',
+        size: 354,
+        margin: 10,
+        backgroundColor: '#ffffff',
+        foregroundColor: '#000000',
+        fileType: 'jpg',
+        correctLevel: uQRCode.errorCorrectLevel.H
+      }).then(res => {
+          console.log(res)
+      })
+
+      // 同步等待
+      var res = await uQRCode.make({
+        canvasId: 'qrcode',
+        componentInstance: this,
+        text: 'uQRCode',
+        size: 354,
+        margin: 10,
+        backgroundColor: '#ffffff',
+        foregroundColor: '#000000',
+        fileType: 'jpg',
+        correctLevel: uQRCode.errorCorrectLevel.H
+      })
+      console.log(res)
     }
   }
 }
@@ -151,13 +181,11 @@ export default {
 					canvasId: 'qrcode',
 					text: this.qrcodeText,
 					size: this.qrcodeSize,
-					margin: 10,
-					success: res => {
-						this.qrcodeSrc = res
-					},
-					complete: () => {
-						uni.hideLoading()
-					}
+					margin: 10
+				}).then(res => {
+					this.qrcodeSrc = res
+				}).finally(() => {
+					uni.hideLoading()
 				})
 			}
 		}
@@ -222,6 +250,40 @@ export default {
 	}
 </style>
 ```
+
+### 使用建议
+canvas在二维码生成中请当做一个生成工具来看待，它的作用仅是绘制出二维码。应把生成回调得到的资源保存并使用，显示用image图片组件，原因是方便操作，例如调整大小，或是H5端长按保存或识别，所以canvas应将它放在看不见的地方。不能用`display:none;overflow:hidden;`隐藏，否则生成空白。这里推荐canvas的隐藏样式代码
+```html
+<style>
+	.canvas-hide {
+		/* 1 */
+		position: fixed;
+		right: 100vw;
+		bottom: 100vh;
+		/* 2 */
+		z-index: -9999;
+		/* 3 */
+		opacity: 0;
+	}
+</style>
+```
+
+### 常见问题
+**二维码生成不完整**
+
+canvas宽高必须和size一致，并且size的单位是px，如果canvas的单位是rpx，那么不同设备屏幕分辨率不一样，rpx转换成px后的画布尺寸不足以放下全部内容，实际绘制图案超出，就会出现不完整的情况。
+
+**如何扫码跳转指定网页**
+
+text参数直接放入完整的网页地址即可，例如：`https://ext.dcloud.net.cn/plugin?id=1287`。微信客户端不能是ip地址。
+
+**小程序、APP报错**
+
+canvas不支持放在 `slot` 插槽，请尽量放在模板根节点，也就是第一个 `<view></view>` 标签里面
+
+**H5长按识别**
+
+canvas无法长按识别，长按识别需要是图片才行，所以只需将回调过来的资源用image组件显示即可。
 
 **Tips**
 - 示例项目中的图片采集于互联网，仅作为案例展示，不作为广告/商业，如有侵权，请告知删除。下载使用的用户，请勿把示例项目中的图片应用到你的项目；

@@ -68,23 +68,65 @@
 			</view>
 		</view>
 
+		<view v-if="type == 8">
+			<view class="block">
+				<view class="title">canvas</view>
+				<view class="component">
+					<canvas id="batch" canvas-id="batch" :style="{width: `${size}px`, height: `${size}px`}" />
+				</view>
+			</view>
+
+			<view class="block" v-for="(item, index) in list" :key="index">
+				<view class="title">{{item.qrcodeText}}</view>
+				<view class="component">
+					<image :src="item.qrcodeSrc" :style="{width: `${size}px`, height: `${size}px`}" />
+				</view>
+			</view>
+		</view>
+
 	</view>
 </template>
 
 <script>
-	import uniQrcode from '@/components/uni-qrcode/uni-qrcode'
+	import uQRCode from '@/common/uqrcode.js'
+	import UniQrcode from '@/components/uni-qrcode/uni-qrcode'
 
 	export default {
 		components: {
-			uniQrcode
+			UniQrcode
 		},
 		data() {
 			return {
-				type: null
+				type: null,
+				size: uni.upx2px(590),
+				list: [{
+					id: '1',
+					qrcodeText: '8g7ahja0vx'
+				}, {
+					id: '2',
+					qrcodeText: '5awg5jh89u'
+				}, {
+					id: '3',
+					qrcodeText: '09ikkz48we'
+				}, {
+					id: '4',
+					qrcodeText: 'zghuu8iteg'
+				}]
 			}
 		},
-		onLoad(options) {
+		async onLoad(options) {
 			this.type = options.type
+			if (this.type == 8) {
+				for (var i = 0; i < this.list.length; i++) {
+					var item = this.list[i]
+					var res = await uQRCode.make({
+						canvasId: 'batch',
+						text: item.qrcodeText,
+						size: this.size
+					})
+					this.$set(item, 'qrcodeSrc', res)
+				}
+			}
 		},
 		methods: {
 			qrcode2233Click() {

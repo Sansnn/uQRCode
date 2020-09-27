@@ -1286,9 +1286,9 @@ let uQRCode = {};
 	}
 
 	uQRCode = {
-		
+
 		errorCorrectLevel: QRErrorCorrectLevel,
-		
+
 		defaults: {
 			size: 354,
 			margin: 0,
@@ -1300,81 +1300,101 @@ let uQRCode = {};
 		},
 
 		make: function(options) {
-			var defaultOptions = {
-				canvasId: options.canvasId,
-				componentInstance: options.componentInstance,
-				text: options.text,
-				size: this.defaults.size,
-				margin: this.defaults.margin,
-				backgroundColor: this.defaults.backgroundColor,
-				foregroundColor: this.defaults.foregroundColor,
-				fileType: this.defaults.fileType,
-				errorCorrectLevel: this.defaults.errorCorrectLevel,
-				typeNumber: this.defaults.typeNumber
-			};
-			if (options) {
-				for (var i in options) {
-					defaultOptions[i] = options[i];
-				}
-			}
-			options = defaultOptions;
-			if (!options.canvasId) {
-				console.error('uQRCode: Please set canvasId!');
-				return;
-			}
-
-			function createCanvas() {
-				var qrcode = new QRCode(options.typeNumber, options.errorCorrectLevel);
-				qrcode.addData(utf16To8(options.text));
-				qrcode.make();
-
-				var ctx = uni.createCanvasContext(options.canvasId, options.componentInstance);
-				ctx.setFillStyle(options.backgroundColor);
-				ctx.fillRect(0, 0, options.size, options.size);
-
-				var tileW = (options.size - options.margin * 2) / qrcode.getModuleCount();
-				var tileH = tileW;
-
-				for (var row = 0; row < qrcode.getModuleCount(); row++) {
-					for (var col = 0; col < qrcode.getModuleCount(); col++) {
-						var style = qrcode.isDark(row, col) ? options.foregroundColor : options.backgroundColor;
-						ctx.setFillStyle(style);
-						var x = Math.round(col * tileW) + options.margin;
-						var y = Math.round(row * tileH) + options.margin;
-						var w = Math.ceil((col + 1) * tileW) - Math.floor(col * tileW);
-						var h = Math.ceil((row + 1) * tileW) - Math.floor(row * tileW);
-						ctx.fillRect(x, y, w, h);
+			return new Promise((reslove, reject) => {
+				var defaultOptions = {
+					canvasId: options.canvasId,
+					componentInstance: options.componentInstance,
+					text: options.text,
+					size: this.defaults.size,
+					margin: this.defaults.margin,
+					backgroundColor: this.defaults.backgroundColor,
+					foregroundColor: this.defaults.foregroundColor,
+					fileType: this.defaults.fileType,
+					errorCorrectLevel: this.defaults.errorCorrectLevel,
+					typeNumber: this.defaults.typeNumber
+				};
+				if (options) {
+					for (var i in options) {
+						defaultOptions[i] = options[i];
 					}
 				}
+				options = defaultOptions;
+				if (!options.canvasId) {
+					console.error('uQRCode: Please set canvasId!');
+					return;
+				}
 
-				setTimeout(function() {
-					ctx.draw(false, (function() {
-						setTimeout(function() {
-							uni.canvasToTempFilePath({
-								canvasId: options.canvasId,
-								fileType: options.fileType,
-								width: options.size,
-								height: options.size,
-								destWidth: options.size,
-								destHeight: options.size,
-								success: function(res) {
-									options.success && options.success(res.tempFilePath);
-								},
-								fail: function(error) {
-									options.fail && options.fail(error);
-								},
-								complete: function(res) {
-									options.complete && options.complete(res);
-								}
-							}, options.componentInstance);
-						}, options.text.length + 100);
-					})());
-				}, 150);
-			}
-			
-			createCanvas();
+				function createCanvas() {
+					var qrcode = new QRCode(options.typeNumber, options.errorCorrectLevel);
+					qrcode.addData(utf16To8(options.text));
+					qrcode.make();
+
+					var ctx = uni.createCanvasContext(options.canvasId, options.componentInstance);
+					ctx.setFillStyle(options.backgroundColor);
+					ctx.fillRect(0, 0, options.size, options.size);
+
+					var tileW = (options.size - options.margin * 2) / qrcode.getModuleCount();
+					var tileH = tileW;
+
+					for (var row = 0; row < qrcode.getModuleCount(); row++) {
+						for (var col = 0; col < qrcode.getModuleCount(); col++) {
+							var style = qrcode.isDark(row, col) ? options.foregroundColor : options.backgroundColor;
+							ctx.setFillStyle(style);
+							var x = Math.round(col * tileW) + options.margin;
+							var y = Math.round(row * tileH) + options.margin;
+							var w = Math.ceil((col + 1) * tileW) - Math.floor(col * tileW);
+							var h = Math.ceil((row + 1) * tileW) - Math.floor(row * tileW);
+							ctx.fillRect(x, y, w, h);
+						}
+					}
+
+					setTimeout(function() {
+						ctx.draw(false, (function() {
+							setTimeout(function() {
+								uni.canvasToTempFilePath({
+									canvasId: options.canvasId,
+									fileType: options.fileType,
+									width: options.size,
+									height: options.size,
+									destWidth: options.size,
+									destHeight: options.size,
+									success: function(res) {
+										let resData; // 将统一为base64格式
+										let tempFilePath = res.tempFilePath; // H5为base64，其他为相对路径
+
+										// #ifdef H5
+										resData = tempFilePath;
+										options.success && options.success(resData);
+										reslove(resData);
+										// #endif
+
+										// #ifndef H5
+										const path = plus.io.convertLocalFileSystemURL(tempFilePath) //绝对路径
+										let fileReader = new plus.io.FileReader();
+										fileReader.readAsDataURL(path);
+										fileReader.onloadend = res => {
+											resData = res.target.result;
+											options.success && options.success(resData);
+											reslove(resData);
+										};
+										// #endif
+									},
+									fail: function(error) {
+										options.fail && options.fail(error);
+										reject(error);
+									},
+									complete: function(res) {
+										options.complete && options.complete(res);
+									}
+								}, options.componentInstance);
+							}, options.text.length + 100);
+						})());
+					}, 150);
+				}
+
+				createCanvas();
+			});
 		}
-
 	}
 
 })()
