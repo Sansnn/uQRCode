@@ -1368,8 +1368,8 @@ let uQRCode = {};
 										reslove(resData);
 										// #endif
 
-										// #ifndef H5
-										const path = plus.io.convertLocalFileSystemURL(tempFilePath) //绝对路径
+										// #ifdef APP-PLUS
+										const path = plus.io.convertLocalFileSystemURL(tempFilePath) // 绝对路径
 										let fileReader = new plus.io.FileReader();
 										fileReader.readAsDataURL(path);
 										fileReader.onloadend = res => {
@@ -1377,6 +1377,42 @@ let uQRCode = {};
 											options.success && options.success(resData);
 											reslove(resData);
 										};
+										// #endif
+
+										// #ifdef MP-WEIXIN || MP-QQ || MP-TOUTIAO
+										uni.getFileSystemManager().readFile({
+											filePath: tempFilePath,
+											encoding: 'base64',
+											success: res => {
+												resData = 'data:image/png;base64,' + res.data;
+												options.success && options.success(resData);
+												reslove(resData);
+											}
+										})
+										// #endif
+
+										// #ifndef H5 || APP-PLUS || MP-WEIXIN || MP-QQ || MP-TOUTIAO
+										if (plus) {
+											const path = plus.io.convertLocalFileSystemURL(tempFilePath) // 绝对路径
+											let fileReader = new plus.io.FileReader();
+											fileReader.readAsDataURL(path);
+											fileReader.onloadend = res => {
+												resData = res.target.result;
+												options.success && options.success(resData);
+												reslove(resData);
+											};
+										} else {
+											uni.request({
+												url: tempFilePath,
+												method: 'GET',
+												responseType: 'arraybuffer',
+												success: res => {
+													resData = `data:image/png;base64,${uni.arrayBufferToBase64(res.data)}`; // 把arraybuffer转成base64
+													options.success && options.success(resData);
+													reslove(resData);
+												}
+											})
+										}
 										// #endif
 									},
 									fail: function(error) {
