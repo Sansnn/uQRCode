@@ -67,7 +67,7 @@ export default {
         backgroundColor: '#ffffff',
         foregroundColor: '#000000',
         fileType: 'jpg',
-        correctLevel: uQRCode.errorCorrectLevel.H,
+        errorCorrectLevel: uQRCode.errorCorrectLevel.H,
         success: res => {
           console.log(res)
         }
@@ -83,7 +83,7 @@ export default {
         backgroundColor: '#ffffff',
         foregroundColor: '#000000',
         fileType: 'jpg',
-        correctLevel: uQRCode.errorCorrectLevel.H
+        errorCorrectLevel: uQRCode.errorCorrectLevel.H
       }).then(res => {
           console.log(res)
       })
@@ -98,7 +98,7 @@ export default {
         backgroundColor: '#ffffff',
         foregroundColor: '#000000',
         fileType: 'jpg',
-        correctLevel: uQRCode.errorCorrectLevel.H
+        errorCorrectLevel: uQRCode.errorCorrectLevel.H
       })
       console.log(res)
     }
