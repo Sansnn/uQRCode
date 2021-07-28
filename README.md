@@ -120,6 +120,7 @@ export default {
 |foregroundColor|String|否|前景色（默认：`'#000000'`）|
 |fileType|String|否|输出图片的类型，只支持 `'jpg'` 和 `'png'`（默认：`'png'`）|
 |errorCorrectLevel|Number|否|纠错等级，参考属性说明 `errorCorrectLevel`（默认：`errorCorrectLevel.H`）|
+|enableDelay|Boolen|否|启用延迟绘制（默认：`false`）|
 
 ### getModules(options)
 
@@ -153,6 +154,8 @@ export default {
 **二维码生成不完整**
 
 size的单位是px，请尽量避免使用rpx，如果canvas的单位是rpx，那么不同设备屏幕分辨率不一样，rpx转换成px后的画布尺寸不足以放下全部内容，实际绘制图案超出，就会出现不完整或者没有填充完整画布的情况。
+
+另外还可以尝试延迟绘制，``enableDelay`` 设置为 ``true``。
 
 **如何扫码跳转指定网页**
 
