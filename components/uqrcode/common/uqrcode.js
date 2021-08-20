@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------
 // github https://github.com/Sansnn/uQRCode
-// version 2.0.2
+// version 2.0.23
 //---------------------------------------------------------------------
 
 let uQRCode = {};
@@ -1319,48 +1319,54 @@ let uQRCode = {};
 				var tileW = (options.size - options.margin * 2) / modules.length;
 				var tileH = tileW;
 				var delay = 0;
-				var ctx = uni.createCanvasContext(options.canvasId, componentInstance);
-				ctx.setFillStyle(options.backgroundColor);
-				ctx.fillRect(0, 0, options.size, options.size);
-				for (var row = 0; row < modules.length; row++) {
-					for (var col = 0; col < modules.length; col++) {
-						delay = options.enableDelay ? row * modules.length + col + 1 : 0;
-						setTimeout(function(row, col) {
-							// 计算每一个小块的位置
-							var x = Math.round(col * tileW) + options.margin;
-							var y = Math.round(row * tileH) + options.margin;
-							var w = Math.ceil((col + 1) * tileW) - Math.floor(col * tileW);
-							var h = Math.ceil((row + 1) * tileW) - Math.floor(row * tileW);
-							var style = modules[row][col] ? options.foregroundColor :
-								options.backgroundColor;
-							ctx.setFillStyle(style);
-							ctx.fillRect(x, y, w, h);
-						}, delay, row, col);
-					}
-				}
 				
-				// 耗时
-				var time = options.enableDelay ? delay + options.size * 2 + options.margin * 2 + options.text.length : 0;
-				setTimeout(function() {
-					ctx.draw(false, function() {
-						uni.canvasToTempFilePath({
-							canvasId: options.canvasId,
-							fileType: options.fileType,
-							width: options.size,
-							height: options.size,
-							destWidth: options.size,
-							destHeight: options.size,
-							success: function(res) {
-								reslove(Object.assign(res, {
-									time
-								}));
-							},
-							fail: function(err) {
-								reject(err);
-							}
-						}, componentInstance);
-					});
-				}, time);
+				// 创建canvas上下文前增加一点延时，确保canvas组件已渲染
+				setTimeout(() => {
+					var ctx = uni.createCanvasContext(options.canvasId, componentInstance);
+					ctx.setFillStyle(options.backgroundColor);
+					ctx.fillRect(0, 0, options.size, options.size);
+					for (var row = 0; row < modules.length; row++) {
+						for (var col = 0; col < modules.length; col++) {
+							delay = options.enableDelay ? row * modules.length + col + 1 : 0;
+							setTimeout(function(row, col) {
+								// 计算每一个小块的位置
+								var x = Math.round(col * tileW) + options.margin;
+								var y = Math.round(row * tileH) + options.margin;
+								var w = Math.ceil((col + 1) * tileW) - Math.floor(col * tileW);
+								var h = Math.ceil((row + 1) * tileW) - Math.floor(row * tileW);
+								var style = modules[row][col] ? options.foregroundColor :
+									options.backgroundColor;
+								ctx.setFillStyle(style);
+								ctx.fillRect(x, y, w, h);
+							}, delay, row, col);
+						}
+					}
+					
+					// 耗时
+					var time = options.enableDelay ? delay + options.size * 2 + options.margin * 2 + options.text.length : 0;
+					setTimeout(function() {
+						ctx.draw(false, function() {
+							uni.canvasToTempFilePath({
+								canvasId: options.canvasId,
+								fileType: options.fileType,
+								width: options.size,
+								height: options.size,
+								destWidth: options.size,
+								destHeight: options.size,
+								success: function(res) {
+									reslove(Object.assign(res, {
+										time: time + 50
+									}));
+								},
+								fail: function(err) {
+									reject(err);
+								}
+							}, componentInstance);
+						});
+					}, time);
+				}, 50);
+				
+				
 			});
 		}
 	}
