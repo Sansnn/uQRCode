@@ -1293,16 +1293,19 @@ let uQRCode = {};
 		defaults: {
 			size: 354,
 			margin: 0,
-			backgroundColor: '#ffffff',
+			backgroundColor: '#FFFFFF',
 			foregroundColor: '#000000',
 			fileType: 'png', // 'jpg', 'png'
 			errorCorrectLevel: QRErrorCorrectLevel.H,
-			typeNumber: -1,
-			enableDelay: false // 启用延迟绘制
+			typeNumber: -1
 		},
 
 		getModules: function(options) {
-			options = Object.assign(this.defaults, options);
+			// options = Object.assign(this.defaults, options); // 不能用Object.assign，它会导致this.defaults被污染
+			options = {
+				...this.defaults,
+				...options
+			};
 			var qrcode = new QRCode(options.typeNumber, options.errorCorrectLevel);
 			qrcode.addData(utf16To8(options.text));
 			qrcode.make();
@@ -1310,8 +1313,11 @@ let uQRCode = {};
 		},
 
 		make: function(options, componentInstance) {
-			return new Promise((reslove, reject) => {
-				options = Object.assign(this.defaults, options);
+			return new Promise((resolve, reject) => {
+				options = {
+					...this.defaults,
+					...options
+				}
 				if (!options.canvasId) {
 					throw new Error('uQRCode: Please set canvasId!');
 				}
@@ -1319,33 +1325,36 @@ let uQRCode = {};
 				var tileW = (options.size - options.margin * 2) / modules.length;
 				var tileH = tileW;
 				var delay = 0;
-				
-				// 创建canvas上下文前增加一点延时，确保canvas组件已渲染
-				setTimeout(() => {
+				var startTime = Date.now();
+
+				setTimeout(function() {
 					var ctx = uni.createCanvasContext(options.canvasId, componentInstance);
+					// ctx.draw(false); // 解决重复绘制，ctx.draw(true);调用过多导致真机卡顿、掉帧等问题
 					ctx.setFillStyle(options.backgroundColor);
 					ctx.fillRect(0, 0, options.size, options.size);
 					for (var row = 0; row < modules.length; row++) {
 						for (var col = 0; col < modules.length; col++) {
-							delay = options.enableDelay ? row * modules.length + col + 1 : 0;
-							setTimeout(function(row, col) {
-								// 计算每一个小块的位置
-								var x = Math.round(col * tileW) + options.margin;
-								var y = Math.round(row * tileH) + options.margin;
-								var w = Math.ceil((col + 1) * tileW) - Math.floor(col * tileW);
-								var h = Math.ceil((row + 1) * tileW) - Math.floor(row * tileW);
-								var style = modules[row][col] ? options.foregroundColor :
-									options.backgroundColor;
-								ctx.setFillStyle(style);
-								ctx.fillRect(x, y, w, h);
-							}, delay, row, col);
+							// 计算每一个小块的位置
+							var x = Math.round(col * tileW) + options.margin;
+							var y = Math.round(row * tileH) + options.margin;
+							var w = Math.ceil((col + 1) * tileW) - Math.floor(col * tileW);
+							var h = Math.ceil((row + 1) * tileW) - Math.floor(row * tileW);
+							var style = modules[row][col] ?
+								options.foregroundColor :
+								options.backgroundColor;
+							ctx.setFillStyle(style);
+							ctx.fillRect(x, y, w, h);
+							// ctx.draw(true);
 						}
 					}
-					
-					// 耗时
-					var time = options.enableDelay ? delay + options.size * 2 + options.margin * 2 + options.text.length : 0;
-					setTimeout(function() {
-						ctx.draw(false, function() {
+
+					ctx.draw(false, function() {
+						// canvasToTempFilePath不加延时在微信小程序安卓端会混乱，所有问题主要就出现在这：canvasToTempFilePath，本来绘制是正确的，调用它的过程中，组件还是绘制状态，所以导致绘制异常，因为没有确保状态正常的回调方法，draw的回调也不行，所以加延时确保组件状态正常，再调用。
+						var drawTime = Date.now() - startTime;
+						var delay = drawTime + // draw绘制耗费时间
+							(options.size * 2) + // 绘制大小的宽高，用来作为耗时参数
+							(modules.length * 2); // 矩阵信息，对应宽高，用来作为耗时参数
+						setTimeout(function() {
 							uni.canvasToTempFilePath({
 								canvasId: options.canvasId,
 								fileType: options.fileType,
@@ -1354,21 +1363,23 @@ let uQRCode = {};
 								destWidth: options.size,
 								destHeight: options.size,
 								success: function(res) {
-									reslove(Object.assign(res, {
-										time: time + 50
+									resolve(Object.assign(res, {
+										time: Date
+											.now() -
+											startTime
 									}));
 								},
 								fail: function(err) {
 									reject(err);
 								}
 							}, componentInstance);
-						});
-					}, time);
-				}, 50);
-				
-				
+						}, delay);
+					});
+				}, options.size * 2);
+
 			});
 		}
+
 	}
 
 })();

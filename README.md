@@ -4,7 +4,7 @@ uQRCode 生成方式简单，可扩展性高，如有复杂需求可通过自定
 
 支持自定义二维码渲染规则，可通过 ``getModules`` 方法得到矩阵信息后，自行实现canvas渲染二维码，如随机颜色、圆点、方块、块与块之间的间距等，详情见示例中的 ``custom``。
 
-支持nvue生成，但暂不支持保存。
+支持nvue使用 ``getModules`` 生成，但暂不支持保存，详见示例 index.nvue。
 
 ### 二维码
 **什么是QR码**
@@ -118,7 +118,6 @@ export default {
 |foregroundColor|String|否|前景色（默认：`'#000000'`）|
 |fileType|String|否|输出图片的类型，只支持 `'jpg'` 和 `'png'`（默认：`'png'`）|
 |errorCorrectLevel|Number|否|纠错等级，参考属性说明 `errorCorrectLevel`（默认：`errorCorrectLevel.H`）|
-|enableDelay|Boolen|否|启用延迟绘制（默认：`false`）|
 
 ### getModules(options)
 
@@ -152,8 +151,6 @@ export default {
 **二维码生成不完整**
 
 size的单位是px，请尽量避免使用rpx，如果canvas的单位是rpx，那么不同设备屏幕分辨率不一样，rpx转换成px后的画布尺寸不足以放下全部内容，实际绘制图案超出，就会出现不完整或者没有填充完整画布的情况。
-
-另外还可以尝试延迟绘制，``enableDelay`` 设置为 ``true``。
 
 **如何扫码跳转指定网页**
 
