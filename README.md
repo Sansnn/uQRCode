@@ -4,7 +4,7 @@ uQRCode 生成方式简单，可扩展性高，如有复杂需求可通过自定
 
 支持自定义二维码渲染规则，可通过 ``getModules`` 方法得到矩阵信息后，自行实现canvas渲染二维码，如随机颜色、圆点、方块、块与块之间的间距等，详情见示例中的 ``custom``。
 
-支持nvue使用 ``getModules`` 生成，但暂不支持保存，详见示例 index.nvue。
+2.0.4新增绘制模式，view模式和canvas模式，使用view模式可以保证在安卓的成功率，并且支持nvue，缺点是不能保存。canvas可以保存，但在安卓低端设备问题较多，这是由于canvas底层API造成的，大部分问题设备可以通过设置延时解决，2.0.4同步提供了增加延时属性，如遇到异常情况，可适当增加延时，若还是无法解决建议使用view模式。
 
 ### 二维码
 **什么是QR码**
@@ -43,6 +43,7 @@ export default {
     this.$refs
     	.uqrcode
     	.make({
+    		mode: 'canvas', // 默认为view
     		size: 354,
     		text: 'uQRCode'
     	})
@@ -109,6 +110,7 @@ export default {
 
 |参数|类型|必填|说明|
 |---|---|---|:---|
+|mode|String|否|绘制模式，有`view`和`canvas`两种模式，非必填（默认：`view`）|
 |canvasId|String|是|画布标识，传入 `<canvas/>` 的 `canvas-id`|
 |componentInstance|Object|否|自定义组件实例 `this` ，表示在这个自定义组件下查找拥有 `canvas-id` 的 `<canvas/>` ，如果省略，则不在任何自定义组件内查找|
 |text|String|是|二维码内容|
@@ -118,6 +120,8 @@ export default {
 |foregroundColor|String|否|前景色（默认：`'#000000'`）|
 |fileType|String|否|输出图片的类型，只支持 `'jpg'` 和 `'png'`（默认：`'png'`）|
 |errorCorrectLevel|Number|否|纠错等级，参考属性说明 `errorCorrectLevel`（默认：`errorCorrectLevel.H`）|
+|drawDelay|Number|否|绘制延时，默认为自动计算延时，设置`-1`则不启用延时|
+|toFileDelay|Number|否|canvas导出到文件延时，默认为自动计算延时，设置`-1`则不启用延时|
 
 ### getModules(options)
 
