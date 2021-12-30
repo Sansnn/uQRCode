@@ -54,19 +54,18 @@
         })
         this.$refs[id].toTempFilePath({
           success: res => {
+            uni.hideLoading()
             uni.showToast({
               icon: 'none',
               title: '文件临时路径：' + res.tempFilePath
             })
           },
           fail: err => {
+            uni.hideLoading()
             uni.showToast({
               icon: 'none',
               title: JSON.stringify(err)
             })
-          },
-          complete: () => {
-            uni.hideLoading()
           }
         })
       },
@@ -77,19 +76,18 @@
         })
         this.$refs[id].save({
           success: res => {
+            uni.hideLoading()
             uni.showToast({
               icon: 'none',
               title: res.msg
             })
           },
           fail: err => {
+            uni.hideLoading()
             uni.showToast({
               icon: 'none',
               title: JSON.stringify(err)
             })
-          },
-          complete: () => {
-            uni.hideLoading()
           }
         })
       },
