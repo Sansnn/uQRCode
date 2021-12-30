@@ -43,7 +43,7 @@ export default {
     this.$refs
     	.uqrcode
     	.make({
-    		mode: 'canvas', // 默认为view
+        mode: 'canvas', // 默认为view
     		size: 354,
     		text: 'uQRCode'
     	})
