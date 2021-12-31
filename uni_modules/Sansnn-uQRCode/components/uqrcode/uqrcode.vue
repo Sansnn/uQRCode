@@ -1,34 +1,36 @@
 <template>
   <view class="uqrcode" :style="{'width': `${size}px`, 'height': `${size}px`}">
-    <!-- canvas模式，默认 -->
-    <block v-if="mode === 'canvas'">
-      <!-- #ifdef APP-NVUE -->
-      <gcanvas class="uqrcode-canvas" ref="gcanvas" :style="{'width': `${size}px`, 'height': `${size}px`}"></gcanvas>
-      <!-- #endif -->
-      <!-- #ifndef APP-NVUE -->
-      <canvas class="uqrcode-canvas" :id="id" :canvas-id="id" :style="{'width': `${size}px`, 'height': `${size}px`}"></canvas>
-      <!-- #endif -->
-    </block>
+    <block v-if="!isReload">
+      <!-- canvas模式，默认 -->
+      <block v-if="mode === 'canvas'">
+        <!-- #ifdef APP-NVUE -->
+        <gcanvas class="uqrcode-canvas" ref="gcanvas" :style="{'width': `${size}px`, 'height': `${size}px`}"></gcanvas>
+        <!-- #endif -->
+        <!-- #ifndef APP-NVUE -->
+        <canvas class="uqrcode-canvas" :id="id" :canvas-id="id" :style="{'width': `${size}px`, 'height': `${size}px`}"></canvas>
+        <!-- #endif -->
+      </block>
 
-    <!-- view模式，兼容 -->
-    <view v-else-if="mode === 'view'" class="uqrcode-view" :style="{
+      <!-- view模式，兼容 -->
+      <view v-else-if="mode === 'view'" class="uqrcode-view" :style="{
       'width': `${size}px`,
       'height': `${size}px`,
       'padding': `${margin}px`,
       'background-color': backgroundColor
       }">
-      <view class="uqrcode-view-row" v-for="(row, rowIndex) in modules.length" :key="rowIndex">
-        <view class="uqrcode-view-col" v-for="(col, colIndex) in modules.length" :key="colIndex" :style="{
+        <view class="uqrcode-view-row" v-for="(row, rowIndex) in modules.length" :key="rowIndex">
+          <view class="uqrcode-view-col" v-for="(col, colIndex) in modules.length" :key="colIndex" :style="{
         	'width': `${tileSize}px`,
         	'height': `${tileSize}px`,
         	'background-color': modules[rowIndex][colIndex] ? foregroundColor : backgroundColor
         	}">
+          </view>
         </view>
       </view>
-    </view>
+    </block>
 
     <!-- 生成二维码的loading效果 -->
-    <view class="uqrcode-makeing" :class="{'uqrcode-make-complete': !makeing}">makeing</view>
+    <!-- <view class="uqrcode-makeing" :class="{'uqrcode-make-complete': !makeing}">loading...</view> -->
 
     <!-- H5保存提示 -->
     <!-- #ifdef H5 -->
@@ -60,15 +62,15 @@
   export default {
     name: 'uqrcode',
     props: {
-      // 生成模式
-      mode: {
-        type: String,
-        default: 'canvas' // canvas|view (nvue不支持canvas模式)
-      },
       // id
       id: {
         type: String,
         default: uuid()
+      },
+      // 生成模式
+      mode: {
+        type: String,
+        default: 'canvas' // canvas|view (nvue不支持canvas模式)
       },
       // 二维码内容
       text: String,
@@ -91,17 +93,32 @@
       foregroundColor: {
         type: String,
         default: '#000000'
+      },
+      // 纠错等级
+      errorCorrectLevel: {
+        type: Number,
+        default: uqrcode.errorCorrectLevel.H
+      },
+      // 版本
+      typeNumber: {
+        type: Number,
+        default: -1
+      },
+      // 导出的文件类型
+      fileType: {
+        type: String,
+        default: 'png'
       }
     },
     data() {
       return {
-        value: '',
         canvasContext: null,
-        makeing: true,
+        makeing: false,
         delegate: null,
         delegateParams: null,
         tempFilePath: '',
-        isH5Save: false
+        isH5Save: false,
+        isReload: false
       }
     },
     computed: {
@@ -109,7 +126,6 @@
         let options = {
           ...this.$props
         }
-        options.text = this.value
         return uqrcode.getModules(options)
       },
       tileSize() {
@@ -117,9 +133,12 @@
       }
     },
     watch: {
-      text(val) {
-        this.value = val
-        this.make()
+      /* 深度监听props，任意属性一发生改变立即重绘二维码 */
+      $props: {
+        handler() {
+          this.reload()
+        },
+        deep: true
       },
       makeing(val) {
         if (!val) {
@@ -130,11 +149,28 @@
       }
     },
     mounted() {
-      this.value = this.text
-      this.make()
+      this.$nextTick(() => {
+        this.make()
+      })
     },
     methods: {
+      reload() {
+        /* 重载组件 */
+        this.isReloadMake = true
+        this.isReload = true
+        this.$nextTick(() => {
+          this.isReload = false
+          this.$nextTick(() => {
+            setTimeout(() => {
+              this.make()
+            }, 150)
+          })
+        })
+      },
       make() {
+        if (this.makeing) {
+          return
+        }
         this.makeing = true
         if (this.mode === 'canvas') {
           let ctx = null
@@ -157,6 +193,7 @@
 
           this.canvasContext = ctx
 
+          ctx.draw() // 清空之前的画布内容
           ctx.setFillStyle(this.backgroundColor)
           ctx.fillRect(0, 0, this.size, this.size)
 
@@ -186,7 +223,7 @@
       complete(e = {}) {
         let basic = {
           id: this.id,
-          text: this.value,
+          text: this.text,
           mode: this.mode
         }
         let ages = {
@@ -197,16 +234,6 @@
         this.$emit('complete', ages)
       },
       toTempFilePath(callback = {}) {
-        if (this.makeing) {
-          // 如果还在生成状态，那当前操作将托管到委托，监听生成完成后再通过委托复调当前方法
-          this.delegate = this.toTempFilePath
-          this.delegateParams = callback
-          return
-        } else {
-          this.delegate = null
-          this.delegateParams = null
-        }
-
         if (typeof callback.success != 'function') {
           callback.success = () => {}
         }
@@ -217,16 +244,26 @@
           callback.complete = () => {}
         }
 
+        if (this.makeing) {
+          // 如果还在生成状态，那当前操作将托管到委托，监听生成完成后再通过委托复调当前方法
+          this.delegate = this.toTempFilePath
+          this.delegateParams = callback
+          return
+        } else {
+          this.delegate = null
+          this.delegateParams = null
+        }
+
         let _this = this
         // #ifdef APP-NVUE
         this.canvasContext.toTempFilePath(
           0,
           0,
-          _this.size * 10, // 不知道什么原因，最少要*3，不然输出的图片只有一个角
-          _this.size * 10, // 不知道什么原因，最少要*3，不然输出的图片只有一个角
+          _this.size * 3, // 不知道什么原因，最少要*3，不然输出的图片只有一个角
+          _this.size * 3, // 不知道什么原因，最少要*3，不然输出的图片只有一个角
           _this.size,
           _this.size,
-          'png',
+          _this.fileType,
           1,
           res => {
             _this.tempFilePath = res.tempFilePath
@@ -239,7 +276,7 @@
         // #ifndef APP-NVUE
         uni.canvasToTempFilePath({
           canvasId: this.id,
-          fileType: 'png',
+          fileType: this.fileType,
           width: this.size,
           height: this.size,
           success: res => {
