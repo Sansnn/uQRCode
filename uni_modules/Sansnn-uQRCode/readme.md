@@ -73,7 +73,7 @@ QR码属于矩阵式二维码中的一个种类，由DENSO(日本电装)公司�
 <template>
   <view>
     <uqrcode ref="uQRCode" text="uQRCode 3.0" />
-    <button @click="toTempFilePath">导出文件临时路径</button>
+    <button @click="toTempFilePath">导出临时文件路径</button>
   </view>
 </template>
 ```
