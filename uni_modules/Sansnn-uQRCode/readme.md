@@ -67,6 +67,31 @@ QR码属于矩阵式二维码中的一个种类，由DENSO(日本电装)公司�
 |fail			|Function	|否		|-			|方法调用失败的回调函数														|
 |complete	|Function	|否		|-			|方法调用结束的回调函数（调用成功、失败都会执行）	|
 
+#### 示例
+
+```html
+<template>
+  <view>
+    <uqrcode ref="uQRCode" text="uQRCode 3.0" />
+    <button @click="toTempFilePath">导出文件临时路径</button>
+  </view>
+</template>
+```
+
+```javascript
+export default {
+  methods: {
+    toTempFilePath() {
+      this.$refs.uQRCode.toTempFilePath({
+        success: res => {
+          console.log(res)
+        }
+      })
+    }
+  }
+}
+```
+
 ### save(OBJECT)
 
 保存二维码
@@ -78,6 +103,31 @@ QR码属于矩阵式二维码中的一个种类，由DENSO(日本电装)公司�
 |success	|Function	|否		|-			|方法调用成功的回调函数														|
 |fail			|Function	|否		|-			|方法调用失败的回调函数														|
 |complete	|Function	|否		|-			|方法调用结束的回调函数（调用成功、失败都会执行）	|
+
+#### 示例
+
+```html
+<template>
+  <view>
+    <uqrcode ref="uQRCode" text="uQRCode 3.0" />
+    <button @click="save">保存二维码</button>
+  </view>
+</template>
+```
+
+```javascript
+export default {
+  methods: {
+    save() {
+      this.$refs.uQRCode.save({
+        success: res => {
+          console.log(res)
+        }
+      })
+    }
+  }
+}
+```
 
 ### 高级使用
 
