@@ -96,7 +96,7 @@
       },
       // 纠错等级
       errorCorrectLevel: {
-        type: Number,
+        type: [String, Number],
         default: uqrcode.errorCorrectLevel.H
       },
       // 版本
@@ -125,6 +125,9 @@
       modules() {
         let options = {
           ...this.$props
+        }
+        if (typeof options.errorCorrectLevel === 'string') {
+          options.errorCorrectLevel = uqrcode.errorCorrectLevel[options.errorCorrectLevel]
         }
         return uqrcode.getModules(options)
       },

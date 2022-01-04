@@ -133,7 +133,7 @@
         })
       },
       sliderChange(e, dataName) {
-        
+
         this.$set(this.$data, dataName, e.detail.value)
       }
     }
@@ -173,7 +173,7 @@
     font-size: 36rpx;
     color: #666666;
   }
-  
+
   .text {
     margin-top: 32rpx;
     font-size: 32rpx;
@@ -194,7 +194,7 @@
     width: 690rpx;
     margin-top: 32rpx;
   }
-  
+
   .qrcode-box {
     /* #ifndef APP-NVUE */
     display: flex;
