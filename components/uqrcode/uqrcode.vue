@@ -55,7 +55,7 @@
   import {
     enable,
     WeexBridge
-  } from '../../gcanvas'
+  } from './gcanvas'
   let modal = weex.requireModule("modal")
   // #endif
 
