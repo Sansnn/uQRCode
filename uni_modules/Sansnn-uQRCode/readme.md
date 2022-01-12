@@ -4,6 +4,9 @@ uQRCode 生成方式简单，可扩展性高，如有复杂需求可通过自定
 
 支持自定义二维码渲染规则，可通过 `getModules` 方法得到矩阵信息后，自行实现canvas或view+css渲染二维码，如随机颜色、圆点、方块、块与块之间的间距等。
 
+### 示例预览
+[https://static-c15f4b57-ef97-4d2b-b939-f580f910d7e2.bspapp.com](https://static-c15f4b57-ef97-4d2b-b939-f580f910d7e2.bspapp.com)
+
 ### 二维码
 **什么是QR码**
 
@@ -35,18 +38,19 @@ QR码属于矩阵式二维码中的一个种类，由DENSO(日本电装)公司�
 
 ### 属性说明
 
-|属性名						|类型					|可选值						|默认值		|是否必填	|说明														|
-|---							|---					|---							|---			|---			|:---														|
-|id								|String				|-								|随机生成	|否				|组件标识/canvasId							|
-|mode							|String				|canvas/view			|canvas		|否				|生成模式												|
-|text							|String				|-								|-				|是				|二维码内容											|
-|size							|Number				|-								|256			|否				|二维码大小，单位px							|
-|margin						|Number				|-								|0				|否				|填充边距，单位px								|
-|backgroundColor	|String				|-								|#FFFFFF	|否				|背景色													|
-|foregroundColor	|String				|-								|#000000	|否				|前景色													|
-|errorCorrectLevel|String/Number|L/M/Q/H/1/0/3/2	|H				|否				|纠错等级L/M/Q/H分别对应1/0/3/2	|
-|typeNumber				|Number				|-								|-1				|否				|版本														|
-|fileType					|String				|png/jpg					|png			|否				|导出的文件类型									|
+|属性名						|类型					|可选值					|默认值		|是否必填	|说明																																						|
+|---							|---					|---						|---			|---			|:---																																						|
+|id								|String				|-							|随机生成	|否				|组件标识/canvasId																															|
+|mode							|String				|canvas/view		|canvas		|否				|生成模式																																				|
+|text							|String				|-							|-				|是				|二维码内容																																			|
+|size							|Number				|-							|256			|否				|二维码大小，单位px																															|
+|margin						|Number				|-							|0				|否				|填充边距，单位px																																|
+|backgroundColor	|String				|-							|#FFFFFF	|否				|背景色																																					|
+|foregroundColor	|String				|-							|#000000	|否				|前景色																																					|
+|errorCorrectLevel|String/Number|L/M/Q/H/1/0/3/2|H				|否				|纠错等级L/M/Q/H分别对应1/0/3/2																									|
+|typeNumber				|Number				|-							|-1				|否				|版本																																						|
+|fileType					|String				|png/jpg				|png			|否				|导出的文件类型																																	|
+|complete					|EventHandle	|								|					|否				|二维码生成完成时触发，一般用于刚加载完页面就生成二维码并需要导出临时文件的情况	|
 
 ### 方法说明
 
@@ -197,6 +201,10 @@ export default {
 |typeNumber				|Number	|否		|-1			|版本															|
 
 ### 常见问题
+**导出空白**
+
+如果是页面刚加载完毕就在onLoad、mounted等页面生命周期中调用导出临时文件或者保存，这时画布还未绘制完毕，那么导出肯定是空白的。正确做法是在`complete`中导出，二维码绘制完毕后会触发`complete`，所以在这里导出能保证画布不会空白。如果是其他情况，请联系作者说明。
+
 **关于高级使用二维码生成不完整**
 
 size的单位是px，请尽量避免使用rpx，如果canvas的单位是rpx，那么不同设备屏幕分辨率不一样，rpx转换成px后的画布尺寸不足以放下全部内容，实际绘制图案超出，就会出现不完整或者没有填充完整画布的情况。
