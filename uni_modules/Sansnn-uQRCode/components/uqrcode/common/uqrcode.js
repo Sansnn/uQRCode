@@ -1311,7 +1311,7 @@ let uQRCode = (() => {
         ...options
       };
       var qrcode = new QRCode(options.typeNumber, options.errorCorrectLevel);
-      qrcode.addData(utf16To8(options.text));
+      qrcode.addData(utf16To8(options.text.toString()));
       qrcode.make();
       return qrcode.modules;
     }
