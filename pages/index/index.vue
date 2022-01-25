@@ -13,18 +13,26 @@
         :error-correct-level="errorCorrectLevel"
         :type-number="typeNumber"
         :file-type="fileType"
+        :tile-margin="tileMargin + '%'"
+        :tile-radius="tileRadius + '%'"
+        :tile-alpha="tileAlpha"
+        :foreground-image="foregroundImage"
+        :foreground-image-options="foregroundImageOptions"
+        :background-image-options="backgroundImageOptions"
+        :background-image="backgroundImage"
+        :debug="true"
       ></uqrcode>
     </view>
 
     <uni-forms class="form">
       <uni-forms-item label="文本"><uni-easyinput type="textarea" v-model="text" /></uni-forms-item>
       <uni-forms-item label="模式"><uni-data-checkbox v-model="mode" :localdata="[{ value: 'canvas', text: 'canvas' }, { value: 'view', text: 'view' }]" /></uni-forms-item>
-      <uni-forms-item label="尺寸"><slider class="slider" :value="256" min="192" max="320" show-value @change="sliderChange($event, 'size')" /></uni-forms-item>
-      <uni-forms-item label="边距"><slider class="slider" :value="10" min="0" max="20" show-value @change="sliderChange($event, 'margin')" /></uni-forms-item>
+      <uni-forms-item label="尺寸"><slider class="slider" :value="size" min="192" max="320" show-value @change="sliderChange($event, 'size')" /></uni-forms-item>
+      <uni-forms-item label="边距"><slider class="slider" :value="margin" min="0" max="20" show-value @change="sliderChange($event, 'margin')" /></uni-forms-item>
       <uni-forms-item label="背景色">
         <uni-data-checkbox
           v-model="backgroundColor"
-          :localdata="[{ value: '', text: '透明' }, { value: '#FFFFFF', text: '白' }, { value: '#FFFF7F', text: '黄' }, { value: '#AAFF7F', text: '绿' }]"
+          :localdata="[{ value: '#FFFFFF', text: '白' }, { value: '#FFFF7F', text: '黄' }, { value: '#AAFF7F', text: '绿' }, { value: '', text: '透明' }]"
         />
       </uni-forms-item>
       <uni-forms-item label="前景色">
@@ -33,9 +41,157 @@
           :localdata="[{ value: '#000000', text: '黑' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#AA0000,#00007F', text: '渐变' }]"
         />
       </uni-forms-item>
-      <uni-forms-item label="前景色渐变类型" v-if="foregroundColor.split(',').length > 1">
-        <uni-data-checkbox v-model="foregroundGradientType" :localdata="[{ value: 'linear', text: '线性' }, { value: 'circular', text: '圆形|放射' }]" />
+      <uni-forms-item label="渐变类型" v-if="foregroundColor.split(',').length > 1">
+        <uni-data-checkbox v-model="foregroundGradientType" :localdata="[{ value: 'linear', text: '线性' }, { value: 'circular', text: '圆形/放射' }]" />
       </uni-forms-item>
+      <uni-forms-item label="小块间距"><slider class="slider" :value="tileMargin" min="0" max="20" show-value @change="sliderChange($event, 'tileMargin')" /></uni-forms-item>
+      <uni-forms-item label="小块圆角"><slider class="slider" :value="tileRadius" min="0" max="100" show-value @change="sliderChange($event, 'tileRadius')" /></uni-forms-item>
+      <uni-forms-item label="小块透明度">
+        <slider class="slider" :value="tileAlpha" :min="0.0" :max="1.0" :step="0.01" show-value @change="sliderChange($event, 'tileAlpha')" />
+      </uni-forms-item>
+      <uni-forms-item label="前景图">
+        <uni-file-picker file-mediatype="image" limit="1" @select="filePickerSelect($event, 'foregroundImage')" @delete="filePickerDelete('foregroundImage')" />
+      </uni-forms-item>
+      <uni-forms-item label="前景图选项" v-if="foregroundImage">
+        <uni-forms-item label="图片宽度">
+          <slider
+            class="slider"
+            :value="foregroundImageOptions.width"
+            :min="size / 8"
+            :max="size / 4"
+            show-value
+            @change="sliderChange($event, 'foregroundImageOptions', 'width')"
+          />
+        </uni-forms-item>
+        <uni-forms-item label="图片高度">
+          <slider
+            class="slider"
+            :value="foregroundImageOptions.height"
+            :min="size / 8"
+            :max="size / 4"
+            show-value
+            @change="sliderChange($event, 'foregroundImageOptions', 'height')"
+          />
+        </uni-forms-item>
+        <uni-forms-item label="水平排列">
+          <uni-data-picker
+            v-model="foregroundImageOptions.align[0]"
+            :localdata="[{ text: '靠左', value: 'left' }, { text: '居中', value: 'center' }, { text: '靠右', value: 'right' }]"
+            @change="dataPickerChange($event, 'fios')"
+          ></uni-data-picker>
+        </uni-forms-item>
+        <uni-forms-item label="垂直排列">
+          <uni-data-picker
+            v-model="foregroundImageOptions.align[1]"
+            :localdata="[{ text: '顶部', value: 'top' }, { text: '居中', value: 'center' }, { text: '底部', value: 'bottom' }]"
+            @change="dataPickerChange($event, 'fioc')"
+          ></uni-data-picker>
+        </uni-forms-item>
+        <uni-forms-item label="anchor">
+          <uni-forms-item label="X"><uni-easyinput type="number" v-model="foregroundImageOptions.anchor[0]" /></uni-forms-item>
+          <uni-forms-item label="Y"><uni-easyinput type="number" v-model="foregroundImageOptions.anchor[1]" /></uni-forms-item>
+        </uni-forms-item>
+        <uni-forms-item label="透明度">
+          <slider
+            class="slider"
+            :value="foregroundImageOptions.alpha"
+            :min="0.0"
+            :max="1.0"
+            :step="0.01"
+            show-value
+            @change="sliderChange($event, 'foregroundImageOptions', 'alpha')"
+          />
+        </uni-forms-item>
+      </uni-forms-item>
+
+      <uni-forms-item label="背景图">
+        <uni-file-picker file-mediatype="image" limit="1" @select="filePickerSelect($event, 'backgroundImage')" @delete="filePickerDelete('backgroundImage')" />
+      </uni-forms-item>
+      <uni-forms-item label="背景图选项" v-if="backgroundImage">
+        <uni-forms-item label="图片宽度">
+          <slider
+            class="slider"
+            :value="backgroundImageOptions.width"
+            :min="size / 2"
+            :max="size * 1.5"
+            show-value
+            @change="sliderChange($event, 'backgroundImageOptions', 'width')"
+          />
+        </uni-forms-item>
+        <uni-forms-item label="图片高度">
+          <slider
+            class="slider"
+            :value="backgroundImageOptions.height"
+            :min="size / 2"
+            :max="size * 1.5"
+            show-value
+            @change="sliderChange($event, 'backgroundImageOptions', 'height')"
+          />
+        </uni-forms-item>
+        <uni-forms-item label="水平排列">
+          <uni-data-picker
+            v-model="backgroundImageOptions.align[0]"
+            :localdata="[{ text: '靠左', value: 'left' }, { text: '居中', value: 'center' }, { text: '靠右', value: 'right' }]"
+            @change="dataPickerChange($event, 'bios')"
+          ></uni-data-picker>
+        </uni-forms-item>
+        <uni-forms-item label="垂直排列">
+          <uni-data-picker
+            v-model="backgroundImageOptions.align[1]"
+            :localdata="[{ text: '顶部', value: 'top' }, { text: '居中', value: 'center' }, { text: '底部', value: 'bottom' }]"
+            @change="dataPickerChange($event, 'bioc')"
+          ></uni-data-picker>
+        </uni-forms-item>
+        <uni-forms-item label="anchor">
+          <uni-forms-item label="X"><uni-easyinput type="number" v-model="backgroundImageOptions.anchor[0]" /></uni-forms-item>
+          <uni-forms-item label="Y"><uni-easyinput type="number" v-model="backgroundImageOptions.anchor[1]" /></uni-forms-item>
+        </uni-forms-item>
+        <uni-forms-item label="透明度">
+          <slider
+            class="slider"
+            :value="backgroundImageOptions.alpha"
+            :min="0.0"
+            :max="1.0"
+            :step="0.01"
+            show-value
+            @change="sliderChange($event, 'backgroundImageOptions', 'alpha')"
+          />
+        </uni-forms-item>
+      </uni-forms-item>
+
+      <!-- <uni-forms-item label="定位角">
+        <uni-forms-item label="左上">
+          <uni-forms-item label="颜色">
+            <uni-data-checkbox
+              :localdata="[{ value: '#000000', text: '黑' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#00ffff,#55aaff', text: '渐变' }]"
+            />
+          </uni-forms-item>
+          <uni-forms-item label="间距"><slider class="slider" min="0" max="20" show-value @change="sliderChange($event, 'tileMargin')" /></uni-forms-item>
+          <uni-forms-item label="圆角"><slider class="slider" min="0" max="100" show-value @change="sliderChange($event, 'tileRadius')" /></uni-forms-item>
+          <uni-forms-item label="透明度"><slider class="slider" :min="0.0" :max="1.0" :step="0.01" show-value @change="sliderChange($event, 'tileAlpha')" /></uni-forms-item>
+        </uni-forms-item>
+        <uni-forms-item label="右上">
+          <uni-forms-item label="颜色">
+            <uni-data-checkbox
+              :localdata="[{ value: '#000000', text: '黑' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#00ffff,#55aaff', text: '渐变' }]"
+            />
+          </uni-forms-item>
+          <uni-forms-item label="间距"><slider class="slider" min="0" max="20" show-value @change="sliderChange($event, 'tileMargin')" /></uni-forms-item>
+          <uni-forms-item label="圆角"><slider class="slider" min="0" max="100" show-value @change="sliderChange($event, 'tileRadius')" /></uni-forms-item>
+          <uni-forms-item label="透明度"><slider class="slider" :min="0.0" :max="1.0" :step="0.01" show-value @change="sliderChange($event, 'tileAlpha')" /></uni-forms-item>
+        </uni-forms-item>
+        <uni-forms-item label="左下">
+          <uni-forms-item label="颜色">
+            <uni-data-checkbox
+              :localdata="[{ value: '#000000', text: '黑' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#00ffff,#55aaff', text: '渐变' }]"
+            />
+          </uni-forms-item>
+          <uni-forms-item label="间距"><slider class="slider" min="0" max="20" show-value @change="sliderChange($event, 'tileMargin')" /></uni-forms-item>
+          <uni-forms-item label="圆角"><slider class="slider" min="0" max="100" show-value @change="sliderChange($event, 'tileRadius')" /></uni-forms-item>
+          <uni-forms-item label="透明度"><slider class="slider" :min="0.0" :max="1.0" :step="0.01" show-value @change="sliderChange($event, 'tileAlpha')" /></uni-forms-item>
+        </uni-forms-item>
+      </uni-forms-item> -->
+
       <uni-forms-item label="纠错等级">
         <uni-data-checkbox
           v-model="errorCorrectLevel"
@@ -47,7 +203,9 @@
           ]"
         />
       </uni-forms-item>
-      <uni-forms-item label="文件类型"><uni-data-checkbox v-model="fileType" :localdata="[{ value: 'jpg', text: 'jpg' }, { value: 'png', text: 'png' }]" /></uni-forms-item>
+      <uni-forms-item label="文件类型">
+        <uni-data-checkbox v-model="fileType" :localdata="[{ value: 'jpg', text: 'jpg' }, { value: 'png', text: 'png(背景色透明选这个)' }]" />
+      </uni-forms-item>
     </uni-forms>
 
     <button class="button" @click="toTempFilePath('uQRCode')" v-if="mode === 'canvas'">导出临时文件路径</button>
@@ -72,15 +230,34 @@ export default {
   data() {
     return {
       mode: 'canvas',
-      text: `uQRCode 3.0.0 更新时间：2021-12-30 预览时间：${new Date()}`,
+      text: `uQRCode`,
       size: 256,
       margin: 10,
-      backgroundColor: '',
+      backgroundColor: '#FFFFFF',
       foregroundColor: '#000000',
       foregroundGradientType: 'linear',
       errorCorrectLevel: uQRCode.errorCorrectLevel.H,
       typeNumber: -1,
       fileType: 'jpg',
+      tileMargin: 0,
+      tileRadius: 0,
+      tileAlpha: 1,
+      foregroundImage: '',
+      foregroundImageOptions: {
+        width: 48,
+        height: 48,
+        align: ['center', 'center'],
+        anchor: [0, 0],
+        alpha: 1
+      },
+      backgroundImage: '',
+      backgroundImageOptions: {
+        width: 256,
+        height: 256,
+        align: ['center', 'center'],
+        anchor: [0, 0],
+        alpha: 1
+      },
       defaultErrorCorrectLevel: uQRCode.errorCorrectLevel,
       qrcodeList: ['我是第一个', '我是第二个', '我是第三个']
     };
@@ -154,8 +331,34 @@ export default {
         }, index * 500);
       });
     },
-    sliderChange(e, dataName) {
-      this.$set(this.$data, dataName, e.detail.value);
+    sliderChange(e, dataName, subDataName) {
+      if (subDataName) {
+        this.$set(this.$data[dataName], subDataName, e.detail.value);
+      } else {
+        this.$set(this.$data, dataName, e.detail.value);
+      }
+    },
+    filePickerSelect(e, dataName) {
+      this.$set(this.$data, dataName, e.tempFilePaths[0]);
+    },
+    filePickerDelete(dataName) {
+      this.$set(this.$data, dataName, '');
+    },
+    dataPickerChange(e, name) {
+      switch (name) {
+        case 'fios':
+          this.foregroundImageOptions.align[0] = e.detail.value[0].value;
+          break;
+        case 'fioc':
+          this.foregroundImageOptions.align[1] = e.detail.value[0].value;
+          break;
+        case 'bios':
+          this.backgroundImageOptions.align[0] = e.detail.value[0].value;
+          break;
+        case 'bioc':
+          this.backgroundImageOptions.align[1] = e.detail.value[0].value;
+          break;
+      }
     }
   }
 };

@@ -120,6 +120,33 @@ export default {
     fileType: {
       type: String,
       default: 'jpg'
+    },
+    // 小块边距，基于小块宽度的百分比
+    tileMargin: {
+      type: String,
+      default: '0%'
+    },
+    // 小块圆角值，基于小块宽度的百分比
+    tileRadius: {
+      type: String,
+      default: '0%'
+    },
+    // 小块透明度
+    tileAlpha: {
+      type: Number,
+      default: 1
+    },
+    // 前景图
+    foregroundImage: String,
+    // 前景图选项
+    foregroundImageOptions: Object,
+    // 背景图
+    backgroundImage: String,
+    // 背景图选项
+    backgroundImageOptions: Object,
+    debug: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -150,7 +177,10 @@ export default {
   watch: {
     /* 深度监听props，任意属性一发生改变立即重绘二维码 */
     $props: {
-      handler() {
+      handler(val) {
+        if (this.debug) {
+          console.log(val);
+        }
         this.reload();
       },
       deep: true
@@ -217,6 +247,48 @@ export default {
           ctx.setFillStyle(backgroundColor);
           ctx.fillRect(0, 0, this.size, this.size);
         }
+        let backgroundImage = this.backgroundImage; // 背景图
+        if (backgroundImage) {
+          // 绘制背景图
+          let x = 0;
+          let y = 0;
+          let w = this.backgroundImageOptions.width || this.size / 4;
+          let h = this.backgroundImageOptions.height || this.size / 4;
+          let align = this.backgroundImageOptions.align || ['center', 'center'];
+          let anchor = this.backgroundImageOptions.anchor || [0, 0];
+          let alpha = this.backgroundImageOptions.alpha == undefined ? 1 : this.backgroundImageOptions.alpha;
+
+          switch (align[0]) {
+            case 'left':
+              x = 0;
+              break;
+            case 'center':
+              x = this.size / 2 - w / 2;
+              break;
+            case 'right':
+              x = this.size - w;
+              break;
+          }
+          x += Number(anchor[0]);
+
+          switch (align[1]) {
+            case 'top':
+              y = 0;
+              break;
+            case 'center':
+              y = this.size / 2 - h / 2;
+              break;
+            case 'bottom':
+              y = this.size - h;
+              break;
+          }
+          y += Number(anchor[1]);
+
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.drawImage(backgroundImage, x, y, w, h);
+          ctx.restore();
+        }
 
         let foregroundColor = this.foregroundColor; // 前景色绘制颜色
         if (typeof foregroundColor === 'string' && foregroundColor.split(',').length > 1) {
@@ -231,18 +303,24 @@ export default {
             gnt.addColorStop(0, foregroundColor[0]);
             gnt.addColorStop(1, foregroundColor[1]);
             ctx.setFillStyle(gnt);
+            ctx.setStrokeStyle(gnt);
           } else if (this.foregroundGradientType === 'circular') {
             var scope = this.foregroundGradientScope || [this.size / 2, this.size / 2, this.size];
             var gnt = ctx.createCircularGradient(scope[0], scope[1], scope[2]);
             gnt.addColorStop(0, foregroundColor[0]);
             gnt.addColorStop(1, foregroundColor[1]);
             ctx.setFillStyle(gnt);
+            ctx.setStrokeStyle(gnt);
           }
         } else {
           // 前景色为字符串元素则为纯色
           ctx.setFillStyle(foregroundColor);
+          ctx.setStrokeStyle(foregroundColor);
         }
 
+        // 设置透明度
+        ctx.save();
+        ctx.globalAlpha = this.tileAlpha;
         for (var row = 0; row < this.modules.length; row++) {
           for (var col = 0; col < this.modules.length; col++) {
             // 计算每一个小块的位置
@@ -252,10 +330,54 @@ export default {
             var h = this.tileSize;
 
             if (this.modules[row][col]) {
-              // 填充前景二维码小方块
-              ctx.fillRect(x, y, w, h);
+              // 填充前景二维码
+              this.fillTile(ctx, x, y, w, h);
             }
           }
+        }
+        ctx.restore();
+
+        let foregroundImage = this.foregroundImage; // 前景图
+        if (foregroundImage) {
+          // 绘制前景图
+          let x = 0;
+          let y = 0;
+          let w = this.foregroundImageOptions.width || this.size / 4;
+          let h = this.foregroundImageOptions.height || this.size / 4;
+          let align = this.foregroundImageOptions.align || ['center', 'center'];
+          let anchor = this.foregroundImageOptions.anchor || [0, 0];
+          let alpha = this.foregroundImageOptions.alpha == undefined ? 1 : this.foregroundImageOptions.alpha;
+
+          switch (align[0]) {
+            case 'left':
+              x = 0;
+              break;
+            case 'center':
+              x = this.size / 2 - w / 2;
+              break;
+            case 'right':
+              x = this.size - w;
+              break;
+          }
+          x += Number(anchor[0]);
+
+          switch (align[1]) {
+            case 'top':
+              y = 0;
+              break;
+            case 'center':
+              y = this.size / 2 - h / 2;
+              break;
+            case 'bottom':
+              y = this.size - h;
+              break;
+          }
+          y += Number(anchor[1]);
+
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.drawImage(foregroundImage, x, y, w, h);
+          ctx.restore();
         }
 
         ctx.draw(false, () => {
@@ -386,6 +508,28 @@ export default {
           callback.fail(err);
         }
       });
+    },
+    fillTile(ctx, x, y, w, h) {
+      let margin = Number(this.tileMargin.replace('%', '')) / 100;
+      let m = margin == 0 ? 0 : (w * margin) / 2;
+      x += m;
+      y += m;
+      w -= m * 2;
+      h -= m * 2;
+      let radius = Number(this.tileRadius.replace('%', '')) / 100;
+      let r = radius == 0 ? 0 : (w * radius) / 2;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + r, y, r);
+      ctx.closePath();
+      // ctx.stroke();
+      ctx.fill();
+      ctx.restore();
     }
   }
 };

@@ -216,3 +216,18 @@ text参数直接放入完整的网页地址即可，例如：`https://ext.dcloud
 **H5长按识别**
 
 canvas无法长按识别，长按识别需要是图片才行，所以需要先调用`toTempFilePath`方法得到临时路径，再用image组件显示即可。
+
+**nvue打包后生成失败**
+
+Canvas是作为独立的模块，打包时需要选择使用Canvas模块才能正常使用相关的功能。 需要在manifest.json的代码视图中配置如下（暂时还不支持可视化界面操作）：
+```javascript
+"app-plus" : {
+  /* 模块配置 */
+  "modules" : {
+    "Canvas" : "nvue canvas"    //使用Canvas模块
+  },
+  //...
+},
+//...
+```
+保存好提交云端打包。
