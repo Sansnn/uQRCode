@@ -7,7 +7,7 @@
         <gcanvas class="uqrcode-canvas" ref="gcanvas" :style="{ width: `${size}px`, height: `${size}px` }" />
         <!-- #endif -->
         <!-- #ifndef APP-NVUE -->
-        <canvas class="uqrcode-canvas" :id="id" :canvas-id="id" :style="{ width: `${size}px`, height: `${size}px` }" />
+        <canvas class="uqrcode-canvas" :id="canvasId" :canvas-id="canvasId" :style="{ width: `${size}px`, height: `${size}px` }" />
         <!-- #endif -->
       </block>
 
@@ -67,83 +67,82 @@ let modal = weex.requireModule('modal');
 export default {
   name: 'uqrcode',
   props: {
-    // id
-    id: {
-      type: String,
-      default: uuid()
-    },
-    // 生成模式
+    /* id */
+    id: String,
+    /* 生成模式 */
     mode: {
       type: String,
-      default: 'canvas' // canvas|view (nvue不支持canvas模式)
+      default: 'canvas' // canvas|view
     },
-    // 二维码内容
+    /* 二维码内容 */
     text: {
       type: [String, Number],
       required: true
     },
-    // 二维码大小
+    /* 二维码大小 */
     size: {
       type: Number,
       default: 256
     },
-    // 填充边距
+    /* 填充边距 */
     margin: {
       type: Number,
       default: 0
     },
-    // 背景色
+    /* 背景色 */
     backgroundColor: String,
-    // 前景色
+    /* 前景色 */
     foregroundColor: {
       type: [String, Array],
       default: '#000000'
     },
-    // 前景色渐变方式：线性:linear/圆形|放射:circular
+    /* 前景色渐变方式：线性:linear/圆形|放射:circular */
     foregroundGradientType: {
       type: String,
       default: 'linear'
     },
-    // 前景色渐变范围，线性默认：[0, size, size, size]，圆形默认：[size/2, size/2, size]
+    /* 前景色渐变范围，线性默认：[0, size, size, size]，圆形默认：[size/2, size/2, size] */
     foregroundGradientScope: Array,
-    // 纠错等级
+    /* 纠错等级 */
     errorCorrectLevel: {
       type: [String, Number],
       default: uqrcode.errorCorrectLevel.H
     },
-    // 版本
+    /* 版本 */
     typeNumber: {
       type: Number,
       default: -1
     },
-    // 导出的文件类型
+    /* 导出的文件类型 */
     fileType: {
       type: String,
       default: 'jpg'
     },
-    // 小块边距，基于小块宽度的百分比
+    /* 小块边距，基于小块宽度的百分比 */
     tileMargin: {
-      type: String,
-      default: '0%'
+      type: Number,
+      default: 0
     },
-    // 小块圆角值，基于小块宽度的百分比
+    /* 小块圆角值，基于小块宽度的百分比 */
     tileRadius: {
-      type: String,
-      default: '0%'
+      type: Number,
+      default: 0
     },
-    // 小块透明度
+    /* 小块透明度 */
     tileAlpha: {
       type: Number,
       default: 1
     },
-    // 前景图
+    /* 前景图 */
     foregroundImage: String,
-    // 前景图选项
+    /* 前景图选项 */
     foregroundImageOptions: Object,
-    // 背景图
+    /* 背景图 */
     backgroundImage: String,
-    // 背景图选项
+    /* 背景图选项 */
     backgroundImageOptions: Object,
+    /* 定位角 */
+    corner: Object,
     debug: {
       type: Boolean,
       default: false
@@ -151,6 +150,7 @@ export default {
   },
   data() {
     return {
+      canvasId: '',
       canvasContext: null,
       makeing: false,
       delegate: null,
@@ -168,7 +168,23 @@ export default {
       if (typeof options.errorCorrectLevel === 'string') {
         options.errorCorrectLevel = uqrcode.errorCorrectLevel[options.errorCorrectLevel];
       }
-      return uqrcode.getModules(options);
+      let modules = uqrcode.getModules(options);
+      /* 标记定位角 */
+      for (var row = 0; row < modules.length; row++) {
+        for (var col = 0; col < modules.length; col++) {
+          var leftTop = row < 7 && col < 7;
+          var rightTop = row < 7 && col >= modules.length - 7;
+          var leftBottom = row >= modules.length - 7 && col < 7;
+          if (leftTop && modules[row][col]) {
+            modules[row][col] = 'lt'; // 定位角左上
+          } else if (rightTop && modules[row][col]) {
+            modules[row][col] = 'rt'; // 定位角右上
+          } else if (leftBottom && modules[row][col]) {
+            modules[row][col] = 'lb'; // 定位角左下
+          }
+        }
+      }
+      return modules;
     },
     tileSize() {
       return (this.size - this.margin * 2) / this.modules.length;
@@ -194,6 +210,7 @@ export default {
     }
   },
   mounted() {
+    this.canvasId = this.id || this.createCanvasId();
     this.$nextTick(() => {
       this.make();
     });
@@ -218,167 +235,19 @@ export default {
       }
       this.makeing = true;
       if (this.mode === 'canvas') {
-        let ctx = null;
-
-        // #ifdef APP-NVUE
-        /* 获取元素引用 */
-        let gcanvas = this.$refs['gcanvas'];
-        /* 通过元素引用获取canvas对象 */
-        let canvasObj = enable(gcanvas, {
-          bridge: WeexBridge
-        });
-        /* 获取绘图所需的上下文，目前不支持3d */
-        ctx = canvasObj.getContext('2d');
-        // #endif
-
-        // #ifndef APP-NVUE
-        /* 获取绘图所需的上下文 */
-        ctx = uni.createCanvasContext(this.id, this);
-        // #endif
-
-        this.canvasContext = ctx;
-
-        ctx.draw(false); // 清空之前的画布内容
-        ctx.save();
-
-        let backgroundColor = this.backgroundColor; // 背景色绘制颜色
-        if (backgroundColor) {
-          // 背景色已设置则填充，未设置则不填充，为透明背景
-          ctx.setFillStyle(backgroundColor);
-          ctx.fillRect(0, 0, this.size, this.size);
-        }
-        let backgroundImage = this.backgroundImage; // 背景图
-        if (backgroundImage) {
-          // 绘制背景图
-          let x = 0;
-          let y = 0;
-          let w = this.backgroundImageOptions.width || this.size / 4;
-          let h = this.backgroundImageOptions.height || this.size / 4;
-          let align = this.backgroundImageOptions.align || ['center', 'center'];
-          let anchor = this.backgroundImageOptions.anchor || [0, 0];
-          let alpha = this.backgroundImageOptions.alpha == undefined ? 1 : this.backgroundImageOptions.alpha;
-
-          switch (align[0]) {
-            case 'left':
-              x = 0;
-              break;
-            case 'center':
-              x = this.size / 2 - w / 2;
-              break;
-            case 'right':
-              x = this.size - w;
-              break;
-          }
-          x += Number(anchor[0]);
-
-          switch (align[1]) {
-            case 'top':
-              y = 0;
-              break;
-            case 'center':
-              y = this.size / 2 - h / 2;
-              break;
-            case 'bottom':
-              y = this.size - h;
-              break;
-          }
-          y += Number(anchor[1]);
-
-          ctx.save();
-          ctx.globalAlpha = alpha;
-          ctx.drawImage(backgroundImage, x, y, w, h);
-          ctx.restore();
-        }
-
-        let foregroundColor = this.foregroundColor; // 前景色绘制颜色
-        if (typeof foregroundColor === 'string' && foregroundColor.split(',').length > 1) {
-          // 前景色为字符串元素但是是通过逗号分隔的多颜色元素，则表示是渐变，且切割成数组元素
-          foregroundColor = foregroundColor.split(',');
-        }
-        if (foregroundColor instanceof Array) {
-          // 前景色为数组元素则表示是渐变
-          if (this.foregroundGradientType === 'linear') {
-            var scope = this.foregroundGradientScope || [0, this.size, this.size, this.size];
-            var gnt = ctx.createLinearGradient(scope[0], scope[1], scope[2], scope[3]);
-            gnt.addColorStop(0, foregroundColor[0]);
-            gnt.addColorStop(1, foregroundColor[1]);
-            ctx.setFillStyle(gnt);
-            ctx.setStrokeStyle(gnt);
-          } else if (this.foregroundGradientType === 'circular') {
-            var scope = this.foregroundGradientScope || [this.size / 2, this.size / 2, this.size];
-            var gnt = ctx.createCircularGradient(scope[0], scope[1], scope[2]);
-            gnt.addColorStop(0, foregroundColor[0]);
-            gnt.addColorStop(1, foregroundColor[1]);
-            ctx.setFillStyle(gnt);
-            ctx.setStrokeStyle(gnt);
-          }
-        } else {
-          // 前景色为字符串元素则为纯色
-          ctx.setFillStyle(foregroundColor);
-          ctx.setStrokeStyle(foregroundColor);
-        }
-
-        // 设置透明度
-        ctx.save();
-        ctx.globalAlpha = this.tileAlpha;
-        for (var row = 0; row < this.modules.length; row++) {
-          for (var col = 0; col < this.modules.length; col++) {
-            // 计算每一个小块的位置
-            var x = col * this.tileSize + this.margin;
-            var y = row * this.tileSize + this.margin;
-            var w = this.tileSize;
-            var h = this.tileSize;
-
-            if (this.modules[row][col]) {
-              // 填充前景二维码
-              this.fillTile(ctx, x, y, w, h);
-            }
-          }
-        }
-        ctx.restore();
-
-        let foregroundImage = this.foregroundImage; // 前景图
-        if (foregroundImage) {
-          // 绘制前景图
-          let x = 0;
-          let y = 0;
-          let w = this.foregroundImageOptions.width || this.size / 4;
-          let h = this.foregroundImageOptions.height || this.size / 4;
-          let align = this.foregroundImageOptions.align || ['center', 'center'];
-          let anchor = this.foregroundImageOptions.anchor || [0, 0];
-          let alpha = this.foregroundImageOptions.alpha == undefined ? 1 : this.foregroundImageOptions.alpha;
-
-          switch (align[0]) {
-            case 'left':
-              x = 0;
-              break;
-            case 'center':
-              x = this.size / 2 - w / 2;
-              break;
-            case 'right':
-              x = this.size - w;
-              break;
-          }
-          x += Number(anchor[0]);
-
-          switch (align[1]) {
-            case 'top':
-              y = 0;
-              break;
-            case 'center':
-              y = this.size / 2 - h / 2;
-              break;
-            case 'bottom':
-              y = this.size - h;
-              break;
-          }
-          y += Number(anchor[1]);
-
-          ctx.save();
-          ctx.globalAlpha = alpha;
-          ctx.drawImage(foregroundImage, x, y, w, h);
-          ctx.restore();
-        }
+        let ctx = this.createCanvasContext();
+        /* 如果画布有其他内容则清空之前的画布内容 */
+        ctx.draw(false);
+        /* 绘制背景色 */
+        this.drawBackgroundColor();
+        /* 绘制背景图 */
+        this.drawBackgroundImage();
+        /* 绘制二维码主体 */
+        this.drawQrCodeBody();
+        /* 绘制二维码定位角 */
+        this.drawQrCodeCorner();
+        /* 绘制前景图 */
+        this.drawForegroundImage();
 
         ctx.draw(false, () => {
           // setTimeout(() => {
@@ -391,7 +260,7 @@ export default {
     },
     complete(e = {}) {
       let basic = {
-        id: this.id,
+        id: this.canvasId,
         text: this.text,
         mode: this.mode
       };
@@ -445,7 +314,7 @@ export default {
       // #ifndef APP-NVUE
       uni.canvasToTempFilePath(
         {
-          canvasId: this.id,
+          canvasId: this.canvasId,
           fileType: this.fileType,
           width: this.size,
           height: this.size,
@@ -509,16 +378,13 @@ export default {
         }
       });
     },
-    fillTile(ctx, x, y, w, h) {
-      let margin = Number(this.tileMargin.replace('%', '')) / 100;
-      let m = margin == 0 ? 0 : (w * margin) / 2;
-      x += m;
-      y += m;
-      w -= m * 2;
-      h -= m * 2;
-      let radius = Number(this.tileRadius.replace('%', '')) / 100;
-      let r = radius == 0 ? 0 : (w * radius) / 2;
 
+    /* —————————————————— canvas方法 —————————————————— */
+
+    /**
+     * 填充小块
+     */
+    fillTile(ctx, x, y, w, h, m, r) {
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(x + r, y);
@@ -530,6 +396,429 @@ export default {
       // ctx.stroke();
       ctx.fill();
       ctx.restore();
+    },
+
+    /**
+     * 绘制二维码定位角
+     */
+    drawQrCodeCorner() {
+      let ctx = this.canvasContext;
+      ctx.save();
+
+      let modules = this.modules;
+      let corner =
+        this.corner === undefined
+          ? {
+              lt: {
+                color: this.foregroundColor,
+                tileMargin: this.tileMargin,
+                tileRadius: this.tileRadius,
+                tileAlpha: this.tileAlpha
+              },
+              rt: {
+                color: this.foregroundColor,
+                tileMargin: this.tileMargin,
+                tileRadius: this.tileRadius,
+                tileAlpha: this.tileAlpha
+              },
+              lb: {
+                color: this.foregroundColor,
+                tileMargin: this.tileMargin,
+                tileRadius: this.tileRadius,
+                tileAlpha: this.tileAlpha
+              }
+            }
+          : {
+              lt:
+                this.corner.lt === undefined
+                  ? {
+                      color: this.foregroundColor,
+                      tileMargin: this.tileMargin,
+                      tileRadius: this.tileRadius,
+                      tileAlpha: this.tileAlpha
+                    }
+                  : {
+                      color: this.corner.lt.color || this.foregroundColor,
+                      tileMargin: typeof this.corner.lt.tileMargin != 'number' ? this.tileMargin : this.corner.lt.tileMargin,
+                      tileRadius: typeof this.corner.lt.tileRadius != 'number' ? this.tileRadius : this.corner.lt.tileRadius,
+                      tileAlpha: typeof this.corner.lt.tileAlpha != 'number' ? this.tileAlpha : this.corner.lt.tileAlpha
+                    },
+              rt:
+                this.corner.rt === undefined
+                  ? {
+                      color: this.foregroundColor,
+                      tileMargin: this.tileMargin,
+                      tileRadius: this.tileRadius,
+                      tileAlpha: this.tileAlpha
+                    }
+                  : {
+                      color: this.corner.rt.color || this.foregroundColor,
+                      tileMargin: typeof this.corner.rt.tileMargin != 'number' ? this.tileMargin : this.corner.rt.tileMargin,
+                      tileRadius: typeof this.corner.rt.tileRadius != 'number' ? this.tileRadius : this.corner.rt.tileRadius,
+                      tileAlpha: typeof this.corner.rt.tileAlpha != 'number' ? this.tileAlpha : this.corner.rt.tileAlpha
+                    },
+              lb:
+                this.corner.lb === undefined
+                  ? {
+                      color: this.foregroundColor,
+                      tileMargin: this.tileMargin,
+                      tileRadius: this.tileRadius,
+                      tileAlpha: this.tileAlpha
+                    }
+                  : {
+                      color: this.corner.lb.color || this.foregroundColor,
+                      tileMargin: typeof this.corner.lb.tileMargin != 'number' ? this.tileMargin : this.corner.lb.tileMargin,
+                      tileRadius: typeof this.corner.lb.tileRadius != 'number' ? this.tileRadius : this.corner.lb.tileRadius,
+                      tileAlpha: typeof this.corner.lb.tileAlpha != 'number' ? this.tileAlpha : this.corner.lb.tileAlpha
+                    }
+            };
+
+      for (let c in corner) {
+        ctx.save();
+
+        var item = corner[c];
+        var color = item.color; // 绘制颜色
+        var size = this.tileSize * 7;
+        if (typeof color === 'string' && color.split(',').length > 1) {
+          /* 前景色为字符串元素但是是通过逗号分隔的多颜色元素，则表示是渐变，且切割成数组元素 */
+          color = color.split(',');
+        }
+        if (color instanceof Array) {
+          /* 前景色为数组元素则表示是渐变 */
+          if (this.foregroundGradientType === 'linear') {
+            var scope = [];
+            if (this.corner) {
+              if (c === 'lt' && this.corner.lt && this.corner.lt.color) {
+                scope = [0, size, size, size];
+              } else if (c === 'rt' && this.corner.rt && this.corner.rt.color) {
+                scope = [(modules.length - 7) * this.tileSize, size, modules.length * this.tileSize, size];
+              } else if (c === 'lb' && this.corner.lb && this.corner.lb.color) {
+                scope = [0, size, size, size];
+              } else {
+                scope = this.foregroundGradientScope || [0, this.size, this.size, this.size];
+              }
+            } else {
+              scope = this.foregroundGradientScope || [0, this.size, this.size, this.size];
+            }
+            var gnt = ctx.createLinearGradient(scope[0], scope[1], scope[2], scope[3]);
+            gnt.addColorStop(0, color[0]);
+            gnt.addColorStop(1, color[1]);
+            ctx.setFillStyle(gnt);
+            ctx.setStrokeStyle(gnt);
+          } else if (this.foregroundGradientType === 'circular') {
+            var scope = [];
+            if (this.corner) {
+              if (c === 'lt' && this.corner.lt && this.corner.lt.color) {
+                scope = [size / 2, size / 2, size];
+              } else if (c === 'rt' && this.corner.rt && this.corner.rt.color) {
+                scope = [(modules.length - 7) * this.tileSize + size / 2, size / 2, size];
+              } else if (c === 'lb' && this.corner.lb && this.corner.lb.color) {
+                scope = [size / 2, (modules.length - 7) * this.tileSize + size / 2, size];
+              } else {
+                scope = this.foregroundGradientScope || [this.size / 2, this.size / 2, this.size];
+              }
+            } else {
+              scope = this.foregroundGradientScope || [this.size / 2, this.size / 2, this.size];
+            }
+            var gnt = ctx.createCircularGradient(scope[0], scope[1], scope[2]);
+            gnt.addColorStop(0, color[0]);
+            gnt.addColorStop(1, color[1]);
+            ctx.setFillStyle(gnt);
+            ctx.setStrokeStyle(gnt);
+          }
+        } else {
+          /* 前景色为字符串元素则为纯色 */
+          ctx.setFillStyle(color);
+          ctx.setStrokeStyle(color);
+        }
+
+        /* 设置透明度 */
+        ctx.globalAlpha = item.tileAlpha;
+
+        for (var row = 0; row < modules.length; row++) {
+          for (var col = 0; col < modules.length; col++) {
+            if (modules[row][col] === c) {
+              /* 计算每一个小块的位置 */
+              var x = col * this.tileSize + this.margin;
+              var y = row * this.tileSize + this.margin;
+              var w = this.tileSize;
+              var h = this.tileSize;
+              var m = 0;
+              var r = 0;
+              /* 填充主要内容部分 */
+              m = (w * (item.tileMargin / 100)) / 2;
+              x += m;
+              y += m;
+              w -= m * 2;
+              h -= m * 2;
+              r = (w * (item.tileRadius / 100)) / 2;
+              this.fillTile(ctx, x, y, w, h, m, r);
+            }
+          }
+        }
+
+        ctx.restore();
+      }
+
+      ctx.restore();
+    },
+
+    /**
+     * 绘制二维码主体
+     */
+    drawQrCodeBody() {
+      let ctx = this.canvasContext;
+      ctx.save();
+
+      let foregroundColor = this.foregroundColor; // 前景色绘制颜色
+      if (typeof foregroundColor === 'string' && foregroundColor.split(',').length > 1) {
+        /* 前景色为字符串元素但是是通过逗号分隔的多颜色元素，则表示是渐变，且切割成数组元素 */
+        foregroundColor = foregroundColor.split(',');
+      }
+      if (foregroundColor instanceof Array) {
+        /* 前景色为数组元素则表示是渐变 */
+        if (this.foregroundGradientType === 'linear') {
+          var scope = this.foregroundGradientScope || [0, this.size, this.size, this.size];
+          var gnt = ctx.createLinearGradient(scope[0], scope[1], scope[2], scope[3]);
+          gnt.addColorStop(0, foregroundColor[0]);
+          gnt.addColorStop(1, foregroundColor[1]);
+          ctx.setFillStyle(gnt);
+          ctx.setStrokeStyle(gnt);
+        } else if (this.foregroundGradientType === 'circular') {
+          var scope = this.foregroundGradientScope || [this.size / 2, this.size / 2, this.size];
+          var gnt = ctx.createCircularGradient(scope[0], scope[1], scope[2]);
+          gnt.addColorStop(0, foregroundColor[0]);
+          gnt.addColorStop(1, foregroundColor[1]);
+          ctx.setFillStyle(gnt);
+          ctx.setStrokeStyle(gnt);
+        }
+      } else {
+        /* 前景色为字符串元素则为纯色 */
+        ctx.setFillStyle(foregroundColor);
+        ctx.setStrokeStyle(foregroundColor);
+      }
+
+      /* 设置透明度 */
+      ctx.globalAlpha = this.tileAlpha;
+
+      let modules = this.modules;
+      for (var row = 0; row < modules.length; row++) {
+        for (var col = 0; col < modules.length; col++) {
+          if (modules[row][col] === true) {
+            /* 计算每一个小块的位置 */
+            var x = col * this.tileSize + this.margin;
+            var y = row * this.tileSize + this.margin;
+            var w = this.tileSize;
+            var h = this.tileSize;
+            var m = 0;
+            var r = 0;
+            /* 填充主要内容部分 */
+            m = (w * (this.tileMargin / 100)) / 2;
+            x += m;
+            y += m;
+            w -= m * 2;
+            h -= m * 2;
+            r = (w * (this.tileRadius / 100)) / 2;
+            this.fillTile(ctx, x, y, w, h, m, r);
+          }
+        }
+      }
+
+      ctx.restore();
+    },
+
+    /**
+     * 绘制前景图
+     */
+    drawForegroundImage() {
+      let ctx = this.canvasContext;
+      ctx.save();
+
+      let foregroundImage = this.foregroundImage; // 前景图
+      if (foregroundImage) {
+        // 绘制前景图
+        let x = 0;
+        let y = 0;
+
+        let options =
+          this.foregroundImageOptions === undefined
+            ? {
+                width: this.size / 4,
+                height: this.size / 4,
+                align: ['center', 'center'],
+                anchor: [0, 0],
+                alpha: 1
+              }
+            : {
+                width: typeof this.foregroundImageOptions.width != 'number' ? this.size / 4 : this.foregroundImageOptions.width,
+                height: typeof this.foregroundImageOptions.height != 'number' ? this.size / 4 : this.foregroundImageOptions.height,
+                align: this.foregroundImageOptions.align instanceof Array ? this.foregroundImageOptions.align : ['center', 'center'],
+                anchor: this.foregroundImageOptions.anchor instanceof Array ? this.foregroundImageOptions.anchor : [0, 0],
+                alpha: typeof this.foregroundImageOptions.alpha != 'number' ? 1 : this.foregroundImageOptions.alpha
+              };
+
+        let w = options.width;
+        let h = options.height;
+        let align = options.align;
+        let anchor = options.anchor;
+        let alpha = options.alpha;
+
+        switch (align[0]) {
+          case 'left':
+            x = 0;
+            break;
+          case 'center':
+            x = this.size / 2 - w / 2;
+            break;
+          case 'right':
+            x = this.size - w;
+            break;
+        }
+        x += Number(anchor[0]);
+
+        switch (align[1]) {
+          case 'top':
+            y = 0;
+            break;
+          case 'center':
+            y = this.size / 2 - h / 2;
+            break;
+          case 'bottom':
+            y = this.size - h;
+            break;
+        }
+        y += Number(anchor[1]);
+
+        /* 设置透明度 */
+        ctx.globalAlpha = alpha;
+
+        ctx.drawImage(foregroundImage, x, y, w, h);
+
+        ctx.restore();
+      }
+    },
+
+    /**
+     * 绘制背景图
+     */
+    drawBackgroundImage() {
+      let ctx = this.canvasContext;
+      ctx.save();
+      let backgroundImage = this.backgroundImage; // 背景图
+      if (backgroundImage) {
+        let x = 0;
+        let y = 0;
+
+        let options =
+          this.backgroundImageOptions === undefined
+            ? {
+                width: this.size,
+                height: this.size,
+                align: ['center', 'center'],
+                anchor: [0, 0],
+                alpha: 1
+              }
+            : {
+                width: typeof this.backgroundImageOptions.width != 'number' ? this.size : this.backgroundImageOptions.width,
+                height: typeof this.backgroundImageOptions.height != 'number' ? this.size : this.backgroundImageOptions.height,
+                align: this.backgroundImageOptions.align instanceof Array ? this.backgroundImageOptions.align : ['center', 'center'],
+                anchor: this.backgroundImageOptions.anchor instanceof Array ? this.backgroundImageOptions.anchor : [0, 0],
+                alpha: typeof this.backgroundImageOptions.alpha != 'number' ? 1 : this.backgroundImageOptions.alpha
+              };
+
+        let w = options.width;
+        let h = options.height;
+        let align = options.align;
+        let anchor = options.anchor;
+        let alpha = options.alpha;
+
+        switch (align[0]) {
+          case 'left':
+            x = 0;
+            break;
+          case 'center':
+            x = this.size / 2 - w / 2;
+            break;
+          case 'right':
+            x = this.size - w;
+            break;
+        }
+        x += Number(anchor[0]);
+
+        switch (align[1]) {
+          case 'top':
+            y = 0;
+            break;
+          case 'center':
+            y = this.size / 2 - h / 2;
+            break;
+          case 'bottom':
+            y = this.size - h;
+            break;
+        }
+        y += Number(anchor[1]);
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.drawImage(backgroundImage, x, y, w, h);
+        ctx.restore();
+      }
+      ctx.restore();
+    },
+
+    /**
+     * 绘制背景色
+     */
+    drawBackgroundColor() {
+      let ctx = this.canvasContext;
+      ctx.save();
+      let backgroundColor = this.backgroundColor; // 背景色绘制颜色
+      if (backgroundColor) {
+        // 背景色已设置则填充，未设置则不填充，为透明背景
+        ctx.setFillStyle(backgroundColor);
+        ctx.fillRect(0, 0, this.size, this.size);
+      }
+      ctx.restore();
+    },
+
+    /**
+     * 创建canvas上下文
+     */
+    createCanvasContext() {
+      let ctx = null;
+
+      // #ifdef APP-NVUE
+      /* 获取元素引用 */
+      let gcanvas = this.$refs['gcanvas'];
+      /* 通过元素引用获取canvas对象 */
+      let canvasObj = enable(gcanvas, {
+        bridge: WeexBridge
+      });
+      /* 获取绘图所需的上下文，目前不支持3d */
+      ctx = canvasObj.getContext('2d');
+      // #endif
+
+      // #ifndef APP-NVUE
+      /* 获取绘图所需的上下文 */
+      ctx = uni.createCanvasContext(this.canvasId, this);
+      // #endif
+
+      this.canvasContext = ctx;
+
+      return ctx;
+    },
+
+    /**
+     * 生成随机的canvasId
+     */
+    createCanvasId() {
+      let id = '';
+      let t = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+      let len = t.length;
+      for (let i = 0; i < 32; i++) {
+        id += t.charAt(Math.floor(Math.random() * len));
+      }
+      return id;
     }
   }
 };

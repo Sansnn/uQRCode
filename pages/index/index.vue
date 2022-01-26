@@ -13,13 +13,14 @@
         :error-correct-level="errorCorrectLevel"
         :type-number="typeNumber"
         :file-type="fileType"
-        :tile-margin="tileMargin + '%'"
-        :tile-radius="tileRadius + '%'"
+        :tile-margin="tileMargin"
+        :tile-radius="tileRadius"
         :tile-alpha="tileAlpha"
         :foreground-image="foregroundImage"
         :foreground-image-options="foregroundImageOptions"
         :background-image-options="backgroundImageOptions"
         :background-image="backgroundImage"
+        :corner="corner"
         :debug="true"
       ></uqrcode>
     </view>
@@ -54,14 +55,7 @@
       </uni-forms-item>
       <uni-forms-item label="前景图选项" v-if="foregroundImage">
         <uni-forms-item label="图片宽度">
-          <slider
-            class="slider"
-            :value="foregroundImageOptions.width"
-            :min="size / 8"
-            :max="size / 4"
-            show-value
-            @change="sliderChange($event, 'foregroundImageOptions', 'width')"
-          />
+          <slider class="slider" :value="foregroundImageOptions.width" :min="size / 8" :max="size / 4" show-value @change="sliderChange($event, 'foregroundImageOptions.width')" />
         </uni-forms-item>
         <uni-forms-item label="图片高度">
           <slider
@@ -70,7 +64,7 @@
             :min="size / 8"
             :max="size / 4"
             show-value
-            @change="sliderChange($event, 'foregroundImageOptions', 'height')"
+            @change="sliderChange($event, 'foregroundImageOptions.height')"
           />
         </uni-forms-item>
         <uni-forms-item label="水平排列">
@@ -99,7 +93,7 @@
             :max="1.0"
             :step="0.01"
             show-value
-            @change="sliderChange($event, 'foregroundImageOptions', 'alpha')"
+            @change="sliderChange($event, 'foregroundImageOptions.alpha')"
           />
         </uni-forms-item>
       </uni-forms-item>
@@ -115,7 +109,7 @@
             :min="size / 2"
             :max="size * 1.5"
             show-value
-            @change="sliderChange($event, 'backgroundImageOptions', 'width')"
+            @change="sliderChange($event, 'backgroundImageOptions.width')"
           />
         </uni-forms-item>
         <uni-forms-item label="图片高度">
@@ -125,7 +119,7 @@
             :min="size / 2"
             :max="size * 1.5"
             show-value
-            @change="sliderChange($event, 'backgroundImageOptions', 'height')"
+            @change="sliderChange($event, 'backgroundImageOptions.height')"
           />
         </uni-forms-item>
         <uni-forms-item label="水平排列">
@@ -154,43 +148,64 @@
             :max="1.0"
             :step="0.01"
             show-value
-            @change="sliderChange($event, 'backgroundImageOptions', 'alpha')"
+            @change="sliderChange($event, 'backgroundImageOptions.alpha')"
           />
         </uni-forms-item>
       </uni-forms-item>
 
-      <!-- <uni-forms-item label="定位角">
+      <uni-forms-item label="定位角">
         <uni-forms-item label="左上">
           <uni-forms-item label="颜色">
             <uni-data-checkbox
-              :localdata="[{ value: '#000000', text: '黑' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#00ffff,#55aaff', text: '渐变' }]"
+              v-model="corner.lt.color"
+              :localdata="[{ value: '', text: '默认' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#00ffff,#55aaff', text: '渐变' }]"
             />
           </uni-forms-item>
-          <uni-forms-item label="间距"><slider class="slider" min="0" max="20" show-value @change="sliderChange($event, 'tileMargin')" /></uni-forms-item>
-          <uni-forms-item label="圆角"><slider class="slider" min="0" max="100" show-value @change="sliderChange($event, 'tileRadius')" /></uni-forms-item>
-          <uni-forms-item label="透明度"><slider class="slider" :min="0.0" :max="1.0" :step="0.01" show-value @change="sliderChange($event, 'tileAlpha')" /></uni-forms-item>
+          <uni-forms-item label="间距">
+            <slider class="slider" :value="corner.lt.tileMargin" :min="0" :max="20" show-value @change="sliderChange($event, 'corner.lt.tileMargin')" />
+          </uni-forms-item>
+          <uni-forms-item label="圆角">
+            <slider class="slider" :value="corner.lt.tileRadius" :min="0" :max="100" show-value @change="sliderChange($event, 'corner.lt.tileRadius')" />
+          </uni-forms-item>
+          <uni-forms-item label="透明度">
+            <slider class="slider" :value="corner.lt.tileAlpha" :min="0.0" :max="1.0" :step="0.01" show-value @change="sliderChange($event, 'corner.lt.tileAlpha')" />
+          </uni-forms-item>
         </uni-forms-item>
         <uni-forms-item label="右上">
           <uni-forms-item label="颜色">
             <uni-data-checkbox
-              :localdata="[{ value: '#000000', text: '黑' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#00ffff,#55aaff', text: '渐变' }]"
+              v-model="corner.rt.color"
+              :localdata="[{ value: '', text: '默认' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#ffff00,#ff5500', text: '渐变' }]"
             />
           </uni-forms-item>
-          <uni-forms-item label="间距"><slider class="slider" min="0" max="20" show-value @change="sliderChange($event, 'tileMargin')" /></uni-forms-item>
-          <uni-forms-item label="圆角"><slider class="slider" min="0" max="100" show-value @change="sliderChange($event, 'tileRadius')" /></uni-forms-item>
-          <uni-forms-item label="透明度"><slider class="slider" :min="0.0" :max="1.0" :step="0.01" show-value @change="sliderChange($event, 'tileAlpha')" /></uni-forms-item>
+          <uni-forms-item label="间距">
+            <slider class="slider" :value="corner.rt.tileMargin" :min="0" :max="20" show-value @change="sliderChange($event, 'corner.rt.tileMargin')" />
+          </uni-forms-item>
+          <uni-forms-item label="圆角">
+            <slider class="slider" :value="corner.rt.tileRadius" :min="0" :max="100" show-value @change="sliderChange($event, 'corner.rt.tileRadius')" />
+          </uni-forms-item>
+          <uni-forms-item label="透明度">
+            <slider class="slider" :value="corner.rt.tileAlpha" :min="0.0" :max="1.0" :step="0.01" show-value @change="sliderChange($event, 'corner.rt.tileAlpha')" />
+          </uni-forms-item>
         </uni-forms-item>
         <uni-forms-item label="左下">
           <uni-forms-item label="颜色">
             <uni-data-checkbox
-              :localdata="[{ value: '#000000', text: '黑' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#00ffff,#55aaff', text: '渐变' }]"
+              v-model="corner.lb.color"
+              :localdata="[{ value: '', text: '默认' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#ffaa00,#AA0000', text: '渐变' }]"
             />
           </uni-forms-item>
-          <uni-forms-item label="间距"><slider class="slider" min="0" max="20" show-value @change="sliderChange($event, 'tileMargin')" /></uni-forms-item>
-          <uni-forms-item label="圆角"><slider class="slider" min="0" max="100" show-value @change="sliderChange($event, 'tileRadius')" /></uni-forms-item>
-          <uni-forms-item label="透明度"><slider class="slider" :min="0.0" :max="1.0" :step="0.01" show-value @change="sliderChange($event, 'tileAlpha')" /></uni-forms-item>
+          <uni-forms-item label="间距">
+            <slider class="slider" :value="corner.lb.tileMargin" :min="0" :max="20" show-value @change="sliderChange($event, 'corner.lb.tileMargin')" />
+          </uni-forms-item>
+          <uni-forms-item label="圆角">
+            <slider class="slider" :value="corner.lb.tileRadius" :min="0" :max="100" show-value @change="sliderChange($event, 'corner.lb.tileRadius')" />
+          </uni-forms-item>
+          <uni-forms-item label="透明度">
+            <slider class="slider" :value="corner.lb.tileAlpha" :min="0.0" :max="1.0" :step="0.01" show-value @change="sliderChange($event, 'corner.lb.tileAlpha')" />
+          </uni-forms-item>
         </uni-forms-item>
-      </uni-forms-item> -->
+      </uni-forms-item>
 
       <uni-forms-item label="纠错等级">
         <uni-data-checkbox
@@ -220,6 +235,108 @@
     <button class="button" type="primary" @tap="saveBatch">批量保存</button>
 
     <text class="title">下面是一些示例</text>
+    <view class="qrcode-box">
+      <uqrcode text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000"></uqrcode>
+      <text class="text">普通二维码</text>
+    </view>
+    <view class="qrcode-box">
+      <uqrcode text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000" foreground-image="/static/logo.png"></uqrcode>
+      <text class="text">二维码带logo</text>
+    </view>
+    <view class="qrcode-box">
+      <uqrcode text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" :foreground-color="['#AA0000', '#00007F']"></uqrcode>
+      <text class="text">渐变色二维码</text>
+    </view>
+    <view class="qrcode-box">
+      <uqrcode
+        text="uQRCode is very very niubility"
+        :size="256"
+        :margin="10"
+        background-color="#FFFFFF"
+        foreground-color="#000000"
+        :tile-margin="30"
+        :tile-radius="30"
+        :corner="{ lt: { tileMargin: 0, tileRadius: 0 }, rt: { tileMargin: 0, tileRadius: 0 }, lb: { tileMargin: 0, tileRadius: 0 } }"
+        foreground-image="/static/weixin-work.jpg"
+      ></uqrcode>
+      <text class="text">企业微信二维码</text>
+    </view>
+    <view class="qrcode-box">
+      <uqrcode text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000" :tile-margin="20" :tile-radius="100"></uqrcode>
+      <text class="text">圆点二维码</text>
+    </view>
+    <view class="qrcode-box">
+      <uqrcode
+        text="uQRCode"
+        :size="256"
+        :margin="10"
+        background-color="#FFFFFF"
+        foreground-color="#000000"
+        :tile-margin="20"
+        :tile-radius="100"
+        :corner="{ lt: { tileMargin: 0, tileRadius: 0 }, rt: { tileMargin: 0, tileRadius: 0 }, lb: { tileMargin: 0, tileRadius: 0 } }"
+      ></uqrcode>
+      <text class="text">仅内容区域为圆点</text>
+    </view>
+    <view class="qrcode-box">
+      <uqrcode
+        text="uQRCode"
+        :size="256"
+        :margin="10"
+        background-color="#FFFFFF"
+        foreground-color="#000000"
+        :corner="{ lt: { tileMargin: 20, tileRadius: 100 }, rt: { tileMargin: 20, tileRadius: 100 }, lb: { tileMargin: 20, tileRadius: 100 } }"
+      ></uqrcode>
+      <text class="text">仅定位角为圆点</text>
+    </view>
+    <view class="qrcode-box">
+      <uqrcode
+        text="uQRCode"
+        :size="256"
+        :margin="10"
+        background-color="#FFFFFF"
+        foreground-color="#000000"
+        :corner="{ rt: { tileMargin: 20, tileRadius: 100 }, lb: { tileMargin: 20, tileRadius: 100 } }"
+      ></uqrcode>
+      <text class="text">定位角右上和左下为圆点</text>
+    </view>
+    <view class="qrcode-box">
+      <uqrcode
+        text="uQRCode"
+        :size="256"
+        :margin="10"
+        background-color="#FFFFFF"
+        foreground-color="#000000"
+        :corner="{ lt: { color: '#AA0000' }, rt: { color: '#ffff00,#ff5500' }, lb: { color: ['#00ffff', '#55aaff'] } }"
+      ></uqrcode>
+      <text class="text">单独设置定位角颜色</text>
+    </view>
+    <view class="qrcode-box">
+      <uqrcode text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000" background-image="/static/background-image.jpg"></uqrcode>
+      <text class="text">设置背景图片</text>
+    </view>
+    <view class="qrcode-box">
+      <uqrcode
+        text="uQRCode is very very niubility"
+        :size="256"
+        :margin="10"
+        background-color="#FFFFFF"
+        foreground-color="#ffff00,#ff5500"
+        background-image="/static/avatar.jpg"
+        :background-image-options="{ alpha: 0.5 }"
+        foreground-image="/static/avatar@radius.png"
+        :foreground-image-options="{ width: 48, height: 48 }"
+        :tile-margin="25"
+        :tile-radius="75"
+        :tile-alpha="1"
+        :corner="{
+          lt: { tileMargin: 0, tileRadius: 0, tileAlpha: 0.6 },
+          rt: { tileMargin: 0, tileRadius: 0, tileAlpha: 0.6 },
+          lb: { tileMargin: 0, tileRadius: 0, tileAlpha: 0.6 }
+        }"
+      ></uqrcode>
+      <text class="text">美化一丢丢(适当美化，太过复杂不容易被扫出来)</text>
+    </view>
   </view>
 </template>
 
@@ -257,6 +374,17 @@ export default {
         align: ['center', 'center'],
         anchor: [0, 0],
         alpha: 1
+      },
+      corner: {
+        lt: {
+          color: ''
+        },
+        rt: {
+          color: ''
+        },
+        lb: {
+          color: ''
+        }
       },
       defaultErrorCorrectLevel: uQRCode.errorCorrectLevel,
       qrcodeList: ['我是第一个', '我是第二个', '我是第三个']
@@ -331,12 +459,15 @@ export default {
         }, index * 500);
       });
     },
-    sliderChange(e, dataName, subDataName) {
-      if (subDataName) {
-        this.$set(this.$data[dataName], subDataName, e.detail.value);
-      } else {
-        this.$set(this.$data, dataName, e.detail.value);
-      }
+    sliderChange(e, dataName) {
+      let value = e.detail.value;
+      let dataKeyLayer = dataName.split('.');
+      let key = dataKeyLayer.pop();
+      let target = this.$data;
+      dataKeyLayer.forEach(x => {
+        target = target[x];
+      });
+      this.$set(target, key, value);
     },
     filePickerSelect(e, dataName) {
       this.$set(this.$data, dataName, e.tempFilePaths[0]);
@@ -399,7 +530,7 @@ export default {
 }
 
 .text {
-  margin-top: 32rpx;
+  margin: 32rpx 0;
   font-size: 32rpx;
   color: #666666;
 }
