@@ -7,7 +7,7 @@
         <gcanvas class="uqrcode-canvas" ref="gcanvas" :style="{ width: `${size}px`, height: `${size}px` }" />
         <!-- #endif -->
         <!-- #ifndef APP-NVUE -->
-        <canvas class="uqrcode-canvas" :id="canvasId" :canvas-id="canvasId" :style="{ width: `${size}px`, height: `${size}px` }" />
+        <canvas class="uqrcode-canvas" :id="cid" :canvas-id="cid" :style="{ width: `${size}px`, height: `${size}px` }" />
         <!-- #endif -->
       </block>
 
@@ -68,7 +68,11 @@ export default {
   name: 'uqrcode',
   props: {
     /* id */
-    id: String,
+    cid: {
+      // canvasId在微信小程序初始值不能为空，created中赋值也不行，必须给一个值，否则挂载组件后无法绘制，需reload后才有绘制内容
+      type: String,
+      required: true
+    },
     /* 生成模式 */
     mode: {
       type: String,
@@ -136,13 +140,28 @@ export default {
     /* 前景图 */
     foregroundImage: String,
     /* 前景图选项 */
-    foregroundImageOptions: Object,
+    foregroundImageOptions: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
     /* 背景图 */
     backgroundImage: String,
     /* 背景图选项 */
-    backgroundImageOptions: Object,
+    backgroundImageOptions: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
     /* 定位角 */
-    corner: Object,
+    corner: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
     debug: {
       type: Boolean,
       default: false
@@ -150,7 +169,6 @@ export default {
   },
   data() {
     return {
-      canvasId: '',
       canvasContext: null,
       makeing: false,
       delegate: null,
@@ -210,7 +228,9 @@ export default {
     }
   },
   mounted() {
-    this.canvasId = this.id || this.createCanvasId();
+    if (!this.cid) {
+      console.error('[uQRCode]: cid must be set!');
+    }
     this.$nextTick(() => {
       this.make();
     });
@@ -260,7 +280,7 @@ export default {
     },
     complete(e = {}) {
       let basic = {
-        id: this.canvasId,
+        id: this.cid,
         text: this.text,
         mode: this.mode
       };
@@ -314,7 +334,7 @@ export default {
       // #ifndef APP-NVUE
       uni.canvasToTempFilePath(
         {
-          canvasId: this.canvasId,
+          canvasId: this.cid,
           fileType: this.fileType,
           width: this.size,
           height: this.size,
@@ -406,72 +426,7 @@ export default {
       ctx.save();
 
       let modules = this.modules;
-      let corner =
-        this.corner === undefined
-          ? {
-              lt: {
-                color: this.foregroundColor,
-                tileMargin: this.tileMargin,
-                tileRadius: this.tileRadius,
-                tileAlpha: this.tileAlpha
-              },
-              rt: {
-                color: this.foregroundColor,
-                tileMargin: this.tileMargin,
-                tileRadius: this.tileRadius,
-                tileAlpha: this.tileAlpha
-              },
-              lb: {
-                color: this.foregroundColor,
-                tileMargin: this.tileMargin,
-                tileRadius: this.tileRadius,
-                tileAlpha: this.tileAlpha
-              }
-            }
-          : {
-              lt:
-                this.corner.lt === undefined
-                  ? {
-                      color: this.foregroundColor,
-                      tileMargin: this.tileMargin,
-                      tileRadius: this.tileRadius,
-                      tileAlpha: this.tileAlpha
-                    }
-                  : {
-                      color: this.corner.lt.color || this.foregroundColor,
-                      tileMargin: typeof this.corner.lt.tileMargin != 'number' ? this.tileMargin : this.corner.lt.tileMargin,
-                      tileRadius: typeof this.corner.lt.tileRadius != 'number' ? this.tileRadius : this.corner.lt.tileRadius,
-                      tileAlpha: typeof this.corner.lt.tileAlpha != 'number' ? this.tileAlpha : this.corner.lt.tileAlpha
-                    },
-              rt:
-                this.corner.rt === undefined
-                  ? {
-                      color: this.foregroundColor,
-                      tileMargin: this.tileMargin,
-                      tileRadius: this.tileRadius,
-                      tileAlpha: this.tileAlpha
-                    }
-                  : {
-                      color: this.corner.rt.color || this.foregroundColor,
-                      tileMargin: typeof this.corner.rt.tileMargin != 'number' ? this.tileMargin : this.corner.rt.tileMargin,
-                      tileRadius: typeof this.corner.rt.tileRadius != 'number' ? this.tileRadius : this.corner.rt.tileRadius,
-                      tileAlpha: typeof this.corner.rt.tileAlpha != 'number' ? this.tileAlpha : this.corner.rt.tileAlpha
-                    },
-              lb:
-                this.corner.lb === undefined
-                  ? {
-                      color: this.foregroundColor,
-                      tileMargin: this.tileMargin,
-                      tileRadius: this.tileRadius,
-                      tileAlpha: this.tileAlpha
-                    }
-                  : {
-                      color: this.corner.lb.color || this.foregroundColor,
-                      tileMargin: typeof this.corner.lb.tileMargin != 'number' ? this.tileMargin : this.corner.lb.tileMargin,
-                      tileRadius: typeof this.corner.lb.tileRadius != 'number' ? this.tileRadius : this.corner.lb.tileRadius,
-                      tileAlpha: typeof this.corner.lb.tileAlpha != 'number' ? this.tileAlpha : this.corner.lb.tileAlpha
-                    }
-            };
+      let corner = this.deepReplace(this.getDrawDefaults().corner, this.corner);
 
       for (let c in corner) {
         ctx.save();
@@ -495,16 +450,16 @@ export default {
               } else if (c === 'lb' && this.corner.lb && this.corner.lb.color) {
                 scope = [0, size, size, size];
               } else {
-                scope = this.foregroundGradientScope || [0, this.size, this.size, this.size];
+                scope = this.getDrawDefaults().foregroundGradientScope;
               }
             } else {
-              scope = this.foregroundGradientScope || [0, this.size, this.size, this.size];
+              scope = this.getDrawDefaults().foregroundGradientScope;
             }
             var gnt = ctx.createLinearGradient(scope[0], scope[1], scope[2], scope[3]);
             gnt.addColorStop(0, color[0]);
             gnt.addColorStop(1, color[1]);
             ctx.setFillStyle(gnt);
-            ctx.setStrokeStyle(gnt);
+            // ctx.setStrokeStyle(gnt);
           } else if (this.foregroundGradientType === 'circular') {
             var scope = [];
             if (this.corner) {
@@ -515,21 +470,21 @@ export default {
               } else if (c === 'lb' && this.corner.lb && this.corner.lb.color) {
                 scope = [size / 2, (modules.length - 7) * this.tileSize + size / 2, size];
               } else {
-                scope = this.foregroundGradientScope || [this.size / 2, this.size / 2, this.size];
+                scope = this.getDrawDefaults().foregroundGradientScope;
               }
             } else {
-              scope = this.foregroundGradientScope || [this.size / 2, this.size / 2, this.size];
+              scope = this.getDrawDefaults().foregroundGradientScope;
             }
             var gnt = ctx.createCircularGradient(scope[0], scope[1], scope[2]);
             gnt.addColorStop(0, color[0]);
             gnt.addColorStop(1, color[1]);
             ctx.setFillStyle(gnt);
-            ctx.setStrokeStyle(gnt);
+            // ctx.setStrokeStyle(gnt);
           }
         } else {
           /* 前景色为字符串元素则为纯色 */
           ctx.setFillStyle(color);
-          ctx.setStrokeStyle(color);
+          // ctx.setStrokeStyle(color);
         }
 
         /* 设置透明度 */
@@ -577,26 +532,27 @@ export default {
       }
       if (foregroundColor instanceof Array) {
         /* 前景色为数组元素则表示是渐变 */
+        var scope = this.getDrawDefaults().foregroundGradientScope;
         if (this.foregroundGradientType === 'linear') {
-          var scope = this.foregroundGradientScope || [0, this.size, this.size, this.size];
           var gnt = ctx.createLinearGradient(scope[0], scope[1], scope[2], scope[3]);
           gnt.addColorStop(0, foregroundColor[0]);
           gnt.addColorStop(1, foregroundColor[1]);
           ctx.setFillStyle(gnt);
-          ctx.setStrokeStyle(gnt);
+          // ctx.setStrokeStyle(gnt);
         } else if (this.foregroundGradientType === 'circular') {
-          var scope = this.foregroundGradientScope || [this.size / 2, this.size / 2, this.size];
           var gnt = ctx.createCircularGradient(scope[0], scope[1], scope[2]);
           gnt.addColorStop(0, foregroundColor[0]);
           gnt.addColorStop(1, foregroundColor[1]);
           ctx.setFillStyle(gnt);
-          ctx.setStrokeStyle(gnt);
+          // ctx.setStrokeStyle(gnt);
         }
       } else {
         /* 前景色为字符串元素则为纯色 */
         ctx.setFillStyle(foregroundColor);
-        ctx.setStrokeStyle(foregroundColor);
+        // ctx.setStrokeStyle(foregroundColor);
       }
+
+      // ctx.setFillStyle('#000000');
 
       /* 设置透明度 */
       ctx.globalAlpha = this.tileAlpha;
@@ -640,22 +596,7 @@ export default {
         let x = 0;
         let y = 0;
 
-        let options =
-          this.foregroundImageOptions === undefined
-            ? {
-                width: this.size / 4,
-                height: this.size / 4,
-                align: ['center', 'center'],
-                anchor: [0, 0],
-                alpha: 1
-              }
-            : {
-                width: typeof this.foregroundImageOptions.width != 'number' ? this.size / 4 : this.foregroundImageOptions.width,
-                height: typeof this.foregroundImageOptions.height != 'number' ? this.size / 4 : this.foregroundImageOptions.height,
-                align: this.foregroundImageOptions.align instanceof Array ? this.foregroundImageOptions.align : ['center', 'center'],
-                anchor: this.foregroundImageOptions.anchor instanceof Array ? this.foregroundImageOptions.anchor : [0, 0],
-                alpha: typeof this.foregroundImageOptions.alpha != 'number' ? 1 : this.foregroundImageOptions.alpha
-              };
+        let options = this.deepReplace(this.getDrawDefaults().foregroundImageOptions, this.foregroundImageOptions);
 
         let w = options.width;
         let h = options.height;
@@ -709,22 +650,7 @@ export default {
         let x = 0;
         let y = 0;
 
-        let options =
-          this.backgroundImageOptions === undefined
-            ? {
-                width: this.size,
-                height: this.size,
-                align: ['center', 'center'],
-                anchor: [0, 0],
-                alpha: 1
-              }
-            : {
-                width: typeof this.backgroundImageOptions.width != 'number' ? this.size : this.backgroundImageOptions.width,
-                height: typeof this.backgroundImageOptions.height != 'number' ? this.size : this.backgroundImageOptions.height,
-                align: this.backgroundImageOptions.align instanceof Array ? this.backgroundImageOptions.align : ['center', 'center'],
-                anchor: this.backgroundImageOptions.anchor instanceof Array ? this.backgroundImageOptions.anchor : [0, 0],
-                alpha: typeof this.backgroundImageOptions.alpha != 'number' ? 1 : this.backgroundImageOptions.alpha
-              };
+        let options = this.deepReplace(this.getDrawDefaults().backgroundImageOptions, this.backgroundImageOptions);
 
         let w = options.width;
         let h = options.height;
@@ -800,7 +726,7 @@ export default {
 
       // #ifndef APP-NVUE
       /* 获取绘图所需的上下文 */
-      ctx = uni.createCanvasContext(this.canvasId, this);
+      ctx = uni.createCanvasContext(this.cid, this);
       // #endif
 
       this.canvasContext = ctx;
@@ -809,50 +735,88 @@ export default {
     },
 
     /**
-     * 生成随机的canvasId
+     * 获取绘制所需的数据默认值
      */
-    createCanvasId() {
-      let id = '';
-      let t = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-      let len = t.length;
-      for (let i = 0; i < 32; i++) {
-        id += t.charAt(Math.floor(Math.random() * len));
+    getDrawDefaults() {
+      /* 背景图 */
+      let backgroundImageOptions = {
+        width: this.size,
+        height: this.size,
+        align: ['center', 'center'],
+        anchor: [0, 0],
+        alpha: 1
+      };
+
+      /* 前景图 */
+      let foregroundImageOptions = {
+        width: this.size / 4,
+        height: this.size / 4,
+        align: ['center', 'center'],
+        anchor: [0, 0],
+        alpha: 1
+      };
+
+      let foregroundGradientScope = [];
+      if (this.foregroundGradientType === 'linear') {
+        foregroundGradientScope = !this.foregroundGradientScope || this.foregroundGradientScope.length != 4 ? [0, this.size, this.size, this.size] : this.foregroundGradientScope;
+      } else if (this.foregroundGradientType === 'circular') {
+        foregroundGradientScope =
+          !this.foregroundGradientScope || this.foregroundGradientScope.length != 3 ? [this.size / 2, this.size / 2, this.size] : this.foregroundGradientScope;
       }
-      return id;
+
+      /* 定位角 */
+      let corner = {
+        lt: {
+          color: this.foregroundColor,
+          tileMargin: this.tileMargin,
+          tileRadius: this.tileRadius,
+          tileAlpha: this.tileAlpha
+        },
+        rt: {
+          color: this.foregroundColor,
+          tileMargin: this.tileMargin,
+          tileRadius: this.tileRadius,
+          tileAlpha: this.tileAlpha
+        },
+        lb: {
+          color: this.foregroundColor,
+          tileMargin: this.tileMargin,
+          tileRadius: this.tileRadius,
+          tileAlpha: this.tileAlpha
+        }
+      };
+
+      return {
+        backgroundImageOptions,
+        foregroundImageOptions,
+        foregroundGradientScope,
+        corner
+      };
+    },
+
+    /* —————————————————— object方法 —————————————————— */
+
+    /**
+     * 对象属性深度替换
+     * @param {Object} o 原始对象/默认对象/被替换的对象
+     * @param {Object} r 从这个对象里取值替换到o对象里
+     */
+    deepReplace(o = {}, r = {}) {
+      let obj = Object.assign({}, o);
+      for (let k in r) {
+        var vr = r[k];
+        if (Object.prototype.toString.call(vr) == '[object Object]') {
+          obj[k] = this.deepReplace(obj[k], vr);
+        } else if (Object.prototype.toString.call(vr) == '[object String]' && !vr) {
+          obj[k] = obj[k];
+        } else {
+          obj[k] = vr;
+        }
+      }
+      return obj;
     }
   }
 };
-
-function uuid(len = 32, firstU = true, radix = null) {
-  let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-  let uuid = [];
-  radix = radix || chars.length;
-
-  if (len) {
-    // 如果指定uuid长度,只是取随机的字符,0|x为位运算,能去掉x的小数位,返回整数位
-    for (let i = 0; i < len; i++) uuid[i] = chars[0 | (Math.random() * radix)];
-  } else {
-    let r;
-    // rfc4122标准要求返回的uuid中,某些位为固定的字符
-    uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
-    uuid[14] = '4';
-
-    for (let i = 0; i < 36; i++) {
-      if (!uuid[i]) {
-        r = 0 | (Math.random() * 16);
-        uuid[i] = chars[i == 19 ? (r & 0x3) | 0x8 : r];
-      }
-    }
-  }
-
-  // 移除第一个字符,并用u替代,因为第一个字符为数值时,该guuid不能用作id或者class
-  if (firstU) {
-    uuid.shift();
-    return 'u' + uuid.join('');
-  } else {
-    return uuid.join('');
-  }
-}
 </script>
 
 <style>

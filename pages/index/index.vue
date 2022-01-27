@@ -2,6 +2,7 @@
   <view class="content">
     <view class="qrcode">
       <uqrcode
+        cid="uQRCode"
         ref="uQRCode"
         :mode="mode"
         :text="text"
@@ -158,7 +159,7 @@
           <uni-forms-item label="颜色">
             <uni-data-checkbox
               v-model="corner.lt.color"
-              :localdata="[{ value: '', text: '默认' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#00ffff,#55aaff', text: '渐变' }]"
+              :localdata="[{ value: '', text: '默认' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#ffff00,#ff5500', text: '渐变' }]"
             />
           </uni-forms-item>
           <uni-forms-item label="间距">
@@ -175,7 +176,7 @@
           <uni-forms-item label="颜色">
             <uni-data-checkbox
               v-model="corner.rt.color"
-              :localdata="[{ value: '', text: '默认' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#ffff00,#ff5500', text: '渐变' }]"
+              :localdata="[{ value: '', text: '默认' }, { value: '#AA0000', text: '红' }, { value: '#00007F', text: '蓝' }, { value: '#00ffff,#55aaff', text: '渐变' }]"
             />
           </uni-forms-item>
           <uni-forms-item label="间距">
@@ -229,26 +230,26 @@
 
     <text class="title">批量生成</text>
     <view class="qrcode-box" v-for="(item, index) in qrcodeList" :key="index">
-      <uqrcode :id="'batchQRCode' + index" ref="batchQRCode" :text="item" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000"></uqrcode>
+      <uqrcode :cid="'batchQRCode' + index" ref="batchQRCode" :text="item" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000"></uqrcode>
       <text class="text">{{ item }}</text>
     </view>
     <button class="button" type="primary" @tap="saveBatch">批量保存</button>
 
     <text class="title">下面是一些示例</text>
+
     <view class="qrcode-box">
-      <uqrcode text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000"></uqrcode>
+      <uqrcode cid="demo1" text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000"></uqrcode>
       <text class="text">普通二维码</text>
     </view>
+
     <view class="qrcode-box">
-      <uqrcode text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000" foreground-image="/static/logo.png"></uqrcode>
+      <uqrcode cid="demo2" text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000" foreground-image="/static/logo.png"></uqrcode>
       <text class="text">二维码带logo</text>
     </view>
-    <view class="qrcode-box">
-      <uqrcode text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" :foreground-color="['#AA0000', '#00007F']"></uqrcode>
-      <text class="text">渐变色二维码</text>
-    </view>
+
     <view class="qrcode-box">
       <uqrcode
+        cid="demo3"
         text="uQRCode is very very niubility"
         :size="256"
         :margin="10"
@@ -261,12 +262,15 @@
       ></uqrcode>
       <text class="text">企业微信二维码</text>
     </view>
+
     <view class="qrcode-box">
-      <uqrcode text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000" :tile-margin="20" :tile-radius="100"></uqrcode>
+      <uqrcode cid="demo4" text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000" :tile-margin="20" :tile-radius="100"></uqrcode>
       <text class="text">圆点二维码</text>
     </view>
+
     <view class="qrcode-box">
       <uqrcode
+        cid="demo5"
         text="uQRCode"
         :size="256"
         :margin="10"
@@ -278,8 +282,10 @@
       ></uqrcode>
       <text class="text">仅内容区域为圆点</text>
     </view>
+
     <view class="qrcode-box">
       <uqrcode
+        cid="demo6"
         text="uQRCode"
         :size="256"
         :margin="10"
@@ -289,8 +295,10 @@
       ></uqrcode>
       <text class="text">仅定位角为圆点</text>
     </view>
+
     <view class="qrcode-box">
       <uqrcode
+        cid="demo7"
         text="uQRCode"
         :size="256"
         :margin="10"
@@ -300,8 +308,15 @@
       ></uqrcode>
       <text class="text">定位角右上和左下为圆点</text>
     </view>
+
+    <view class="qrcode-box">
+      <uqrcode text="uQRCode" cid="demo8" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000" background-image="/static/background-image.jpg"></uqrcode>
+      <text class="text">设置背景图片</text>
+    </view>
+
     <view class="qrcode-box">
       <uqrcode
+        cid="demo9"
         text="uQRCode"
         :size="256"
         :margin="10"
@@ -311,12 +326,15 @@
       ></uqrcode>
       <text class="text">单独设置定位角颜色</text>
     </view>
+
     <view class="qrcode-box">
-      <uqrcode text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" foreground-color="#000000" background-image="/static/background-image.jpg"></uqrcode>
-      <text class="text">设置背景图片</text>
+      <uqrcode cid="demo10" text="uQRCode" :size="256" :margin="10" background-color="#FFFFFF" :foreground-color="['#AA0000', '#00007F']"></uqrcode>
+      <text class="text">渐变色二维码</text>
     </view>
+
     <view class="qrcode-box">
       <uqrcode
+        cid="demo11"
         text="uQRCode is very very niubility"
         :size="256"
         :margin="10"
