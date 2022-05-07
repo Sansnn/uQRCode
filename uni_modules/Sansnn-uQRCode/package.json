@@ -1,7 +1,7 @@
 {
   "id": "Sansnn-uQRCode",
   "displayName": "uQRCode 二维码生成插件",
-  "version": "3.0.1",
+  "version": "3.2.0",
   "description": "uQRCode 是一款使用方式简单，易于扩展的二维码生成插件。",
   "keywords": [
     "uQRCode",
@@ -33,7 +33,7 @@
       "data": "无",
       "permissions": "无"
     },
-    "npmurl": ""
+    "npmurl": "https://www.npmjs.com/package/u-qrcode"
   },
   "uni_modules": {
     "dependencies": [],
@@ -74,7 +74,7 @@
         },
         "Vue": {
           "vue2": "y",
-          "vue3": "u"
+          "vue3": "y"
         }
       }
     }

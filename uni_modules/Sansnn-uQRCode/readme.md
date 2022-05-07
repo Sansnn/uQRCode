@@ -1,8 +1,10 @@
 # uQRCode
 
-uQRCode 生成方式简单，可扩展性高，如有复杂需求可通过自定义组件或修改源码完成需求。已测试H5、微信小程序、iPhoneXsMax真机、华为P20Pro真机。
+**点击群号加入群聊【uQRCode交流群】：[695070434](https://jq.qq.com/?_wv=1027&k=JRjzDqiw)**
 
-支持自定义二维码渲染规则，可通过 `getModules` 方法得到矩阵信息后，自行实现canvas或view+css渲染二维码，如随机颜色、圆点、方块、块与块之间的间距等。
+uQRCode 生成方式简单，可扩展性高，适用所有前端应用和Node.js服务端，可运行到所有支持canvas的平台。支持NVUE（NVUE中使用GCanvas）。
+
+支持自定义二维码渲染规则，可通过uQRCode API得到矩阵信息后，自行实现canvas或view+css渲染二维码，如随机颜色、圆点、方块、块与块之间的间距等，详情参考示例项目。
 
 ### 示例预览
 [https://static-c15f4b57-ef97-4d2b-b939-f580f910d7e2.bspapp.com](https://static-c15f4b57-ef97-4d2b-b939-f580f910d7e2.bspapp.com)
@@ -28,194 +30,172 @@ QR码属于矩阵式二维码中的一个种类，由DENSO(日本电装)公司�
 
 更多二维码介绍及原理：[https://blog.csdn.net/jason_ldh/article/details/11801355](https://blog.csdn.net/jason_ldh/article/details/11801355)
 
-### 简单使用
+### 组件使用
 
-在 `template` 中创建 `<uqrcode/>`，并指定生成内容 `text`
+导入`u-qrcode`组件后，在 `template` 中创建 `<u-qrcode/>` 组件
 
 ```html
-<uqrcode ref="uQRCode" text="uQRCode 3.0" />
+<u-qrcode ref="qrcode" canvas-id="qrcode" value="uQRCode"></u-qrcode>
 ```
 
 ### 属性说明
 
-|属性名						|类型					|可选值					|默认值		|是否必填	|说明																																						|
-|---							|---					|---						|---			|---			|:---																																						|
-|id								|String				|-							|随机生成	|否				|组件标识/canvasId																															|
-|mode							|String				|canvas/view		|canvas		|否				|生成模式																																				|
-|text							|String				|-							|-				|是				|二维码内容																																			|
-|size							|Number				|-							|256			|否				|二维码大小，单位px																															|
-|margin						|Number				|-							|0				|否				|填充边距，单位px																																|
-|backgroundColor	|String				|-							|#FFFFFF	|否				|背景色																																					|
-|foregroundColor	|String				|-							|#000000	|否				|前景色																																					|
-|errorCorrectLevel|String/Number|L/M/Q/H/1/0/3/2|H				|否				|纠错等级L/M/Q/H分别对应1/0/3/2																									|
-|typeNumber				|Number				|-							|-1				|否				|版本																																						|
-|fileType					|String				|png/jpg				|png			|否				|导出的文件类型																																	|
-|complete					|EventHandle	|								|					|否				|二维码生成完成时触发，一般用于刚加载完页面就生成二维码并需要导出临时文件的情况	|
+|属性名		|类型		|可选值	|默认值	|是否必填	|说明																								|
+|---			|---		|---		|---		|---			|:---																								|
+|canvasId	|String	|-			|-			|是				|组件标识/canvasId																	|
+|value		|String	|-			|-			|是				|二维码内容																					|
+|size			|Number	|-			|354		|否				|二维码大小，默认单位px，rpx需要使用uni.upx2px()转换|
+|options	|Object	|-			|-			|否				|参数可选项，详见下方options说明										|
 
-### 方法说明
+#### options说明
+|属性名							|类型					|可选值					|默认值	|是否必填	|说明																					|
+|---								|---					|---						|---		|---			|:---																					|
+|typeNumber					|Number				|-							|-1			|否				|二维码版本																		|
+|errorCorrectLevel	|String/Number|L/M/Q/H/1/0/3/2|H			|否				|纠错等级L/M/Q/H分别对应1/0/3/2								|
+|useDynamicSize			|Boolean			|-							|false	|否				|是否使用动态尺寸，可以去除二维码小块白色细线	|
+|margin							|Number				|-							|0			|否				|填充边距，默认单位px													|
+|background					|Object				|-							|-			|否				|背景设置，详见下方options.background说明			|
+|foreground					|Object				|-							|-			|否				|前景设置，详见下方options.foreground说明			|
+|positionDetection	|Object				|-							|-			|否				|定位角设置，详见下方options.positionDetection说明		|
+|separator					|Object				|-							|-			|否				|分割图案设置，详见下方options.separator说明	|
+|alignment					|Object				|-							|-			|否				|对齐图案设置，详见下方options.alignment说明	|
+|timing							|Object				|-							|-			|否				|时序图案设置，详见下方options.timing说明	|
+|darkBlock					|Object				|-							|-			|否				|暗块设置，详见下方options.darkBlock说明			|
+|versionInformation	|Object				|-							|-			|否				|版本信息设置，详见下方options.versionInformation说明	|
 
-|方法名|说明|
-|---|:---|
-|[toTempFilePath](#totempfilepathobject)|导出临时文件路径|
-|[save](#saveobject)|保存二维码|
+#### options.background说明
+|属性名	|类型		|可选值	|默认值	|是否必填	|说明																				|
+|---		|---		|---		|---		|---			|:---																				|
+|color	|String	|-			|#FFFFFF|否				|背景色，若需要透明背景可设置为rgba(0,0,0,0)|
+|image	|Object	|-			|-			|否				|背景图片设置，详见下方options.background.image说明|
 
-### toTempFilePath(OBJECT)
+#### options.background.image说明
+|属性名	|类型					|可选值																							|默认值								|是否必填	|说明																								|
+|---		|---					|---																								|---									|---			|:---																								|
+|src		|String				|-																									|-										|否				|背景图片路径																				|
+|width	|Number				|-																									|1										|否				|指定背景图片宽度，1为二维码size的100%							|
+|height	|Number				|-																									|1										|否				|指定背景图片高度，1为二维码size的100%							|
+|align	|Array<String>|['left'/'center'/'right', 'top'/'center'/'bottom']	|['center', 'center']	|否				|指定背景图片对齐方式，[0]为水平方位，[1]为垂直方位	|
+|anchor	|Array<Number>|-																									|[0, 0]								|否				|指定背景图片锚点，[0]为X轴偏移量，[1]为Y轴偏移量		|
+|alpha	|Number				|0-1																								|1										|否				|指定背景图片透明度																	|
 
-导出临时文件路径
+#### options.foreground说明
+|属性名	|类型		|可选值	|默认值	|是否必填	|说明																								|
+|---		|---		|---		|---		|---			|:---																								|
+|color	|String	|-			|#FFFFFF|否				|前景色																							|
+|image	|Object	|-			|-			|否				|前景图片设置，详见下方options.foreground.image说明	|
 
-**OBJECT参数说明**
+#### options.foreground.image说明
+|属性名	|类型					|可选值																							|默认值								|是否必填	|说明																								|
+|---		|---					|---																								|---									|---			|:---																								|
+|src		|String				|-																									|-										|否				|前景图片路径																				|
+|width	|Number				|-																									|1/4									|否				|指定前景图片宽度，1为二维码size的100%							|
+|height	|Number				|-																									|1/4									|否				|指定前景图片高度，1为二维码size的100%							|
+|align	|Array<String>|['left'/'center'/'right', 'top'/'center'/'bottom']	|['center', 'center']	|否				|指定前景图片对齐方式，[0]为水平方位，[1]为垂直方位	|
+|anchor	|Array<Number>|-																									|[0, 0]								|否				|指定前景图片锚点，[0]为X轴偏移量，[1]为Y轴偏移量		|
 
-|参数			|类型			|必填	|默认值	|说明																							|
-|---			|---			|---	|---		|:---																							|
-|success	|Function	|否		|-			|方法调用成功的回调函数														|
-|fail			|Function	|否		|-			|方法调用失败的回调函数														|
-|complete	|Function	|否		|-			|方法调用结束的回调函数（调用成功、失败都会执行）	|
+#### options.positionDetection说明
+|属性名					|类型		|可选值	|默认值										|是否必填	|说明																|
+|---						|---		|---		|---											|---			|:---																|
+|backgroundColor|String	|-			|options.background.color	|否				|定位角区域背景色，默认值跟随背景色	|
+|foregroundColor|String	|-			|options.foreground.color	|否				|定位角小块颜色，默认值跟随前景色		|
 
-#### 示例
+#### options.separator说明
+|属性名	|类型		|可选值	|默认值										|是否必填	|说明														|
+|---		|---		|---		|---											|---			|:---														|
+|color	|String	|-			|options.background.color	|否				|分割区域颜色，默认值跟随背景色	|
+
+#### options.alignment说明
+|属性名					|类型		|可选值	|默认值										|是否必填	|说明															|
+|---						|---		|---		|---											|---			|:---															|
+|backgroundColor|String	|-			|options.background.color	|否				|对齐区域背景色，默认值跟随背景色	|
+|foregroundColor|String	|-			|options.foreground.color	|否				|对齐小块颜色，默认值跟随前景色		|
+
+#### options.timing说明
+|属性名					|类型		|可选值	|默认值										|是否必填	|说明															|
+|---						|---		|---		|---											|---			|:---															|
+|backgroundColor|String	|-			|options.background.color	|否				|时序区域背景色，默认值跟随背景色	|
+|foregroundColor|String	|-			|options.foreground.color	|否				|时序小块颜色，默认值跟随前景色		|
+
+#### options.darkBlock说明
+|属性名	|类型		|可选值	|默认值										|是否必填	|说明												|
+|---		|---		|---		|---											|---			|:---												|
+|color	|String	|-			|options.foreground.color	|否				|暗块颜色，默认值跟随前景色	|
+
+#### options.versionInformation说明
+|属性名					|类型		|可选值	|默认值										|是否必填	|说明																	|
+|---						|---		|---		|---											|---			|:---																	|
+|backgroundColor|String	|-			|options.background.color	|否				|版本信息区域背景色，默认值跟随背景色	|
+|foregroundColor|String	|-			|options.foreground.color	|否				|版本信息小块颜色，默认值跟随前景色		|
+
+### u-qrcode.js使用
+
+引入u-qrcode.js
+
+``` javascript
+import uQRCode from '../../uni_modules/Sansnn-uQRCode/components/u-qrcode/common/u-qrcode.js';
+```
+
+或者使用npm安装
+
+> npm i u-qrcode
+
+``` javascript
+import uQRCode from 'u-qrcode';
+```
+
+在 `template` 中创建 `<canvas/>` 组件并设置 `id`，画布宽高
 
 ```html
-<template>
-  <view>
-    <uqrcode ref="uQRCode" text="uQRCode 3.0" />
-    <button @click="toTempFilePath">导出临时文件路径</button>
-  </view>
-</template>
+<canvas id="qrcode" canvas-id="qrcode" :style="{ width: `${size}px`, height: `${size}px` }"></canvas>
 ```
+
+在 `script` 中调用生成方法
 
 ```javascript
-export default {
-  methods: {
-    toTempFilePath() {
-      this.$refs.uQRCode.toTempFilePath({
-        success: res => {
-          console.log(res)
-        }
-      })
-    }
-  }
-}
-```
-
-### save(OBJECT)
-
-保存二维码
-
-**OBJECT参数说明**
-
-|参数			|类型			|必填	|默认值	|说明																							|
-|---			|---			|---	|---		|:---																							|
-|success	|Function	|否		|-			|方法调用成功的回调函数														|
-|fail			|Function	|否		|-			|方法调用失败的回调函数														|
-|complete	|Function	|否		|-			|方法调用结束的回调函数（调用成功、失败都会执行）	|
-
-#### 示例
-
-```html
-<template>
-  <view>
-    <uqrcode ref="uQRCode" text="uQRCode 3.0" />
-    <button @click="save">保存二维码</button>
-  </view>
-</template>
-```
-
-```javascript
-export default {
-  methods: {
-    save() {
-      this.$refs.uQRCode.save({
-        success: res => {
-          console.log(res)
-        }
-      })
-    }
-  }
-}
-```
-
-### 高级使用
-
-在 `template` 中创建 `<canvas/>` 并设置 `id`，画布宽高
-
-```html
-<canvas id="qrcode" canvas-id="qrcode" :style="{'width': `${size}px`, 'height': `${size}px`}" />
-```
-
-在 `script` 中引用js文件并调用方法生成矩阵
-
-```javascript
-import uQRCode from '@/uni_modules/Sansnn-uQRCode/components/uqrcode/common/uqrcode.js'
+import uQRCode from '../../uni_modules/Sansnn-uQRCode/components/u-qrcode/common/u-qrcode.js';
 
 export default {
   data() {
     return {
-      size: 256,
-      margin: 10,
-      backgroundColor: '#FFFFFF',
-      foregroundColor: '#000000'
+      text: 'uQRCode',
+      size: 256
     }
   },
   onReady() {
-    let modules = uQRCode.getModules({
-      text: 'uQRCode 3.0',
-      errorCorrectLevel: uQRCode.errorCorrectLevel.H
-    })
-    let tileSize = (this.size - this.margin * 2) / modules.length
-    // 获取绘图所需的上下文
-    let ctx = uni.createCanvasContext('qrcode', this)
-    // 开始绘制
-    ctx.setFillStyle(this.backgroundColor)
-    ctx.fillRect(0, 0, this.size, this.size)
-    for (var row = 0; row < modules.length; row++) {
-      for (var col = 0; col < modules.length; col++) {
-        // 计算每一个小块的位置
-        var x = col * tileSize + this.margin
-        var y = row * tileSize + this.margin
-        var w = tileSize
-        var h = tileSize
-    
-        var style = modules[row][col] ? this.foregroundColor : this.backgroundColor
-        ctx.setFillStyle(style)
-        ctx.fillRect(x, y, w, h)
-      }
-    }
-    ctx.draw()
+    const ctx = uni.createCanvasContext('qrcode');
+    const uqrcode = new uQRCode(
+      {
+        text: this.text,
+        size: this.size
+      },
+      ctx
+    );
+    uqrcode.make();
+    uqrcode.draw();
   }
 }
 ```
 
-### uqrcode.js 方法说明
+### new uQRCode(options, canvasContext, loadImage)说明
 
-|方法名|说明|
-|---|:---|
-|[getModules](#getmodulesoptions)|可以得到二维码矩阵信息，可根据返回的矩阵信息自行实现二维码生成|
+|属性名				|类型		|可选值	|默认值	|是否必填	|说明																																																																									|
+|---					|---		|---		|---		|---			|:---																																																																									|
+|options			|Object	|-			|-			|是				|包含组件属性中的options的所有属性，详见下方options说明																																																|
+|canvasContext|Object	|-			|-			|是				|canvas绘画上下文																																																																			|
+|loadImage		|Promise|-			|-			|否				|绘制图片时，某些平台必传，例如微信小程序2d绘图需要创建Image对象，不能直接使用路径，这时就需要传入canvas.createImage给loadImage方法，否则无法绘制图片	|
 
-### getModules(options)
-
-根据内容得到二维码矩阵信息
-
-|参数							|类型		|必填	|默认值	|说明															|
-|---							|---		|---	|---		|:---															|
-|text							|String	|是		|-			|二维码内容												|
-|errorCorrectLevel|Number	|否		|2			|纠错等级，1/0/3/2分别对应L/M/Q/H	|
-|typeNumber				|Number	|否		|-1			|版本															|
+#### options说明，包含组件属性中的options的所有属性，下方仅列举未包含的属性，其余属性请移步到组件属性options说明查看
+|属性名	|类型		|可选值	|默认值	|是否必填	|说明				|
+|---		|---		|---		|---		|---			|:---				|
+|text		|String	|-			|-			|是				|二维码内容	|
+|size		|Number	|-			|354		|否				|二维码大小	|
 
 ### 常见问题
-**导出空白**
-
-如果是页面刚加载完毕就在onLoad、mounted等页面生命周期中调用导出临时文件或者保存，这时画布还未绘制完毕，那么导出肯定是空白的。正确做法是在`complete`中导出，二维码绘制完毕后会触发`complete`，所以在这里导出能保证画布不会空白。如果是其他情况，请联系作者说明。
-
-**关于高级使用二维码生成不完整**
-
-size的单位是px，请尽量避免使用rpx，如果canvas的单位是rpx，那么不同设备屏幕分辨率不一样，rpx转换成px后的画布尺寸不足以放下全部内容，实际绘制图案超出，就会出现不完整或者没有填充完整画布的情况。
 
 **如何扫码跳转指定网页**
 
-text参数直接放入完整的网页地址即可，例如：`https://ext.dcloud.net.cn/plugin?id=1287`。微信客户端不能是ip地址。
-
-**H5长按识别**
-
-canvas无法长按识别，长按识别需要是图片才行，所以需要先调用`toTempFilePath`方法得到临时路径，再用image组件显示即可。
+二维码内容直接放入完整的网页地址即可，例如：`https://ext.dcloud.net.cn/plugin?id=1287`。微信客户端不能是ip地址。
 
 **nvue打包后生成失败**
 
