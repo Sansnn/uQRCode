@@ -5,12 +5,16 @@
     <!-- #endif -->
     <view class="input"><textarea style="font-size: 16px;" v-model="text" :auto-height="true" :maxlength="150"></textarea></view>
     <view class="qrcode-box">
-      <view class="qrcode"><u-qrcode ref="qr1" canvas-id="qr1" :value="text" :size="size" @click="remake('qr1')"></u-qrcode></view>
+      <view class="qrcode"><u-qrcode ref="qr1" canvas-id="qr1" :value="text" :size="size" @click="remake('qr1')" @complete="complete($event, 'qr1')"></u-qrcode></view>
       <text class="msg">这是一个常规的二维码</text>
+      <button class="save" type="primary" size="mini" @click="save('qr1')">保存</button>
     </view>
     <view class="qrcode-box">
-      <view class="qrcode"><u-qrcode ref="qr2" canvas-id="qr2" :value="text" :size="size" :options="{ useDynamicSize: false }" @click="remake('qr2')"></u-qrcode></view>
+      <view class="qrcode">
+        <u-qrcode ref="qr2" canvas-id="qr2" :value="text" :size="size" :options="{ useDynamicSize: false }" @click="remake('qr2')" @complete="complete($event, 'qr2')"></u-qrcode>
+      </view>
       <text class="msg">这是一个不使用useDynamicSize选项参数的二维码，小块之间会出现白线哦，不建议这么设置，nvue不支持使用useDynamicSize</text>
+      <button class="save" type="primary" size="mini" @click="save('qr2')">保存</button>
     </view>
     <view class="qrcode-box">
       <view class="qrcode">
@@ -21,9 +25,11 @@
           :size="size"
           :options="{ margin: 10, background: { color: 'rgba(25, 147, 227, 0.5)' }, foreground: { color: 'rgb(185, 0, 0)' } }"
           @click="remake('qr3')"
+          @complete="complete($event, 'qr3')"
         ></u-qrcode>
       </view>
       <text class="msg">这是一个设置了边距、半透明蓝色背景和红色前景色的二维码</text>
+      <button class="save" type="primary" size="mini" @click="save('qr3')">保存</button>
     </view>
     <view class="qrcode-box">
       <view class="qrcode">
@@ -57,13 +63,18 @@
             }
           }"
           @click="remake('qr4')"
+          @complete="complete($event, 'qr4')"
         ></u-qrcode>
       </view>
       <text class="msg">这是一个分别设置了定位角、分割图案、对齐图案、时序图案、暗块、版本信息颜色的二维码</text>
+      <button class="save" type="primary" size="mini" @click="save('qr4')">保存</button>
     </view>
     <view class="qrcode-box">
-      <view class="qrcode"><u-qrcode ref="qr5" canvas-id="qr5" :value="text" :size="size" :options="{ errorCorrectLevel: 'M' }" @click="remake('qr5')"></u-qrcode></view>
+      <view class="qrcode">
+        <u-qrcode ref="qr5" canvas-id="qr5" :value="text" :size="size" :options="{ errorCorrectLevel: 'M' }" @click="remake('qr5')" @complete="complete($event, 'qr5')"></u-qrcode>
+      </view>
       <text class="msg">这是一个设置了纠错等级为M的二维码</text>
+      <button class="save" type="primary" size="mini" @click="save('qr5')">保存</button>
     </view>
     <view class="qrcode-box">
       <view class="qrcode">
@@ -84,9 +95,11 @@
             }
           }"
           @click="remake('qr6')"
+          @complete="complete($event, 'qr6')"
         ></u-qrcode>
       </view>
       <text class="msg">这是一个带logo的二维码，logo处于二维码中间</text>
+      <button class="save" type="primary" size="mini" @click="save('qr6')">保存</button>
     </view>
     <view class="qrcode-box">
       <view class="qrcode">
@@ -107,9 +120,11 @@
             }
           }"
           @click="remake('qr7')"
+          @complete="complete($event, 'qr7')"
         ></u-qrcode>
       </view>
       <text class="msg">这是一个带logo的二维码，logo处于二维码右下角，与边距有一定距离</text>
+      <button class="save" type="primary" size="mini" @click="save('qr7')">保存</button>
     </view>
     <view class="qrcode-box">
       <view class="qrcode">
@@ -135,9 +150,11 @@
             }
           }"
           @click="remake('qr8')"
+          @complete="complete($event, 'qr8')"
         ></u-qrcode>
       </view>
       <text class="msg">这是一个带背景图片的二维码，背景缩放1.5倍，且背景图片带有一定透明度</text>
+      <button class="save" type="primary" size="mini" @click="save('qr8')">保存</button>
     </view>
     <view class="qrcode-box">
       <view class="qrcode">
@@ -163,9 +180,11 @@
             margin: 10
           }"
           @click="remake('qr9')"
+          @complete="complete($event, 'qr9')"
         ></u-qrcode>
       </view>
       <text class="msg">这是一个背景图片来自网络资源的二维码，且背景铺满，前景色为白色，小程序下绘制网络图片需先配置download域名白名单才能生效哦</text>
+      <button class="save" type="primary" size="mini" @click="save('qr9')">保存</button>
     </view>
     <view class="qrcode-box">
       <view class="qrcode">
@@ -186,13 +205,25 @@
             }
           }"
           @click="remake('qr10')"
+          @complete="complete($event, 'qr10')"
         ></u-qrcode>
       </view>
       <text class="msg">这是一个logo来自网络资源的二维码，小程序下绘制网络图片需先配置download域名白名单才能生效哦</text>
+      <button class="save" type="primary" size="mini" @click="save('qr10')">保存</button>
     </view>
     <view class="qrcode-box" v-for="(item, index) in 5" :key="index">
-      <view class="qrcode"><u-qrcode :ref="`qr_${index}`" :canvas-id="`qr_${index}`" :value="`qr_${index}`" :size="size" @click="remake(`qr_${index}`)"></u-qrcode></view>
+      <view class="qrcode">
+        <u-qrcode
+          :ref="`qr_${index}`"
+          :canvas-id="`qr_${index}`"
+          :value="`qr_${index}`"
+          :size="size"
+          @click="remake(`qr_${index}`)"
+          @complete="complete($event, `qr_${index}`)"
+        ></u-qrcode>
+      </view>
       <text class="msg">批量生成二维码{{ `qr_${index + 1}` }}</text>
+      <button class="save" type="primary" size="mini" @click="save(`qr_${index}`)">保存</button>
     </view>
   </view>
 </template>
@@ -206,6 +237,13 @@ export default {
     };
   },
   methods: {
+    complete(e, refName) {
+      if (e.success) {
+        console.log(refName + '生成成功');
+      } else {
+        console.log(refName + '生成失败');
+      }
+    },
     remake(refName) {
       const ref = this.$refs[refName];
       /* ref通过v-for遍历后会自动包裹在数组里，所以要判断一下 */
@@ -213,6 +251,47 @@ export default {
         ref[0].remake();
       } else {
         ref.remake();
+      }
+    },
+    save(refName) {
+      uni.showLoading({
+        title: '保存中',
+        mask: true
+      });
+      const ref = this.$refs[refName];
+      /* ref通过v-for遍历后会自动包裹在数组里，所以要判断一下 */
+      if (Array.isArray(ref)) {
+        ref[0].save({
+          success: res => {
+            uni.hideLoading();
+            uni.showToast({
+              icon: 'success',
+              title: '保存成功'
+            });
+          },
+          fail: err => {
+            uni.showToast({
+              icon: 'none',
+              title: JSON.stringify(err)
+            });
+          }
+        });
+      } else {
+        ref.save({
+          success: res => {
+            uni.hideLoading();
+            uni.showToast({
+              icon: 'success',
+              title: '保存成功'
+            });
+          },
+          fail: err => {
+            uni.showToast({
+              icon: 'none',
+              title: JSON.stringify(err)
+            });
+          }
+        });
       }
     }
   }
@@ -262,5 +341,9 @@ export default {
   margin-top: 15px;
   font-size: 14px;
   color: #9a9b9c;
+}
+
+.save {
+  margin-top: 10px;
 }
 </style>
