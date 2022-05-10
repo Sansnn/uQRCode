@@ -94,12 +94,14 @@ export default {
       drawForeground: {
         after: () => {
           ctx.save();
-
+          
+          /* 设置阴影效果 */
           ctx.shadowOffsetX = 0;
           ctx.shadowOffsetY = 0;
           ctx.shadowBlur = 12;
           ctx.shadowColor = 'rgba(0, 0, 0, 0.68)';
-
+          
+          /* 绘制文字背景 */
           ctx.setFillStyle('#FFFFFF');
           ctx.fillRect(
             uqrcode.options.dynamicSize / 2 / 2,
@@ -107,7 +109,8 @@ export default {
             uqrcode.options.dynamicSize / 2,
             uqrcode.options.dynamicSize / 6
           );
-
+          
+          /* 绘制文本内容 */
           ctx.setFillStyle('#FF0000');
           ctx.setFontSize(uqrcode.options.dynamicSize / 10);
           ctx.setTextAlign('center');
