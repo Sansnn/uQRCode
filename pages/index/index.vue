@@ -89,7 +89,36 @@ export default {
       ctx
     );
     uqrcode.make();
-    uqrcode.draw();
+    uqrcode.draw({
+      /* 在绘制完前景之后接着绘制文字在二维码上 */
+      drawForeground: {
+        after: () => {
+          ctx.save();
+
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+          ctx.shadowBlur = 12;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.68)';
+
+          ctx.setFillStyle('#FFFFFF');
+          ctx.fillRect(
+            uqrcode.options.dynamicSize / 2 / 2,
+            uqrcode.options.dynamicSize / 2 - uqrcode.options.dynamicSize / 6 / 2,
+            uqrcode.options.dynamicSize / 2,
+            uqrcode.options.dynamicSize / 6
+          );
+
+          ctx.setFillStyle('#FF0000');
+          ctx.setFontSize(uqrcode.options.dynamicSize / 10);
+          ctx.setTextAlign('center');
+          ctx.setTextBaseline('middle');
+          ctx.fillText('uQRCode', uqrcode.options.dynamicSize / 2, uqrcode.options.dynamicSize / 2);
+
+          ctx.restore();
+          ctx.draw(true);
+        }
+      }
+    });
   },
   methods: {}
 };

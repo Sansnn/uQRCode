@@ -253,7 +253,6 @@ export default {
         this.templateOptions.canvasHeight = uqrcode.options.dynamicSize;
 
         /* 等待canvas重新渲染和节流，并以最后一次重绘为准 */
-        // clearTimeout(this.makeDelegate);
         this.makeDelegate = setTimeout(() => {
           uqrcode
             .draw()
@@ -314,7 +313,6 @@ export default {
             ctx.scale(dpr, dpr);
 
             /* 等待canvas重新渲染和节流，并以最后一次重绘为准 */
-            // clearTimeout(this.makeDelegate);
             this.makeDelegate = setTimeout(() => {
               uqrcode
                 .draw()
@@ -356,7 +354,6 @@ export default {
         uqrcode.make();
 
         /* 等待canvas重新渲染和节流，并以最后一次重绘为准 */
-        // clearTimeout(this.makeDelegate);
         this.makeDelegate = setTimeout(() => {
           uqrcode
             .draw()
