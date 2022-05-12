@@ -1,6 +1,6 @@
 var http = require('http');
 
-const uQRCode = require('../uni_modules/Sansnn-uQRCode/components/u-qrcode/common/u-qrcode');
+const uQRCode = require('../uni_modules/Sansnn-uQRCode/js_sdk/u-qrcode/module');
 
 http.createServer(function(request, response) {
   console.log('QR code drawing...');
