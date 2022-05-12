@@ -154,7 +154,7 @@ QR码属于矩阵式二维码中的一个种类，由DENSO(日本电装)公司�
 引入u-qrcode.js
 
 ``` javascript
-import uQRCode from '../../uni_modules/Sansnn-uQRCode/components/u-qrcode/common/u-qrcode.js';
+import uQRCode from '../../uni_modules/Sansnn-uQRCode/js_sdk/u-qrcode';
 ```
 
 或者使用npm安装
@@ -163,6 +163,12 @@ import uQRCode from '../../uni_modules/Sansnn-uQRCode/components/u-qrcode/common
 
 ``` javascript
 import uQRCode from 'u-qrcode';
+```
+
+nodejs引入
+
+``` javascript
+import uQRCode from 'u-qrcode/module';
 ```
 
 在 `template` 中创建 `<canvas/>` 组件并设置 `id`，画布宽高
@@ -174,7 +180,7 @@ import uQRCode from 'u-qrcode';
 在 `script` 中调用生成方法
 
 ```javascript
-import uQRCode from '../../uni_modules/Sansnn-uQRCode/components/u-qrcode/common/u-qrcode.js';
+import uQRCode from '../../uni_modules/Sansnn-uQRCode/js_sdk/u-qrcode';
 
 export default {
   data() {
@@ -222,10 +228,18 @@ export default {
 |moduleCount	|Number	|模块数量								|
 
 ### uQRCode实例方法
-|方法名	|参数	|返回值	|说明						|
-|---		|---	|---		|:---						|
-|make		|-		|void		|制作二维码方法	|
-|draw		|-		|Promise|绘制二维码方法	|
+|方法名	|参数		|返回值	|说明						|
+|---		|---		|---		|:---						|
+|make		|-			|void		|制作二维码方法	|
+|draw		|options|Promise|绘制二维码方法，绘制层级关系，最底层背景 -> 背景图片 -> 前景 -> 最顶层前景图片，options见下方说明	|
+
+#### draw(options)说明
+|属性名							|类型										|可选值	|默认值	|是否必填	|说明																				|
+|---								|---										|---		|---		|---			|:---																				|
+|drawBackground			|Object: {before, after}|-			|-			|否				|绘制背景前后可执行自定义方法before，after	|
+|drawBackgroundImage|Object: {before, after}|-			|-			|否				|绘制背景图前后可执行自定义方法before，after|
+|drawForeground			|Object: {before, after}|-			|-			|否				|绘制前景前后可执行自定义方法before，after	|
+|drawForegroundImage|Object: {before, after}|-			|-			|否				|绘制前景图前后可执行自定义方法before，after|
 
 ### uQRCode静态属性
 |属性名						|类型		|说明										|
