@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import uQRCode from '../../uni_modules/Sansnn-uQRCode/components/u-qrcode/common/u-qrcode.js';
+import uQRCode from '../../uni_modules/Sansnn-uQRCode/js_sdk/u-qrcode';
 
 /* 引入nvue所需模块 */
 // #ifdef APP-NVUE

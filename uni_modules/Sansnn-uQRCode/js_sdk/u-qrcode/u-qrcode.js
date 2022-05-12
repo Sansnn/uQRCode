@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
-// uQRCode 二维码生成插件
+// uQRCode 二维码生成插件 v3.2.2
 // 
-// uQRCode 是一款使用方式简单，易于扩展的二维码生成插件。
+// uQRCode 是一款使用方式简单，高扩展的二维码生成插件。支持全端生成，支持canvas的地方就可以使用uQRCode。
 // 
 // Copyright (c) Sansnn uQRCode All rights reserved.
 // Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
@@ -1409,7 +1409,9 @@ function uQRCode(options, canvasContext, loadImage) {
     return obj;
   }
 
-  /* 获取选项值 */
+  /**
+   * 获取选项值
+   */
   uQRCode.getOptions = function(options) {
     options = uQRCode.deepReplace(uQRCode.defaults, options);
 
@@ -1468,11 +1470,25 @@ function uQRCode(options, canvasContext, loadImage) {
     return options;
   }
 
-  /* 获取canvas实例 */
+  /**
+   * 获取canvas实例
+   */
   uQRCode.getCanvasContext = function(ctx) {
     /* 兼容setFillStyle写法，主要在uni-app nvue gcanvas */
     ctx.setFillStyle = ctx.setFillStyle || function(color) {
       ctx.fillStyle = color;
+    }
+    /* 兼容setFontSize写法，主要在微信小程序canvas2d */
+    ctx.setFontSize = ctx.setFontSize || function(fontSize) {
+      ctx.font = `${fontSize}px`;
+    }
+    /* 兼容setTextAlign写法，主要在微信小程序canvas2d */
+    ctx.setTextAlign = ctx.setTextAlign || function(align) {
+      ctx.textAlign = align;
+    }
+    /* 兼容setTextBaseline写法，主要在微信小程序canvas2d */
+    ctx.setTextBaseline = ctx.setTextBaseline || function(textBaseline) {
+      ctx.textBaseline = textBaseline;
     }
     /* 若实例不包含draw方法则创建一个 */
     ctx.draw = ctx.draw || function(reserve, callback) {
@@ -1488,7 +1504,9 @@ function uQRCode(options, canvasContext, loadImage) {
   /* 缓存loadImage图片 */
   uQRCode.loadImageCache = [];
 
-  /* 获取加载图片方法 */
+  /**
+   * 获取加载图片方法
+   */
   uQRCode.getLoadImage = function(loadImage) {
     if (typeof loadImage == 'function') {
       return function(src) {
@@ -1992,49 +2010,79 @@ function uQRCode(options, canvasContext, loadImage) {
     /**
      * 绘制二维码方法
      */
-    draw() {
+    draw(options) {
+      options = uQRCode.deepReplace({
+        drawBackground: {
+          before: () => {},
+          after: () => {}
+        },
+        drawBackgroundImage: {
+          before: () => {},
+          after: () => {}
+        },
+        drawForeground: {
+          before: () => {},
+          after: () => {}
+        },
+        drawForegroundImage: {
+          before: () => {},
+          after: () => {}
+        }
+      }, options);
+
       /* 绘制层级关系，最底层背景 -> 背景图片 -> 前景 -> 最顶层前景图片 */
       return new Promise((resolve, reject) => {
         let ctx = this.canvasContext;
 
         const startup = () => {
           /* 同时绘制多个二维码时使用队列绘制，防止内部方法冲突导致绘制失败 */
-          return uQRCode.Queue(() => new Promise((resX, rejX) => {
+          return uQRCode.Queue(() => new Promise((queueResolve, queueReject) => {
             setTimeout(() => {
-              resX();
+              ctx.draw(false); // 第一个draw false可以清空画布
+              queueResolve();
             }, 150);
           }));
         }
         startup()
           .then(() => {
             /* 绘制背景 */
-            ctx.draw(false); // 第一个draw false可以清空画布
-            return this.drawBackground();
+            return this.drawBackground({
+              before: options.drawBackground.before,
+              after: options.drawBackground.after
+            });
           })
           .then(() => {
             /* 绘制背景图片 */
-            ctx.draw(true); // gcanvas需要每一阶段都draw一下，否则重绘有问题，例如uni-app nvue绘制图片会失败
-            return this.drawBackgroundImage();
+            return this.drawBackgroundImage({
+              before: options.drawBackgroundImage.before,
+              after: options.drawBackgroundImage.after
+            });
           })
           .then(() => {
             /* 绘制前景 */
-            ctx.draw(true); // gcanvas需要每一阶段都draw一下，否则重绘有问题，例如uni-app nvue绘制图片会失败
-            return this.drawForeground();
+            return this.drawForeground({
+              before: options.drawForeground.before,
+              after: options.drawForeground.after
+            });
           })
           .then(() => {
             /* 绘制前景图片 */
-            ctx.draw(true); // gcanvas需要每一阶段都draw一下，否则重绘有问题，例如uni-app nvue绘制图片会失败
-            return this.drawForegroundImage();
+            return this.drawForegroundImage({
+              before: options.drawForegroundImage.before,
+              after: options.drawForegroundImage.after
+            });
           })
           .then(() => {
             /* 完成绘制 */
-            ctx.draw(true);
             resolve();
           });
       });
     },
 
-    drawBackground() {
+    drawBackground({
+      before,
+      after
+    }) {
       let {
         dynamicSize: size,
         background
@@ -2042,16 +2090,26 @@ function uQRCode(options, canvasContext, loadImage) {
       let ctx = this.canvasContext;
 
       return new Promise((resolve, reject) => {
-        ctx.save();
-        /* 填充背景色 */
-        ctx.setFillStyle(background.color);
-        ctx.fillRect(0, 0, size, size);
-        ctx.restore();
-        resolve();
+        (async () => {
+          await before(this);
+
+          ctx.save();
+          /* 填充背景色 */
+          ctx.setFillStyle(background.color);
+          ctx.fillRect(0, 0, size, size);
+          ctx.restore();
+          ctx.draw(true); // gcanvas需要每一阶段都draw一下，否则重绘有问题，例如uni-app nvue绘制图片会失败
+
+          await after(this);
+          resolve();
+        })();
       });
     },
 
-    drawBackgroundImage() {
+    drawBackgroundImage({
+      before,
+      after
+    }) {
       let {
         dynamicSize: size,
         background
@@ -2059,60 +2117,67 @@ function uQRCode(options, canvasContext, loadImage) {
       let ctx = this.canvasContext;
 
       return new Promise((resolve, reject) => {
-        if (background.image.src) {
-          ctx.save();
+        (async () => {
+          await before(this);
 
-          let x = 0;
-          let y = 0;
+          if (background.image.src) {
+            ctx.save();
 
-          let w = background.image.width * size;
-          let h = background.image.height * size;
-          let align = background.image.align;
-          let anchor = background.image.anchor;
-          let alpha = background.image.alpha;
+            let x = 0;
+            let y = 0;
 
-          switch (align[0]) {
-            case 'left':
-              x = 0;
-              break;
-            case 'center':
-              x = size / 2 - w / 2;
-              break;
-            case 'right':
-              x = size - w;
-              break;
-          }
-          x += Number(anchor[0]);
+            let w = background.image.width * size;
+            let h = background.image.height * size;
+            let align = background.image.align;
+            let anchor = background.image.anchor;
+            let alpha = background.image.alpha;
 
-          switch (align[1]) {
-            case 'top':
-              y = 0;
-              break;
-            case 'center':
-              y = size / 2 - h / 2;
-              break;
-            case 'bottom':
-              y = size - h;
-              break;
-          }
-          y += Number(anchor[1]);
+            switch (align[0]) {
+              case 'left':
+                x = 0;
+                break;
+              case 'center':
+                x = size / 2 - w / 2;
+                break;
+              case 'right':
+                x = size - w;
+                break;
+            }
+            x += Number(anchor[0]);
 
-          /* 设置透明度 */
-          ctx.globalAlpha = alpha;
+            switch (align[1]) {
+              case 'top':
+                y = 0;
+                break;
+              case 'center':
+                y = size / 2 - h / 2;
+                break;
+              case 'bottom':
+                y = size - h;
+                break;
+            }
+            y += Number(anchor[1]);
 
-          /* 绘制图片 */
-          this.loadImage(background.image.src).then(img => {
+            /* 设置透明度 */
+            ctx.globalAlpha = alpha;
+
+            /* 绘制图片 */
+            const img = await this.loadImage(background.image.src);
             ctx.drawImage(img, x, y, w, h);
             ctx.restore();
-            resolve();
-          });
-        } else {
+            ctx.draw(true); // gcanvas需要每一阶段都draw一下，否则重绘有问题，例如uni-app nvue绘制图片会失败
+          }
+
+          await after(this);
           resolve();
-        }
+        })();
       });
     },
 
-    drawForeground() {
+    drawForeground({
+      before,
+      after
+    }) {
       let {
         background
       } = this.options;
@@ -2121,24 +2186,34 @@ function uQRCode(options, canvasContext, loadImage) {
       let ctx = this.canvasContext;
 
       return new Promise((resolve, reject) => {
-        ctx.save();
-        for (var rowI = 0; rowI < moduleCount; rowI++) {
-          for (var colI = 0; colI < moduleCount; colI++) {
-            var tile = modules[rowI][colI];
-            if (!tile.isDrawn && tile.color != background.color) { // 颜色不能与背景色一致，否则可能发生颜色重叠
-              var color = tile.color;
-              ctx.setFillStyle(color);
-              ctx.fillRect(tile.x, tile.y, tile.size, tile.size);
-              tile.isDrawn = true;
+        (async () => {
+          await before(this);
+
+          ctx.save();
+          for (var rowI = 0; rowI < moduleCount; rowI++) {
+            for (var colI = 0; colI < moduleCount; colI++) {
+              var tile = modules[rowI][colI];
+              if (!tile.isDrawn && tile.color != background.color) { // 颜色不能与背景色一致，否则可能发生颜色重叠
+                var color = tile.color;
+                ctx.setFillStyle(color);
+                ctx.fillRect(tile.x, tile.y, tile.size, tile.size);
+                tile.isDrawn = true;
+              }
             }
           }
-        }
-        ctx.restore();
-        resolve();
+          ctx.restore();
+          ctx.draw(true); // gcanvas需要每一阶段都draw一下，否则重绘有问题，例如uni-app nvue绘制图片会失败
+
+          await after(this);
+          resolve();
+        })();
       });
     },
 
-    drawForegroundImage() {
+    drawForegroundImage({
+      before,
+      after
+    }) {
       let {
         dynamicSize: size,
         foreground
@@ -2146,56 +2221,60 @@ function uQRCode(options, canvasContext, loadImage) {
       let ctx = this.canvasContext;
 
       return new Promise((resolve, reject) => {
-        if (foreground.image.src) {
-          ctx.save();
+        (async () => {
+          await before(this);
 
-          // 绘制前景图
-          let x = 0;
-          let y = 0;
+          if (foreground.image.src) {
+            ctx.save();
 
-          let w = foreground.image.width * size;
-          let h = foreground.image.height * size;
-          let align = foreground.image.align;
-          let anchor = foreground.image.anchor;
-          let alpha = foreground.image.alpha;
-          let shadow = foreground.image.shadow;
-          let border = foreground.image.border;
+            // 绘制前景图
+            let x = 0;
+            let y = 0;
 
-          switch (align[0]) {
-            case 'left':
-              x = 0;
-              break;
-            case 'center':
-              x = size / 2 - w / 2;
-              break;
-            case 'right':
-              x = size - w;
-              break;
-          }
-          x += Number(anchor[0]);
+            let w = foreground.image.width * size;
+            let h = foreground.image.height * size;
+            let align = foreground.image.align;
+            let anchor = foreground.image.anchor;
+            let alpha = foreground.image.alpha;
+            let shadow = foreground.image.shadow;
+            let border = foreground.image.border;
 
-          switch (align[1]) {
-            case 'top':
-              y = 0;
-              break;
-            case 'center':
-              y = size / 2 - h / 2;
-              break;
-            case 'bottom':
-              y = size - h;
-              break;
-          }
-          y += Number(anchor[1]);
+            switch (align[0]) {
+              case 'left':
+                x = 0;
+                break;
+              case 'center':
+                x = size / 2 - w / 2;
+                break;
+              case 'right':
+                x = size - w;
+                break;
+            }
+            x += Number(anchor[0]);
 
-          /* 绘制图片 */
-          this.loadImage(foreground.image.src).then(img => {
+            switch (align[1]) {
+              case 'top':
+                y = 0;
+                break;
+              case 'center':
+                y = size / 2 - h / 2;
+                break;
+              case 'bottom':
+                y = size - h;
+                break;
+            }
+            y += Number(anchor[1]);
+
+            /* 绘制图片 */
+            const img = await this.loadImage(foreground.image.src);
             ctx.drawImage(img, x, y, w, h);
             ctx.restore();
-            resolve();
-          });
-        } else {
+            ctx.draw(true); // gcanvas需要每一阶段都draw一下，否则重绘有问题，例如uni-app nvue绘制图片会失败
+          }
+
+          await after(this);
           resolve();
-        }
+        })();
       });
     }
 
@@ -2203,4 +2282,4 @@ function uQRCode(options, canvasContext, loadImage) {
 
 })();
 
-module.exports = uQRCode;
+export default uQRCode;
