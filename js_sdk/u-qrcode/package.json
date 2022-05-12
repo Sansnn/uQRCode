@@ -1,0 +1,24 @@
+{
+  "name": "u-qrcode",
+  "version": "3.2.2",
+  "description": "uQRCode 二维码生成插件",
+  "main": "u-qrcode.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sansnn/uQRCode.git"
+  },
+  "keywords": [
+    "QR",
+    "QRCode",
+    "uQRCode"
+  ],
+  "author": "Sansnn",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Sansnn/uQRCode/issues"
+  },
+  "homepage": "https://github.com/Sansnn/uQRCode#readme"
+}
