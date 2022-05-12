@@ -1,3 +1,18 @@
+<!-- ---------------------------------------------------------------------
+ // uQRCode 二维码生成插件 v3.2.2
+ // 
+ // uQRCode 是一款使用方式简单，高扩展的二维码生成插件。支持全端生成，支持canvas的地方就可以使用uQRCode。
+ // 
+ // Copyright (c) Sansnn uQRCode All rights reserved.
+ // Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ // 复制使用请保留本段注释，感谢支持开源！
+ // 
+ // 开源地址：
+ // https://github.com/Sansnn/uQRCode
+ // 
+ // uni-app插件市场地址：
+ // https://ext.dcloud.net.cn/plugin?id=1287
+--------------------------------------------------------------------- -->
 <template>
   <view class="u-qrcode" :style="{ width: `${size}px`, height: `${size}px` }">
     <!-- 画布 -->
