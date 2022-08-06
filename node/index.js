@@ -1,46 +1,44 @@
-var http = require('http');
-
-const uQRCode = require('../uni_modules/Sansnn-uQRCode/js_sdk/u-qrcode/module');
+const http = require('http');
+// 引入canvas
+const {
+  createCanvas,
+  loadImage
+} = require('canvas');
+// 引入uQRCode
+const UQRCode = require('./js/uqrcode.js');
+// 后续要绘制图片，需要设置加载图片方法
+UQRCode.loadImage = loadImage;
 
 http.createServer(function(request, response) {
   console.log('QR code drawing...');
 
-  const size = 480;
-  const {
-    createCanvas,
-    loadImage
-  } = require('canvas');
-  const canvas = createCanvas(size, size);
-  const ctx = canvas.getContext('2d');
+  // 获取uQRCode实例
+  const qr = new UQRCode();
+  // 设置uQRCode属性
+  qr.data = 'uQRCode';
+  qr.size = 220;
+  qr.margin = 10;
+  qr.useDynamicSize = true;
+  // 调用制作二维码方法
+  qr.make();
 
-  let uqrcode = new uQRCode({
-    text: 'uQRCode',
-    size: size,
-    useDynamicSize: true,
-    margin: 10,
-    foreground: {
-      image: {
-        src: 'img/logo.png',
-        width: 0.25,
-        height: 0.25,
-        align: ['center', 'center'],
-        anchor: [0, 0]
-      }
-    }
-  }, ctx, loadImage);
-  uqrcode.make();
-
-  // 使用dynamicSize可以解决白线问题
-  canvas.width = uqrcode.options.dynamicSize;
-  canvas.height = uqrcode.options.dynamicSize;
-  uqrcode.draw().then(() => {
-    const qrcodeDataURL = canvas.toDataURL();
+  // 创建canvas
+  const canvas = createCanvas(qr.dynamicSize, qr.dynamicSize);
+  // 获取canvas上下文
+  const canvasContext = canvas.getContext('2d');
+  // 设置uQRCode实例的canvas上下文
+  qr.canvasContext = canvasContext;
+  // 调用绘制方法将二维码图案绘制到canvas上
+  qr.drawCanvas().then(() => {
+    const qrDataURL = canvas.toDataURL();
 
     // 重设画布大小为size对应大小
-    canvas.width = size;
-    canvas.height = size;
-    loadImage(qrcodeDataURL).then(qrcodeImg => {
-      ctx.drawImage(qrcodeImg, 0, 0, size, size);
+    canvas.width = qr.size;
+    canvas.height = qr.size;
+    // 加载二维码图片
+    loadImage(qrDataURL).then(qrImg => {
+      // 将二维码图片重新绘制到调整过size的canvas上，以保证与原设size一致
+      canvasContext.drawImage(qrImg, 0, 0, qr.size, qr.size);
 
       // console.log(canvas.toDataURL()); // 返回base64
       // console.log(canvas.toBuffer()); // 返回buffer
@@ -49,7 +47,7 @@ http.createServer(function(request, response) {
         'Content-Type': 'image/png'
       });
       response.end(canvas.toBuffer());
-      
+
       console.log('Drawn.');
     });
   });
