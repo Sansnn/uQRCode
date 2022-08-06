@@ -70,7 +70,7 @@ const UQRCode = require('uqrcode');
 // 获取uQRCode实例
 var qr = new UQRCode();
 // 设置二维码内容
-qr.data = "uQRCode";
+qr.data = "https://doc.uqrcode.cn";
 // 设置二维码大小，必须与canvas设置的宽高一致
 qr.size = 200;
 // 调用制作二维码方法
@@ -106,7 +106,7 @@ qr.drawCanvas();
     // 获取uQRCode实例
     var qr = new UQRCode();
     // 设置二维码内容
-    qr.data = "uQRCode";
+    qr.data = "https://doc.uqrcode.cn";
     // 设置二维码大小，必须与canvas设置的宽高一致
     qr.size = 200;
     // 设置二维码前景图，可以是路径
@@ -153,7 +153,7 @@ qr.drawCanvas();
     // 获取uQRCode实例
     var qr = new UQRCode();
     // 设置二维码内容
-    qr.data = "uQRCode";
+    qr.data = "https://doc.uqrcode.cn";
     // 设置二维码大小，必须与canvas设置的宽高一致
     qr.size = 200;
     // 设置二维码前景图，可以是路径
@@ -185,6 +185,67 @@ qr.drawCanvas();
 
 > 更多用法大家自行探索咯，期待分享哟~
 
+### 导出临时文件路径
+
+原生方式基于`Canvas`的，请自行参阅各平台`Canvas`的导出方式。以下是部分示例：
+
+- uni-app
+```javascript
+// 通过uni.createCanvasContext方式创建绘制上下文的，对应导出API为uni.canvasToTempFilePath
+// 调用完ctx.draw()方法后不能第一时间导出，否则会异常，需要有一定的延时
+setTimeout(() => {
+    uni.canvasToTempFilePath(
+        {
+            canvasId: this.canvasId,
+            fileType: this.fileType,
+            width: this.canvasWidth,
+            height: this.canvasHeight,
+            success: res => {
+                console.log(res);
+            },
+            fail: err => {
+                console.log(err);
+            }
+        }, 
+        // this // 组件内使用必传当前实例
+    );
+}, 300);
+```
+
+- Canvas2D
+```javascript
+// 得到base64
+console.log(canvas.toDataURL());
+// 得到buffer
+console.log(canvas.toBuffer());
+```
+
+### 保存二维码到本地相册
+
+必须在导出临时文件路径成功后再执行保存。uni-app通用保存方式（H5除外）：
+```javascript
+uni.saveImageToPhotosAlbum({
+    filePath: tempFilePath,
+    success: res => {
+        console.log(res);
+    },
+    fail: err => {
+        console.log(err);
+    }
+});
+```
+
+H5可以通过设置`<a>`标签`href`属性的方式进行保存：
+```javascript
+const aEle = document.createElement('a');
+aEle.download = 'uQRCode'; // 设置下载的文件名，默认是'下载'
+aEle.href = tempFilePath;
+document.body.appendChild(aEle);
+aEle.click();
+aEle.remove(); // 下载之后把创建的元素删除
+```
+经过测试，PC端浏览器可以下载，部分安卓自带或第三方浏览器可以下载，安卓微信浏览器不适用，移动端iOS所有浏览器均不适用，差异较大，还是推荐各位导出文件给图片组件显示，然后提示用户通过长按图片进行保存这种方式。
+
 ## uni-app组件方式
 
 ### 安装
@@ -193,14 +254,43 @@ qr.drawCanvas();
 
 ### 引入
 
-uni-app默认为easycom模式，可直接使用`<uqrcode>`标签。
+uni-app默认为easycom模式，可直接键入`<uqrcode>`标签。
 
 ### 简单用法
 
 安装`uqrcode`组件后，在`template`中键入`<uqrcode/>`。设置`ref`属性可使用组件内部方法，`canvas-id`属性为组件内部的canvas组件标识，`value`属性为二维码生成对应内容。
 
 ``` html
-<uqrcode ref="qrcode" canvas-id="qrcode" value="uQRCode"></uqrcode>
+<uqrcode ref="qrcode" canvas-id="qrcode" value="https://doc.uqrcode.cn"></uqrcode>
+```
+
+### 导出临时文件路径
+
+为了保证方法调用成功，请在 [complete](/document/uni-app.md#complete) 事件返回`success=true`后调用。
+
+```javascript
+// uqrcode为组件的ref名称
+this.$refs.uqrcode.toTempFilePath({
+  success: res => {
+    console.log(res);
+  }
+});
+```
+
+### 保存二维码到本地相册
+
+为了保证方法调用成功，请在 [complete](/document/uni-app.md#complete) 事件返回`success=true`后调用。
+
+```javascript
+// uqrcode为组件的ref名称
+this.$refs.uqrcode.save({
+  success: () => {
+    uni.showToast({
+      icon: 'success',
+      title: '保存成功'
+    });
+  }
+});
 ```
 
 ## 更多配置说明请前往官方文档查看：[https://doc.uqrcode.cn](https://doc.uqrcode.cn)。
