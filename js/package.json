@@ -1,0 +1,27 @@
+{
+  "name": "@uqrcode/js",
+  "version": "3.5.0",
+  "description": "uQRCode是一款基于Javascript环境开发的二维码生成插件，适用所有Javascript运行环境的前端应用和Node.js。",
+  "main": "uqrcode.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sansnn/uQRCode.git"
+  },
+  "keywords": [
+    "uQRCode",
+    "QR",
+    "QRCode",
+    "artQRCode",
+    "二维码",
+    "艺术码"
+  ],
+  "author": "Sansnn",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Sansnn/uQRCode/issues"
+  },
+  "homepage": "https://github.com/Sansnn/uQRCode#readme"
+}
