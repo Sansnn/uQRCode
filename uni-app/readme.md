@@ -6,13 +6,19 @@
 
 欢迎加入群聊【uQRCode交流群】：[695070434](https://jq.qq.com/?_wv=1027&k=JRjzDqiw)。
 
+# 设计器
+
+uQRCode发布了配套的可视化设计器，可根据自己喜好在设计器中设计二维码样式，一键生成配置代码复制到项目中，详情请在微信小程序搜索“优卡二维码”，或扫描下方小程序码体验。
+
+![uQRCode设计器](https://doc.uqrcode.cn/mp_weixin_code.jpg)
+
 # 快速上手
 
 > 在`uni-app`中，我们更推荐使用组件方式来生成二维码，组件方式大大提高了页面的可读性以及避开了一些平台容易出问题的地方，当组件无法满足需求的时候，再考虑切换成原生方式。
 
 官方文档：[https://doc.uqrcode.cn](https://doc.uqrcode.cn)。
 
-github开源地址：[https://github.com/Sansnn/uQRCode](https://github.com/Sansnn/uQRCode)。
+github地址：[https://github.com/Sansnn/uQRCode](https://github.com/Sansnn/uQRCode)。
 
 npm地址：[https://www.npmjs.com/package/uqrcodejs](https://www.npmjs.com/package/uqrcodejs)。
 
@@ -38,12 +44,18 @@ npm install @uqrcode/js
 
 - 通过`import`引入。
 ``` javascript
-import UQRCode from 'uqrcode';
+// npm安装
+import UQRCode from 'uqrcodejs'; // npm install uqrcodejs
+// 或者
+import UQRCode from '@uqrcode/js'; // npm install @uqrcode/js
 ```
 
 - `Node.js`通过`require`引入。
 ``` javascript
-const UQRCode = require('uqrcode');
+// npm安装
+const UQRCode = require('uqrcodejs'); // npm install uqrcodejs
+// 或者
+const UQRCode = require('@uqrcode/js'); // npm install @uqrcode/js
 ```
 
 - 原生浏览器环境，在js脚本加载时添加到`window`。
@@ -53,8 +65,6 @@ const UQRCode = require('uqrcode');
     var UQRCode = window.UQRCode;
 </script>
 ```
-
-> `vue3`推荐使用`npm`安装，非`npm`安装直接引入`uqrcode.js`文件如果出现报错：`SyntaxError: The requested module 'uqrcode.js' does not provide an export named 'default'`，在`uqrcode.js`文件中最后一行添加`export default uQRCode`即可。
 
 ### 简单用法
 
@@ -266,7 +276,7 @@ uni-app默认为easycom模式，可直接键入`<uqrcode>`标签。
 
 ### 导出临时文件路径
 
-为了保证方法调用成功，请在 [complete](/document/uni-app.md#complete) 事件返回`success=true`后调用。
+为了保证方法调用成功，请在 [complete](https://doc.uqrcode.cn/document/uni-app.html#complete) 事件返回`success=true`后调用。
 
 ```javascript
 // uqrcode为组件的ref名称
@@ -279,7 +289,7 @@ this.$refs.uqrcode.toTempFilePath({
 
 ### 保存二维码到本地相册
 
-为了保证方法调用成功，请在 [complete](/document/uni-app.md#complete) 事件返回`success=true`后调用。
+为了保证方法调用成功，请在 [complete](https://doc.uqrcode.cn/document/uni-app.html#complete) 事件返回`success=true`后调用。
 
 ```javascript
 // uqrcode为组件的ref名称

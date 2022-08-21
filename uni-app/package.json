@@ -1,7 +1,8 @@
 {
   "name": "@uqrcode/uni-app",
-  "version": "3.5.0",
+  "version": "3.5.1",
   "description": "uQRCode是一款基于Javascript环境开发的二维码生成插件，适用所有Javascript运行环境的前端应用和Node.js。",
+  "main": "components/uqrcode/uqrcode.vue",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

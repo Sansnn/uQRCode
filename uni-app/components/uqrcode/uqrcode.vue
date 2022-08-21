@@ -1,5 +1,5 @@
 <!-- ---------------------------------------------------------------------
-// uQRCode二维码生成插件 v3.5.0
+// uQRCode二维码生成插件 v3.5.1
 // 
 // uQRCode是一款基于Javascript环境开发的二维码生成插件，适用所有Javascript运行环境的前端应用和Node.js。
 // 
@@ -7,7 +7,7 @@
 // 
 // Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // 
-// 开源地址：
+// github地址：
 //   https://github.com/Sansnn/uQRCode
 // 
 // npm地址：
@@ -20,7 +20,7 @@
 // 
 --------------------------------------------------------------------- -->
 <template>
-  <view class="uqrcode" :class="{ 'uqrcode-hide': hide }" :style="{ width: `${size}px`, height: `${size}px` }">
+  <view class="uqrcode" :class="{ 'uqrcode-hide': hide }" :style="{ width: `${templateOptions.width}px`, height: `${templateOptions.height}px` }">
     <!-- 画布 -->
     <!-- #ifndef MP-WEIXIN || APP-NVUE -->
     <canvas
@@ -94,6 +94,10 @@
 </template>
 
 <script>
+// #ifdef VUE3
+import { toRaw } from 'vue';
+// #endif
+	
 /* 引入uQRCode核心js */
 import UQRCode from '../../js_sdk/uqrcode';
 
@@ -177,6 +181,8 @@ export default {
       isH5Save: false,
       tempFilePath: '',
       templateOptions: {
+        width: 0, // 组件宽度
+        height: 0,
         canvasWidth: 0, // canvas宽度
         canvasHeight: 0,
         canvasDisplay: false
@@ -238,6 +244,13 @@ export default {
   },
   watch: {
     value: {
+      handler() {
+        if (this.auto) {
+          this.remake();
+        }
+      }
+    },
+    size: {
       handler() {
         if (this.auto) {
           this.remake();
@@ -468,15 +481,15 @@ export default {
      */
     make() {
       this.makeing = true;
-      clearTimeout(this.makeDelegate);
-      this.makeDelegate = setTimeout(() => {
-        this.resetCanvas(() => {
+      this.resetCanvas(() => {
+        clearTimeout(this.makeDelegate);
+        this.makeDelegate = setTimeout(() => {
           this.draw(res => {
             this.makeing = false;
             this.complete(res);
           });
-        });
-      }, 300);
+        }, 300);
+      });
     },
     /**
      * 重新生成
@@ -542,7 +555,12 @@ export default {
       // #ifdef MP-WEIXIN
       /* 需要将 data:image/png;base64, 这段去除 writeFile 才能正常打开文件，否则是损坏文件，无法打开*/
       const reg = new RegExp('^data:image/png;base64,', 'g');
-      const dataURL = this.canvas.toDataURL().replace(reg, '');
+	  // #ifdef VUE3
+      const dataURL = toRaw(this.canvas).toDataURL().replace(reg, '');
+	  // #endif
+	  // #ifndef VUE3
+	  const dataURL = this.canvas.toDataURL().replace(reg, '');
+	  // #endif
       const fs = wx.getFileSystemManager();
       const tempFilePath = `${wx.env.USER_DATA_PATH}/${new Date().getTime()}${
         Math.random()
