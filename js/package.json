@@ -1,6 +1,6 @@
 {
   "name": "@uqrcode/js",
-  "version": "3.5.1",
+  "version": "3.6.0",
   "description": "uQRCode是一款基于Javascript环境开发的二维码生成插件，适用所有Javascript运行环境的前端应用和Node.js。",
   "main": "uqrcode.js",
   "scripts": {
