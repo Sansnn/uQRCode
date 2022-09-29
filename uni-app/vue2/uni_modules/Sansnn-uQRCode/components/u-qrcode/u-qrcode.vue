@@ -1,5 +1,5 @@
 <!-- ---------------------------------------------------------------------
-// uQRCode二维码生成插件 v3.5.1
+// uQRCode二维码生成插件 v3.6.0
 // 
 // uQRCode是一款基于Javascript环境开发的二维码生成插件，适用所有Javascript运行环境的前端应用和Node.js。
 // 
@@ -22,7 +22,7 @@
 <template>
   <view class="uqrcode" :class="{ 'uqrcode-hide': hide }" :style="{ width: `${templateOptions.width}px`, height: `${templateOptions.height}px` }">
     <!-- 画布 -->
-    <!-- #ifndef MP-WEIXIN || APP-NVUE -->
+    <!-- #ifndef APP-NVUE -->
     <canvas
       class="uqrcode-canvas"
       :id="canvasId"
@@ -30,23 +30,7 @@
       :style="{
         width: `${templateOptions.canvasWidth}px`,
         height: `${templateOptions.canvasHeight}px`,
-        transform: `scale(${size / templateOptions.canvasWidth}, ${size / templateOptions.canvasHeight})`
-      }"
-      @click="onClick"
-      v-if="templateOptions.canvasDisplay"
-    ></canvas>
-    <!-- #endif -->
-
-    <!-- 微信小程序非2d模式不支持transform所以使用canvas2d -->
-    <!-- #ifdef MP-WEIXIN -->
-    <canvas
-      class="uqrcode-canvas"
-      type="2d"
-      :id="canvasId"
-      :canvas-id="canvasId"
-      :style="{
-        width: `${templateOptions.canvasWidth}px`,
-        height: `${templateOptions.canvasHeight}px`
+        transform: type != '2d' ? `scale(${templateOptions.size / templateOptions.canvasWidth}, ${templateOptions.size / templateOptions.canvasHeight})` : undefined
       }"
       @click="onClick"
       v-if="templateOptions.canvasDisplay"
@@ -79,11 +63,11 @@
     </view>
     <!-- #endif -->
 
-    <!-- 加载效果，可在此替换 -->
+    <!-- 加载效果，可在此替换。后续版本做成插槽 -->
     <view class="uqrcode-makeing" v-if="makeing">
       <image
         class="uqrcode-makeing-image"
-        :style="{ width: `${size / 4}px`, height: `${size / 4}px` }"
+        :style="{ width: `${templateOptions.size / 4}px`, height: `${templateOptions.size / 4}px` }"
         src="data:image/gif;base64,R0lGODlhAAEAAfIEAOHh4SSsWuDg4N3d3f///wAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/wtYTVAgRGF0YVhNUDw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDYuMC1jMDAyIDc5LjE2NDQ4OCwgMjAyMC8wNy8xMC0yMjowNjo1MyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDIyLjAgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjAyODhGMzM4RDEwMTExRUM4MDhCRkVBQkE2QUZDQzkwIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjAyODhGMzM5RDEwMTExRUM4MDhCRkVBQkE2QUZDQzkwIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MDI4OEYzMzZEMTAxMTFFQzgwOEJGRUFCQTZBRkNDOTAiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MDI4OEYzMzdEMTAxMTFFQzgwOEJGRUFCQTZBRkNDOTAiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4B//79/Pv6+fj39vX08/Lx8O/u7ezr6uno5+bl5OPi4eDf3t3c29rZ2NfW1dTT0tHQ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"
       ></image>
     </view>
@@ -97,7 +81,7 @@
 // #ifdef VUE3
 import { toRaw } from 'vue';
 // #endif
-	
+
 /* 引入uQRCode核心js */
 import UQRCode from '../../js_sdk/uqrcode';
 
@@ -129,6 +113,13 @@ export default {
     size: {
       type: [String, Number],
       default: 200
+    },
+    /**
+     * 二维码尺寸单位
+     */
+    sizeUnit: {
+      type: String,
+      default: 'px'
     },
     /**
      * 选项
@@ -166,6 +157,21 @@ export default {
     hide: {
       type: Boolean,
       default: false
+    },
+    /**
+     * canvas 类型
+     * 微信小程序type2d手机上正常，PC上微信内打开小程序toDataURL报错
+     */
+    type: {
+      type: String,
+      default: undefined
+    },
+    /**
+     * 是否队列加载图片
+     */
+    isQueueLoadImage: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -181,6 +187,7 @@ export default {
       isH5Save: false,
       tempFilePath: '',
       templateOptions: {
+        size: 0,
         width: 0, // 组件宽度
         height: 0,
         canvasWidth: 0, // canvas宽度
@@ -273,11 +280,18 @@ export default {
           }
         }
       }
+    },
+    isQueueLoadImage: {
+      handler(val) {
+        UQRCode.isQueueLoadImage = val;
+      },
+      immediate: true
     }
   },
   mounted() {
-    this.templateOptions.canvasWidth = this.size;
-    this.templateOptions.canvasHeight = this.size;
+    this.templateOptions.size = this.sizeUnit == 'rpx' ? uni.upx2px(this.size) : this.size;
+    this.templateOptions.canvasWidth = this.templateOptions.size;
+    this.templateOptions.canvasHeight = this.templateOptions.size;
     if (this.start) {
       this.make();
     }
@@ -287,9 +301,11 @@ export default {
      * 获取模板选项
      */
     getTemplateOptions() {
+      var size = this.sizeUnit == 'rpx' ? uni.upx2px(this.size) : this.size;
       return UQRCode.deepReplace(this.templateOptions, {
-        width: this.size,
-        height: this.size
+        size,
+        width: size,
+        height: size
       });
     },
     /**
@@ -298,7 +314,7 @@ export default {
     getUqrcodeOptions() {
       return UQRCode.deepReplace(this.options, {
         data: String(this.value),
-        size: Number(this.size)
+        size: Number(this.templateOptions.size)
       });
     },
     /**
@@ -316,7 +332,17 @@ export default {
     /**
      * 绘制二维码
      */
-    async draw(callback = success => {}) {
+    async draw(callback = {}) {
+      if (typeof callback.success != 'function') {
+        callback.success = () => {};
+      }
+      if (typeof callback.fail != 'function') {
+        callback.fail = () => {};
+      }
+      if (typeof callback.complete != 'function') {
+        callback.complete = () => {};
+      }
+
       if (this.drawing) {
         this.drawDelegate = () => {
           this.draw(callback);
@@ -328,13 +354,17 @@ export default {
       if (!this.canvasId) {
         console.error('[uQRCode]: canvasId must be set!');
         this.inError = true;
-        callback(false);
+        callback.fail({
+          errMsg: '[uQRCode]: canvasId must be set!'
+        });
         return;
       }
       if (!this.value) {
         console.error('[uQRCode]: value must be set!');
         this.inError = true;
-        callback(false);
+        callback.fail({
+          errMsg: '[uQRCode]: value must be set!'
+        });
         return;
       }
 
@@ -364,65 +394,90 @@ export default {
       qr.make();
 
       /* 获取canvas上下文 */
-      // #ifndef MP-WEIXIN || APP-NVUE
-      /* uniapp获取canvas上下文方式 */
-      const canvasContext = (this.canvasContext = uni.createCanvasContext(this.canvasId, this));
-      /* 使用dynamicSize，可以解决小块间出现白线问题，再通过scale缩放至size，使其达到所设尺寸 */
-      this.templateOptions.canvasWidth = qr.dynamicSize;
-      this.templateOptions.canvasHeight = qr.dynamicSize;
-      /* uniapp获取图像方式 */
-      UQRCode.loadImage = function(src) {
-        return new Promise((resolve, reject) => {
-          uni.getImageInfo({
-            src,
-            success: res => {
-              resolve(res.path);
-            },
-            fail: err => {
+      let canvasContext = null;
+      // #ifndef APP-NVUE
+      if (this.type === '2d') {
+        // #ifdef MP-WEIXIN
+        /* 微信小程序获取canvas2d上下文方式 */
+        const canvas = (this.canvas = await new Promise(resolve => {
+          uni
+            .createSelectorQuery()
+            .in(this) // 在组件内使用需要
+            .select(`#${this.canvasId}`)
+            .fields({
+              node: true,
+              size: true
+            })
+            .exec(res => {
+              resolve(res[0].node);
+            });
+        }));
+        canvasContext = this.canvasContext = canvas.getContext('2d');
+        /* 2d的组件设置宽高与实际canvas绘制宽高不是一个，打个比方，组件size=200，canvas.width设置为100，那么绘制出来就是100=200，组件size=400，canvas.width设置为800，绘制大小还是800=400，所以无需理会下方返回的dynamicSize是多少，按dpr重新赋值给canvas即可 */
+        this.templateOptions.canvasWidth = qr.size;
+        this.templateOptions.canvasHeight = qr.size;
+        /* 使用dynamicSize+scale，可以解决小块间出现白线问题，dpr可以解决模糊问题 */
+        const dpr = uni.getSystemInfoSync().pixelRatio;
+        canvas.width = qr.dynamicSize * dpr;
+        canvas.height = qr.dynamicSize * dpr;
+        canvasContext.scale(dpr, dpr);
+        /* 微信小程序获取图像方式 */
+        UQRCode.loadImage = function(src) {
+          /* 小程序下获取网络图片信息需先配置download域名白名单才能生效 */
+          return new Promise((resolve, reject) => {
+            const img = canvas.createImage();
+            img.src = src;
+            img.onload = () => {
+              resolve(img);
+            };
+            img.onerror = err => {
               reject(err);
-            }
+            };
           });
-        });
-      };
-      // #endif
-      // #ifdef MP-WEIXIN
-      /* 微信小程序获取canvas上下文方式 */
-      const canvas = (this.canvas = await new Promise(resolve => {
-        uni
-          .createSelectorQuery()
-          .in(this) // 在组件内使用需要
-          .select(`#${this.canvasId}`)
-          .fields({
-            node: true,
-            size: true
-          })
-          .exec(res => {
-            resolve(res[0].node);
+        };
+        // #endif
+        // #ifndef MP-WEIXIN
+        /* 非微信小程序不支持2d，切换回uniapp获取canvas上下文方式 */
+        canvasContext = this.canvasContext = uni.createCanvasContext(this.canvasId, this);
+        /* 使用dynamicSize，可以解决小块间出现白线问题，再通过scale缩放至size，使其达到所设尺寸 */
+        this.templateOptions.canvasWidth = qr.dynamicSize;
+        this.templateOptions.canvasHeight = qr.dynamicSize;
+        /* uniapp获取图像方式 */
+        UQRCode.loadImage = function(src) {
+          return new Promise((resolve, reject) => {
+            uni.getImageInfo({
+              src,
+              success: res => {
+                resolve(res.path);
+              },
+              fail: err => {
+                reject(err);
+              }
+            });
           });
-      }));
-      const canvasContext = (this.canvasContext = canvas.getContext('2d'));
-      /* 2d的组件设置宽高与实际canvas绘制宽高不是一个，打个比方，组件size=200，canvas.width设置为100，那么绘制出来就是100=200，组件size=400，canvas.width设置为800，绘制大小还是800=400，所以无需理会下方返回的dynamicSize是多少，按dpr重新赋值给canvas即可 */
-      this.templateOptions.canvasWidth = qr.size;
-      this.templateOptions.canvasHeight = qr.size;
-      /* 使用dynamicSize+scale，可以解决小块间出现白线问题，dpr可以解决模糊问题 */
-      const dpr = uni.getSystemInfoSync().pixelRatio;
-      canvas.width = qr.dynamicSize * dpr;
-      canvas.height = qr.dynamicSize * dpr;
-      canvasContext.scale(dpr, dpr);
-      /* 微信小程序获取图像方式 */
-      UQRCode.loadImage = function(src) {
-        /* 小程序下获取网络图片信息需先配置download域名白名单才能生效 */
-        return new Promise((resolve, reject) => {
-          const img = canvas.createImage();
-          img.src = src;
-          img.onload = () => {
-            resolve(img);
-          };
-          img.onerror = err => {
-            reject(err);
-          };
-        });
-      };
+        };
+        // #endif
+      } else {
+        /* uniapp获取canvas上下文方式 */
+        canvasContext = this.canvasContext = uni.createCanvasContext(this.canvasId, this);
+        /* 使用dynamicSize，可以解决小块间出现白线问题，再通过scale缩放至size，使其达到所设尺寸 */
+        this.templateOptions.canvasWidth = qr.dynamicSize;
+        this.templateOptions.canvasHeight = qr.dynamicSize;
+        /* uniapp获取图像方式 */
+        UQRCode.loadImage = function(src) {
+          return new Promise((resolve, reject) => {
+            uni.getImageInfo({
+              src,
+              success: res => {
+                resolve(res.path);
+              },
+              fail: err => {
+                reject(err);
+              }
+            });
+          });
+        };
+      }
       // #endif
       // #ifdef APP-NVUE
       /* NVue获取canvas上下文方式 */
@@ -430,7 +485,7 @@ export default {
       const canvas = enable(gcanvas, {
         bridge: WeexBridge
       });
-      const canvasContext = (this.canvasContext = canvas.getContext('2d'));
+      canvasContext = this.canvasContext = canvas.getContext('2d');
       /* NVue获取图像方式 */
       UQRCode.loadImage = function(src) {
         return new Promise((resolve, reject) => {
@@ -461,32 +516,58 @@ export default {
               this.drawDelegate = undefined;
             } else {
               this.drawing = false;
-              callback(true);
+              callback.success();
             }
           })
-          .catch(() => {
+          .catch(err => {
             if (this.drawDelegate) {
               this.drawDelegate();
               this.drawDelegate = undefined;
             } else {
               this.inError = true;
               this.drawing = false;
-              callback(false);
+              callback.fail(err);
             }
+          })
+          .finally(() => {
+            callback.complete();
           });
       }, 300);
     },
     /**
      * 生成二维码
      */
-    make() {
+    make(callback = {}) {
       this.makeing = true;
+
+      if (typeof callback.success != 'function') {
+        callback.success = () => {};
+      }
+      if (typeof callback.fail != 'function') {
+        callback.fail = () => {};
+      }
+      if (typeof callback.complete != 'function') {
+        callback.complete = () => {};
+      }
+
       this.resetCanvas(() => {
         clearTimeout(this.makeDelegate);
         this.makeDelegate = setTimeout(() => {
-          this.draw(res => {
-            this.makeing = false;
-            this.complete(res);
+          this.draw({
+            success: () => {
+              setTimeout(() => {
+                callback.success();
+                this.complete(true);
+              }, 300);
+            },
+            fail: err => {
+              callback.fail(err);
+              this.complete(false, err);
+            },
+            complete: () => {
+              callback.complete();
+              this.makeing = false;
+            }
           });
         }, 300);
       });
@@ -494,18 +575,24 @@ export default {
     /**
      * 重新生成
      */
-    remake() {
-      this.make();
+    remake(callback) {
+      this.$emit('change');
+      this.make(callback);
     },
     /**
      * 生成完成
      */
-    complete(success = true) {
-      setTimeout(() => {
+    complete(success = true, errMsg = '') {
+      if (success) {
         this.$emit('complete', {
           success
         });
-      }, 300);
+      } else {
+        this.$emit('complete', {
+          success,
+          errMsg
+        });
+      }
     },
     /**
      * 导出临时路径
@@ -531,15 +618,33 @@ export default {
         this.toTempFilePathDelegate = null;
       }
 
-      // #ifndef MP-WEIXIN || APP-NVUE
-      uni.canvasToTempFilePath(
-        {
-          canvasId: this.canvasId,
-          fileType: this.fileType,
-          width: this.templateOptions.canvasWidth,
-          height: this.templateOptions.canvasHeight,
+      // #ifndef APP-NVUE
+      if (this.type === '2d') {
+        // #ifdef MP-WEIXIN
+        /* 需要将 data:image/png;base64, 这段去除 writeFile 才能正常打开文件，否则是损坏文件，无法打开*/
+        const reg = new RegExp('^data:image/png;base64,', 'g');
+        // #ifdef VUE3
+        const dataURL = toRaw(this.canvas)
+          .toDataURL()
+          .replace(reg, '');
+        // #endif
+        // #ifndef VUE3
+        const dataURL = this.canvas.toDataURL().replace(reg, '');
+        // #endif
+        const fs = wx.getFileSystemManager();
+        const tempFilePath = `${wx.env.USER_DATA_PATH}/${new Date().getTime()}${
+          Math.random()
+            .toString()
+            .split('.')[1]
+        }.png`;
+        fs.writeFile({
+          filePath: tempFilePath, // 要写入的文件路径 (本地路径)
+          data: dataURL, // base64图片
+          encoding: 'base64',
           success: res => {
-            callback.success(res);
+            callback.success({
+              tempFilePath
+            });
           },
           fail: err => {
             callback.fail(err);
@@ -547,51 +652,48 @@ export default {
           complete: () => {
             callback.complete();
           }
-        },
-        this
-      );
+        });
+        // #endif
+      } else {
+        uni.canvasToTempFilePath(
+          {
+            canvasId: this.canvasId,
+            fileType: this.fileType,
+            width: this.templateOptions.canvasWidth,
+            height: this.templateOptions.canvasHeight,
+            destWidth: this.templateOptions.size,
+            destHeight: this.templateOptions.size,
+            success: res => {
+              callback.success(res);
+            },
+            fail: err => {
+              callback.fail(err);
+            },
+            complete: () => {
+              callback.complete();
+            }
+          },
+          this
+        );
+      }
       // #endif
-
-      // #ifdef MP-WEIXIN
-      /* 需要将 data:image/png;base64, 这段去除 writeFile 才能正常打开文件，否则是损坏文件，无法打开*/
-      const reg = new RegExp('^data:image/png;base64,', 'g');
-	  // #ifdef VUE3
-      const dataURL = toRaw(this.canvas).toDataURL().replace(reg, '');
-	  // #endif
-	  // #ifndef VUE3
-	  const dataURL = this.canvas.toDataURL().replace(reg, '');
-	  // #endif
-      const fs = wx.getFileSystemManager();
-      const tempFilePath = `${wx.env.USER_DATA_PATH}/${new Date().getTime()}${
-        Math.random()
-          .toString()
-          .split('.')[1]
-      }.png`;
-      fs.writeFile({
-        filePath: tempFilePath, // 要写入的文件路径 (本地路径)
-        data: dataURL, // base64图片
-        encoding: 'base64',
-        success: res => {
-          callback.success({
-            tempFilePath
-          });
-        },
-        fail: err => {
-          callback.fail(err);
-        },
-        complete: () => {
-          callback.complete();
-        }
-      });
-      // #endif
-
       // #ifdef APP-NVUE
       /* 测试过程中，size需要乘以3才能保存完整，3又对应dpr，猜测是与像素比有关，故乘以3。第一次运行无法保存，后续正常，待排查。 */
       const dpr = uni.getSystemInfoSync().pixelRatio;
-      this.canvasContext.toTempFilePath(0, 0, this.size * dpr, this.size * dpr, this.size * dpr, this.size * dpr, '', 1, res => {
-        callback.success(res);
-        callback.complete(res);
-      });
+      this.canvasContext.toTempFilePath(
+        0,
+        0,
+        this.templateOptions.canvasWidth * dpr,
+        this.templateOptions.canvasHeight * dpr,
+        this.templateOptions.size * dpr,
+        this.templateOptions.size * dpr,
+        '',
+        1,
+        res => {
+          callback.success(res);
+          callback.complete(res);
+        }
+      );
       // #endif
     },
     /**
