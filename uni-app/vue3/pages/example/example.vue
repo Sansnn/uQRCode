@@ -251,6 +251,23 @@
           <text class="msg">这是一个rpx单位的二维码，不同尺寸的屏幕显示会按照rpx单位的规则进行缩放</text>
           <view class="btns"><button class="btn" type="primary" size="mini" @click="save('qr11')">保存</button></view>
         </view>
+        <!-- <view class="qrcode-box">
+          <view class="qrcode">
+            <uqrcode
+              canvas-id="qr12"
+              type="2d"
+              :ref="el => setRefs(el, 'qr12')"
+              :value="text"
+              :size="size"
+              :start="true"
+              :auto="true"
+              @click="remake('qr12')"
+              @complete="complete($event, 'qr12')"
+            ></uqrcode>
+          </view>
+          <text class="msg">这是一个Canvas 2D的二维码，目前只在微信小程序有效</text>
+          <view class="btns"><button class="btn" type="primary" size="mini" @click="save('qr12')">保存</button></view>
+        </view> -->
         <view class="qrcode-box" v-for="(item, index) in 5" :key="index">
           <view class="qrcode">
             <uqrcode

@@ -1,5 +1,5 @@
 <!-- ---------------------------------------------------------------------
-// uQRCode二维码生成插件 v3.6.0
+// uQRCode二维码生成插件 v3.6.3
 // 
 // uQRCode是一款基于Javascript环境开发的二维码生成插件，适用所有Javascript运行环境的前端应用和Node.js。
 // 
@@ -27,10 +27,11 @@
       class="uqrcode-canvas"
       :id="canvasId"
       :canvas-id="canvasId"
+      :type="type"
       :style="{
         width: `${templateOptions.canvasWidth}px`,
         height: `${templateOptions.canvasHeight}px`,
-        transform: type != '2d' ? `scale(${templateOptions.size / templateOptions.canvasWidth}, ${templateOptions.size / templateOptions.canvasHeight})` : undefined
+        transform: templateOptions.canvasTransform
       }"
       @click="onClick"
       v-if="templateOptions.canvasDisplay"
@@ -51,7 +52,7 @@
     ></gcanvas>
     <!-- #endif -->
 
-    <!-- H5保存提示 -->
+    <!-- H5保存提示，可在此替换。后续版本做成插槽 -->
     <!-- #ifdef H5 -->
     <view class="uqrcode-h5-save" v-if="isH5Save">
       <image class="uqrcode-h5-save-image" :src="tempFilePath"></image>
@@ -160,7 +161,7 @@ export default {
     },
     /**
      * canvas 类型
-     * 微信小程序type2d手机上正常，PC上微信内打开小程序toDataURL报错
+     * 注意：微信小程序type2d手机上正常，PC上微信内打开小程序toDataURL报错
      */
     type: {
       type: String,
@@ -192,6 +193,7 @@ export default {
         height: 0,
         canvasWidth: 0, // canvas宽度
         canvasHeight: 0,
+        canvasTransform: '',
         canvasDisplay: false
       },
       uqrcodeOptions: {
@@ -292,6 +294,13 @@ export default {
     this.templateOptions.size = this.sizeUnit == 'rpx' ? uni.upx2px(this.size) : this.size;
     this.templateOptions.canvasWidth = this.templateOptions.size;
     this.templateOptions.canvasHeight = this.templateOptions.size;
+    if(this.type == '2d') {
+      // #ifndef MP-WEIXIN
+      this.templateOptions.canvasTransform = `scale(${this.templateOptions.size / this.templateOptions.canvasWidth}, ${this.templateOptions.size / this.templateOptions.canvasHeight})`;
+      // #endif
+    } else {
+      this.templateOptions.canvasTransform = `scale(${this.templateOptions.size / this.templateOptions.canvasWidth}, ${this.templateOptions.size / this.templateOptions.canvasHeight})`;
+    }
     if (this.start) {
       this.make();
     }
@@ -332,7 +341,7 @@ export default {
     /**
      * 绘制二维码
      */
-    async draw(callback = {}) {
+    async draw(callback = {}, isDrawDelegate = false) {
       if (typeof callback.success != 'function') {
         callback.success = () => {};
       }
@@ -344,11 +353,15 @@ export default {
       }
 
       if (this.drawing) {
-        this.drawDelegate = () => {
-          this.draw(callback);
-        };
+        if (!isDrawDelegate) {
+          this.drawDelegate = () => {
+            this.draw(callback, true);
+          };
+          return;
+        }
+      } else {
+        this.drawing = true;
       }
-      this.drawing = true;
 
       this.inError = false;
       if (!this.canvasId) {
@@ -416,12 +429,13 @@ export default {
         /* 2d的组件设置宽高与实际canvas绘制宽高不是一个，打个比方，组件size=200，canvas.width设置为100，那么绘制出来就是100=200，组件size=400，canvas.width设置为800，绘制大小还是800=400，所以无需理会下方返回的dynamicSize是多少，按dpr重新赋值给canvas即可 */
         this.templateOptions.canvasWidth = qr.size;
         this.templateOptions.canvasHeight = qr.size;
+        this.templateOptions.canvasTransform = '';
         /* 使用dynamicSize+scale，可以解决小块间出现白线问题，dpr可以解决模糊问题 */
         const dpr = uni.getSystemInfoSync().pixelRatio;
         canvas.width = qr.dynamicSize * dpr;
         canvas.height = qr.dynamicSize * dpr;
         canvasContext.scale(dpr, dpr);
-        /* 微信小程序获取图像方式 */
+        /* 微信小程序获取图像方式，多个组件type默认和2d混用导致loadImage被替换，从而获取图像失败，导致报错：Unhandled promise rejection RangeError: Maximum call stack size exceeded，后续优化一下，现在只能统一所有组件的type */
         UQRCode.loadImage = function(src) {
           /* 小程序下获取网络图片信息需先配置download域名白名单才能生效 */
           return new Promise((resolve, reject) => {
@@ -442,18 +456,28 @@ export default {
         /* 使用dynamicSize，可以解决小块间出现白线问题，再通过scale缩放至size，使其达到所设尺寸 */
         this.templateOptions.canvasWidth = qr.dynamicSize;
         this.templateOptions.canvasHeight = qr.dynamicSize;
+        this.templateOptions.canvasTransform = `scale(${this.templateOptions.size / this.templateOptions.canvasWidth}, ${this.templateOptions.size / this.templateOptions.canvasHeight})`;
         /* uniapp获取图像方式 */
         UQRCode.loadImage = function(src) {
           return new Promise((resolve, reject) => {
-            uni.getImageInfo({
-              src,
-              success: res => {
-                resolve(res.path);
-              },
-              fail: err => {
-                reject(err);
+            if (src.startsWith('http')) {
+              uni.getImageInfo({
+                src,
+                success: res => {
+                  resolve(res.path);
+                },
+                fail: err => {
+                  reject(err);
+                }
+              });
+            } else {
+              if (src.startsWith('/')) {
+                resolve(src);
+              } else {
+                console.error('[uQRCode]: 本地图片路径仅支持绝对路径！');
+                throw new Error('[uQRCode]: local image path only supports absolute path!');
               }
-            });
+            }
           });
         };
         // #endif
@@ -463,18 +487,29 @@ export default {
         /* 使用dynamicSize，可以解决小块间出现白线问题，再通过scale缩放至size，使其达到所设尺寸 */
         this.templateOptions.canvasWidth = qr.dynamicSize;
         this.templateOptions.canvasHeight = qr.dynamicSize;
+        this.templateOptions.canvasTransform = `scale(${this.templateOptions.size / this.templateOptions.canvasWidth}, ${this.templateOptions.size / this.templateOptions.canvasHeight})`;
         /* uniapp获取图像方式 */
         UQRCode.loadImage = function(src) {
           return new Promise((resolve, reject) => {
-            uni.getImageInfo({
-              src,
-              success: res => {
-                resolve(res.path);
-              },
-              fail: err => {
-                reject(err);
+            /* getImageInfo在微信小程序的bug：本地路径返回路径会把开头的/或../移除，导致路径错误，解决方法：限制只能使用绝对路径 */
+            if (src.startsWith('http')) {
+              uni.getImageInfo({
+                src,
+                success: res => {
+                  resolve(res.path);
+                },
+                fail: err => {
+                  reject(err);
+                }
+              });
+            } else {
+              if (src.startsWith('/')) {
+                resolve(src);
+              } else {
+                console.error('[uQRCode]: 本地图片路径仅支持绝对路径！');
+                throw new Error('[uQRCode]: local image path only supports absolute path!');
               }
-            });
+            }
           });
         };
       }
@@ -490,15 +525,24 @@ export default {
       UQRCode.loadImage = function(src) {
         return new Promise((resolve, reject) => {
           /* getImageInfo在nvue的bug：获取同一个路径的图片信息，同一时间第一次获取成功，后续失败，猜测是写入本地时产生文件写入冲突，所以没有返回，特别是对于网络资源 --- js部分已实现队列绘制，已解决此问题 */
-          uni.getImageInfo({
-            src,
-            success: res => {
-              resolve(res.path);
-            },
-            fail: err => {
-              reject(err);
+          if (src.startsWith('http')) {
+            uni.getImageInfo({
+              src,
+              success: res => {
+                resolve(res.path);
+              },
+              fail: err => {
+                reject(err);
+              }
+            });
+          } else {
+            if (src.startsWith('/')) {
+              resolve(src);
+            } else {
+              console.error('[uQRCode]: 本地图片路径仅支持绝对路径！');
+              throw new Error('[uQRCode]: local image path only supports absolute path!');
             }
-          });
+          }
         });
       };
       // #endif
@@ -512,8 +556,9 @@ export default {
           .then(() => {
             if (this.drawDelegate) {
               /* 高频重绘纠正 */
-              this.drawDelegate();
+              let delegate = this.drawDelegate;
               this.drawDelegate = undefined;
+              delegate();
             } else {
               this.drawing = false;
               callback.success();
@@ -521,11 +566,13 @@ export default {
           })
           .catch(err => {
             if (this.drawDelegate) {
-              this.drawDelegate();
+              /* 高频重绘纠正 */
+              let delegate = this.drawDelegate;
               this.drawDelegate = undefined;
+              delegate();
             } else {
-              this.inError = true;
               this.drawing = false;
+              this.inError = true;
               callback.fail(err);
             }
           })
@@ -562,7 +609,7 @@ export default {
             },
             fail: err => {
               callback.fail(err);
-              this.complete(false, err);
+              this.complete(false, err.errMsg);
             },
             complete: () => {
               callback.complete();

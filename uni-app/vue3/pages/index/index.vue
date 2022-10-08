@@ -1,8 +1,5 @@
 <template>
   <view class="page">
-    <!-- #ifdef APP-NVUE -->
-    <text class="msg">nvue</text>
-    <!-- #endif -->
     <view class="input">
       <text style="font-size: 16px;">{{ text }}</text>
     </view>
@@ -11,14 +8,11 @@
       <view class="page" style="height: 1500px;">
         <view class="qrcode-box">
           <view class="qrcode">
-            <!-- #ifndef MP-WEIXIN || APP-NVUE -->
+            <!-- #ifndef MP-WEIXIN -->
             <canvas id="qrcode" canvas-id="qrcode" :style="{ width: `${size}px`, height: `${size}px` }"></canvas>
             <!-- #endif -->
             <!-- #ifdef MP-WEIXIN -->
             <canvas id="qrcode" canvas-id="qrcode" type="2d" :style="{ width: `${size}px`, height: `${size}px` }"></canvas>
-            <!-- #endif -->
-            <!-- #ifdef APP-NVUE -->
-            <gcanvas ref="gcanvas" :style="{ width: `${size}px`, height: `${size}px` }"></gcanvas>
             <!-- #endif -->
           </view>
           <text class="msg">这是一个uQRCode原生方式生成的二维码，示范了uqrcode.js的基本用法</text>
@@ -37,12 +31,6 @@ import { onReady } from '@dcloudio/uni-app';
 
 /* 引入uQRCode */
 import UQRCode from '../../uni_modules/Sansnn-uQRCode/js_sdk/uqrcode';
-
-/* 引入nvue所需模块 */
-// #ifdef APP-NVUE
-import { enable, WeexBridge } from '../../uni_modules/Sansnn-uQRCode/js_sdk/gcanvas';
-const modal = weex.requireModule('modal');
-// #endif
 
 const text = ref('uQRCode');
 const size = ref(200);
@@ -67,7 +55,7 @@ onReady(async () => {
   qr.make();
 
   /* 获取canvas上下文 */
-  // #ifndef MP-WEIXIN || APP-NVUE
+  // #ifndef MP-WEIXIN
   /* uniapp获取canvas上下文方式 */
   const canvasContext = uni.createCanvasContext('qrcode');
   /* uniapp获取图像方式 */
@@ -101,8 +89,8 @@ onReady(async () => {
   });
   const canvasContext = canvas.getContext('2d');
   const dpr = uni.getSystemInfoSync().pixelRatio;
-  canvas.width = this.size * dpr;
-  canvas.height = this.size * dpr;
+  canvas.width = size.value * dpr;
+  canvas.height = size.value * dpr;
   canvasContext.scale(dpr, dpr);
   /* 微信小程序获取图像方式 */
   UQRCode.loadImage = function(src) {
@@ -116,29 +104,6 @@ onReady(async () => {
       img.onerror = err => {
         reject(err);
       };
-    });
-  };
-  // #endif
-  // #ifdef APP-NVUE
-  /* NVue获取canvas上下文方式 */
-  const gcanvas = this.$refs['gcanvas'];
-  const canvas = enable(gcanvas, {
-    bridge: WeexBridge
-  });
-  const canvasContext = canvas.getContext('2d');
-  /* NVue获取图像方式 */
-  UQRCode.loadImage = function(src) {
-    return new Promise((resolve, reject) => {
-      /* getImageInfo在nvue的bug：获取同一个路径的图片信息，同一时间第一次获取成功，后续失败，猜测是写入本地时产生文件写入冲突，所以没有返回，特别是对于网络资源 --- js部分已实现队列绘制，已解决此问题 */
-      uni.getImageInfo({
-        src,
-        success: res => {
-          resolve(res.path);
-        },
-        fail: err => {
-          reject(err);
-        }
-      });
     });
   };
   // #endif
