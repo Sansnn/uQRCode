@@ -1,5 +1,5 @@
 <!-- ---------------------------------------------------------------------
-// uQRCode二维码生成插件 v3.6.3
+// uQRCode二维码生成插件 v3.6.5
 // 
 // uQRCode是一款基于Javascript环境开发的二维码生成插件，适用所有Javascript运行环境的前端应用和Node.js。
 // 
@@ -294,12 +294,14 @@ export default {
     this.templateOptions.size = this.sizeUnit == 'rpx' ? uni.upx2px(this.size) : this.size;
     this.templateOptions.canvasWidth = this.templateOptions.size;
     this.templateOptions.canvasHeight = this.templateOptions.size;
-    if(this.type == '2d') {
+    if (this.type == '2d') {
       // #ifndef MP-WEIXIN
-      this.templateOptions.canvasTransform = `scale(${this.templateOptions.size / this.templateOptions.canvasWidth}, ${this.templateOptions.size / this.templateOptions.canvasHeight})`;
+      this.templateOptions.canvasTransform = `scale(${this.templateOptions.size / this.templateOptions.canvasWidth}, ${this.templateOptions.size /
+        this.templateOptions.canvasHeight})`;
       // #endif
     } else {
-      this.templateOptions.canvasTransform = `scale(${this.templateOptions.size / this.templateOptions.canvasWidth}, ${this.templateOptions.size / this.templateOptions.canvasHeight})`;
+      this.templateOptions.canvasTransform = `scale(${this.templateOptions.size / this.templateOptions.canvasWidth}, ${this.templateOptions.size /
+        this.templateOptions.canvasHeight})`;
     }
     if (this.start) {
       this.make();
@@ -456,7 +458,8 @@ export default {
         /* 使用dynamicSize，可以解决小块间出现白线问题，再通过scale缩放至size，使其达到所设尺寸 */
         this.templateOptions.canvasWidth = qr.dynamicSize;
         this.templateOptions.canvasHeight = qr.dynamicSize;
-        this.templateOptions.canvasTransform = `scale(${this.templateOptions.size / this.templateOptions.canvasWidth}, ${this.templateOptions.size / this.templateOptions.canvasHeight})`;
+        this.templateOptions.canvasTransform = `scale(${this.templateOptions.size / this.templateOptions.canvasWidth}, ${this.templateOptions.size /
+          this.templateOptions.canvasHeight})`;
         /* uniapp获取图像方式 */
         UQRCode.loadImage = function(src) {
           return new Promise((resolve, reject) => {
@@ -471,11 +474,11 @@ export default {
                 }
               });
             } else {
-              if (src.startsWith('/')) {
-                resolve(src);
-              } else {
+              if (src.startsWith('.')) {
                 console.error('[uQRCode]: 本地图片路径仅支持绝对路径！');
                 throw new Error('[uQRCode]: local image path only supports absolute path!');
+              } else {
+                resolve(src);
               }
             }
           });
@@ -487,7 +490,8 @@ export default {
         /* 使用dynamicSize，可以解决小块间出现白线问题，再通过scale缩放至size，使其达到所设尺寸 */
         this.templateOptions.canvasWidth = qr.dynamicSize;
         this.templateOptions.canvasHeight = qr.dynamicSize;
-        this.templateOptions.canvasTransform = `scale(${this.templateOptions.size / this.templateOptions.canvasWidth}, ${this.templateOptions.size / this.templateOptions.canvasHeight})`;
+        this.templateOptions.canvasTransform = `scale(${this.templateOptions.size / this.templateOptions.canvasWidth}, ${this.templateOptions.size /
+          this.templateOptions.canvasHeight})`;
         /* uniapp获取图像方式 */
         UQRCode.loadImage = function(src) {
           return new Promise((resolve, reject) => {
@@ -503,11 +507,11 @@ export default {
                 }
               });
             } else {
-              if (src.startsWith('/')) {
-                resolve(src);
-              } else {
+              if (src.startsWith('.')) {
                 console.error('[uQRCode]: 本地图片路径仅支持绝对路径！');
                 throw new Error('[uQRCode]: local image path only supports absolute path!');
+              } else {
+                resolve(src);
               }
             }
           });
@@ -536,11 +540,11 @@ export default {
               }
             });
           } else {
-            if (src.startsWith('/')) {
-              resolve(src);
-            } else {
+            if (src.startsWith('.')) {
               console.error('[uQRCode]: 本地图片路径仅支持绝对路径！');
               throw new Error('[uQRCode]: local image path only supports absolute path!');
+            } else {
+              resolve(src);
             }
           }
         });
@@ -706,10 +710,10 @@ export default {
           {
             canvasId: this.canvasId,
             fileType: this.fileType,
-            width: this.templateOptions.canvasWidth,
-            height: this.templateOptions.canvasHeight,
-            destWidth: this.templateOptions.size,
-            destHeight: this.templateOptions.size,
+            width: Number(this.templateOptions.canvasWidth),
+            height: Number(this.templateOptions.canvasHeight),
+            destWidth: Number(this.templateOptions.size),
+            destHeight: Number(this.templateOptions.size),
             success: res => {
               callback.success(res);
             },
