@@ -9,7 +9,7 @@
       <view class="page">
         <view class="qrcode-box">
           <view class="qrcode">
-            <uqrcode ref="qr1" canvas-id="qr1" :value="text" :size="size" :start="true" :auto="true" @click="remake('qr1')" @complete="complete($event, 'qr1')"></uqrcode>
+            <uqrcode ref="qr1" canvas-id="qr1" :value="text" size="200" :start="true" :auto="true" @click="remake('qr1')" @complete="complete($event, 'qr1')"></uqrcode>
           </view>
           <text class="msg">这是一个常规的二维码</text>
           <view class="btns"><button class="btn" type="primary" size="mini" @click="save('qr1')">保存</button></view>
