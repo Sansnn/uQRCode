@@ -1,6 +1,6 @@
 function Plugin(UQRCode, options) {
-  options.backgroundRadius = 0.0; // 背景码点圆角半径，系数：0.0-1.0
-  options.foregroundRadius = 0.0; // 前景码点圆角半径，0.0-1.0
+  options.backgroundRadius = 1.0; // 背景码点圆角半径，系数：0.0-1.0
+  options.foregroundRadius = 1.0; // 前景码点圆角半径，0.0-1.0
 
   options.drawRoundCanvas = function() {
     let {

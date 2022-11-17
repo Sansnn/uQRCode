@@ -30,7 +30,7 @@ function UQRCode(options, canvasContext) {
   var _typeNumber = this.typeNumber = -1; // 二维码版本，-1为自动计算，自动计算字符越多，版本越高
   var _errorCorrectLevel = this.errorCorrectLevel = UQRCode.errorCorrectLevel.H; // 纠错等级
   var _margin = this.margin = 0; // 二维码外边距
-  var _areaColor = this.areaColor = 'rgba(255,255,255,0)'; // 二维码绘制区域颜色、底部背景色
+  var _areaColor = this.areaColor = '#FFFFFF'; // 二维码绘制区域颜色、底部背景色
 
   /** 背景属性 */
   var _backgroundColor = this.backgroundColor = 'rgba(255,255,255,0)'; // 背景色

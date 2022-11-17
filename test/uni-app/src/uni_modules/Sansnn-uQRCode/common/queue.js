@@ -37,5 +37,5 @@ function Queue() {
 }
 
 /* 队列实例，某些平台一起使用多个组件时需要通过队列逐一绘制，否则部分绘制方法异常，nvue端的iOS gcanvas尤其明显，在不通过队列绘制时会出现图片丢失的情况 */
-exports.queueDraw = new Queue();
-exports.queueLoadImage = new Queue();
+export const queueDraw = new Queue();
+export const queueLoadImage = new Queue();

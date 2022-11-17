@@ -1,1 +1,1 @@
-exports.cacheImageList = [];
+export const cacheImageList = [];

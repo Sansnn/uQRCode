@@ -1,5 +1,5 @@
 function Plugin(UQRCode, options) {
-  options.foregroundRadius = 0.0; // 前景码点圆角半径，0.0-1.0
+  options.foregroundRadius = 1.0; // 前景码点圆角半径，0.0-1.0
 
   options.drawLiquidCanvas = function() {
     let {

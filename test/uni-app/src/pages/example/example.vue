@@ -422,8 +422,8 @@
 </template>
 
 <script>
-import styleRound from '../../uni_modules/Sansnn-uQRCode/js_sdk/uqrcode/uqrcode.style.round.js';
-import styleLiquid from '../../uni_modules/Sansnn-uQRCode/js_sdk/uqrcode/uqrcode.style.liquid.js';
+import uQRCodeStyleRound from '../../uni_modules/Sansnn-uQRCode/js_sdk/uqrcode/uqrcode.style.round.js';
+import uQRCodeStyleLiquid from '../../uni_modules/Sansnn-uQRCode/js_sdk/uqrcode/uqrcode.style.liquid.js';
 
 export default {
   data() {
@@ -456,8 +456,8 @@ export default {
   },
   onReady() {
     /* 注册扩展插件 */
-    this.$refs.qr16.registerStyle(styleRound);
-    this.$refs.qr16.registerStyle(styleLiquid);
+    this.$refs.qr16.registerStyle(uQRCodeStyleRound);
+    this.$refs.qr16.registerStyle(uQRCodeStyleLiquid);
     /* 注册扩展插件后再执行make生成二维码 */
     this.$refs.qr16.make();
 
