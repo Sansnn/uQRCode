@@ -1064,7 +1064,8 @@
   .uqrcode-h5-save-close-before {
     position: absolute;
     top: 50%;
-    transform: translateY(-50%) rotate(45deg);
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
     width: 40rpx;
     height: 4rpx;
     background: #ffffff;
@@ -1073,7 +1074,8 @@
   .uqrcode-h5-save-close-after {
     position: absolute;
     top: 50%;
-    transform: translateY(-50%) rotate(-45deg);
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
     width: 40rpx;
     height: 4rpx;
     background: #ffffff;

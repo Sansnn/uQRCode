@@ -20,3 +20,12 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+
+style/25d.js
+style/art.js
+dist/style/25d/
+dist/style/art/
+test/html/js/uqrcode.style.25d.js
+test/html/js/uqrcode.style.art.js
+test/html/25d.html
+test/html/art.html

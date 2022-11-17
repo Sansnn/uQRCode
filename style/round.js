@@ -7,19 +7,18 @@ function Plugin(UQRCode, options) {
       isMaked,
       canvasContext: ctx,
       dynamicSize: size,
-      foregroundColor,
       foregroundRadius,
       backgroundColor,
       backgroundRadius,
-      drawModules,
-      drawReserve,
-      margin
+      drawReserve
     } = this;
 
     if (!isMaked) {
       console.error('[uQRCode]: please execute the make method first!');
       return Promise.reject(new UQRCode.Error('please execute the make method first!'));
     }
+
+    let drawModules = this.getDrawModules();
 
     let draw = async (resolve, reject) => {
       try {
@@ -171,12 +170,12 @@ function Plugin(UQRCode, options) {
               }
               break;
           }
-          
+
           /* gcanvas需要每一阶段都draw一下，否则重绘有问题，例如uni-app nvue绘制图片会失败 */
           if (drawReserve) {
             ctx.draw(true);
           }
-          
+
           ctx.restore();
         }
         ctx.draw(true);

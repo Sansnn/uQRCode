@@ -37,27 +37,26 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.UQRCodeStyleRound = factory());
 })(window, (function () {
   function Plugin(UQRCode, options) {
-    options.backgroundRadius = 0.0; // 背景码点圆角半径，系数：0.0-1.0
-    options.foregroundRadius = 0.0; // 前景码点圆角半径，0.0-1.0
+    options.backgroundRadius = 1.0; // 背景码点圆角半径，系数：0.0-1.0
+    options.foregroundRadius = 1.0; // 前景码点圆角半径，0.0-1.0
 
     options.drawRoundCanvas = function() {
       let {
         isMaked,
         canvasContext: ctx,
         dynamicSize: size,
-        foregroundColor,
         foregroundRadius,
         backgroundColor,
         backgroundRadius,
-        drawModules,
-        drawReserve,
-        margin
+        drawReserve
       } = this;
 
       if (!isMaked) {
         console.error('[uQRCode]: please execute the make method first!');
         return Promise.reject(new UQRCode.Error('please execute the make method first!'));
       }
+
+      let drawModules = this.getDrawModules();
 
       let draw = async (resolve, reject) => {
         try {
@@ -209,12 +208,12 @@
                 }
                 break;
             }
-            
+
             /* gcanvas需要每一阶段都draw一下，否则重绘有问题，例如uni-app nvue绘制图片会失败 */
             if (drawReserve) {
               ctx.draw(true);
             }
-            
+
             ctx.restore();
           }
           ctx.draw(true);

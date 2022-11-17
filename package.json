@@ -29,7 +29,7 @@
     "build:banner": "rollup -c --configBanner",
     "build:copy": "rollup -c --configCopy",
     "build": "npm run build:default && npm run build:banner && npm run build:copy",
-    "test:html": "live-server --port=9999 --open=test/html/index.html",
+    "test:html": "live-server --port=9999 --open=test/html",
     "test:uni-app:h5": "cd test/uni-app && npm run dev:h5",
     "test:uni-app:mp-weixin": "cd test/uni-app && npm run dev:mp-weixin",
     "test:uni-app:app": "cd test/uni-app && npm run dev:app-plus",

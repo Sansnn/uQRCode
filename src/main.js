@@ -572,7 +572,6 @@ UQRCode.prototype.make = function() {
   paintDarkBlock(this);
   paintTypeNumber(this);
 
-  this.getDrawModules();
   this.isMaked = true;
 }
 
@@ -709,6 +708,8 @@ UQRCode.prototype.getDrawModules = function() {
       shadowColor: foregroundImageShadowColor
     });
   }
+
+  return drawModules;
 }
 
 /**
@@ -734,7 +735,6 @@ UQRCode.prototype.drawCanvas = function() {
     foregroundPadding,
     backgroundColor,
     backgroundPadding,
-    drawModules,
     drawReserve,
     margin
   } = this;
@@ -743,6 +743,8 @@ UQRCode.prototype.drawCanvas = function() {
     console.error('[uQRCode]: please execute the make method first!');
     return Promise.reject(new UQRCode.Error('please execute the make method first!'));
   }
+
+  let drawModules = this.getDrawModules();
 
   let draw = async (resolve, reject) => {
     try {
@@ -888,12 +890,12 @@ UQRCode.prototype.drawCanvas = function() {
             }
             break;
         }
-        
+
         /* gcanvas需要每一阶段都draw一下，否则重绘有问题，例如uni-app nvue绘制图片会失败 */
         if (drawReserve) {
           ctx.draw(true);
         }
-        
+
         ctx.restore();
       }
       ctx.draw(true);

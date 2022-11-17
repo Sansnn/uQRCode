@@ -17,6 +17,10 @@ export default [{
         src: 'dist/style/liquid/uqrcode.style.liquid.umd.js',
         dest: 'test/html/js',
         rename: 'uqrcode.style.liquid.js'
+      }, {
+        src: 'dist/style/25d/uqrcode.style.25d.umd.js',
+        dest: 'test/html/js',
+        rename: 'uqrcode.style.25d.js'
       }]
     })
   ]

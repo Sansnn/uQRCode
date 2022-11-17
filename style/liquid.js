@@ -9,8 +9,6 @@ function Plugin(UQRCode, options) {
       foregroundColor,
       foregroundRadius,
       backgroundColor,
-      backgroundRadius,
-      drawModules,
       drawReserve,
       margin
     } = this;
@@ -19,6 +17,8 @@ function Plugin(UQRCode, options) {
       console.error('[uQRCode]: please execute the make method first!');
       return Promise.reject(new UQRCode.Error('please execute the make method first!'));
     }
+    
+    let drawModules = this.getDrawModules();
 
     function drawLiquidBasic(ctx, x, y, w, h, ri, ci, c, e) {
       var r = w / 2 * foregroundRadius;

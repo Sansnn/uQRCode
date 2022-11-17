@@ -21,7 +21,7 @@ let buildMain = function() {
   this.plugins = [terser()]; // 压缩代码，压缩后banner也会被移除，重新写个bannerConfig再次buildBanner
 }
 
-let buildStyle = function(name) {
+let buildStyle = function(name, moduleName) {
   this.input = `style/${name}.js`;
   this.output = formats.map(format => {
     var option = {
@@ -30,7 +30,7 @@ let buildStyle = function(name) {
       exports: 'auto'
     }
     if (format.name === 'umd') {
-      option.name = `UQRCodeStyle${name.substring(0, 1).toUpperCase()}${name.substring(1)}`;
+      option.name = moduleName;
     }
     return option;
   });
@@ -38,6 +38,7 @@ let buildStyle = function(name) {
 
 export default [
   new buildMain(),
-  new buildStyle('round'),
-  new buildStyle('liquid')
+  new buildStyle('round', 'UQRCodeStyleRound'),
+  new buildStyle('liquid', 'UQRCodeStyleLiquid'),
+  new buildStyle('25d', 'UQRCodeStyle25D')
 ];

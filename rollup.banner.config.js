@@ -75,5 +75,6 @@ let buildStyle = function(name, title) {
 export default [
   ...buildMain(),
   ...buildStyle('round', '圆点码'),
-  ...buildStyle('liquid', '液态码')
+  ...buildStyle('liquid', '液态码'),
+  ...buildStyle('25d', '2.5D码')
 ];

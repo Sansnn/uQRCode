@@ -32,7 +32,7 @@
 //---------------------------------------------------------------------
 
 function Plugin(UQRCode, options) {
-  options.foregroundRadius = 0.0; // 前景码点圆角半径，0.0-1.0
+  options.foregroundRadius = 1.0; // 前景码点圆角半径，0.0-1.0
 
   options.drawLiquidCanvas = function() {
     let {
@@ -42,8 +42,6 @@ function Plugin(UQRCode, options) {
       foregroundColor,
       foregroundRadius,
       backgroundColor,
-      backgroundRadius,
-      drawModules,
       drawReserve,
       margin
     } = this;
@@ -52,6 +50,8 @@ function Plugin(UQRCode, options) {
       console.error('[uQRCode]: please execute the make method first!');
       return Promise.reject(new UQRCode.Error('please execute the make method first!'));
     }
+    
+    let drawModules = this.getDrawModules();
 
     function drawLiquidBasic(ctx, x, y, w, h, ri, ci, c, e) {
       var f, g;
