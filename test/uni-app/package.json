@@ -89,7 +89,7 @@
     "@dcloudio/webpack-uni-mp-loader": "^2.0.1-alpha-36820221027001",
     "@dcloudio/webpack-uni-pages-loader": "^2.0.1-alpha-36820221027001",
     "@vue/cli-plugin-babel": "~4.5.19",
-    "@vue/cli-service": "~4.5.19",
+    "@vue/cli-service": "~5.0.8",
     "babel-plugin-import": "^1.11.0",
     "cross-env": "^7.0.2",
     "jest": "^25.4.0",
