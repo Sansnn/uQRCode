@@ -18,6 +18,10 @@ export default [{
         dest: 'test/html/js',
         rename: 'uqrcode.style.liquid.js'
       }, {
+        src: 'dist/style/words/uqrcode.style.words.umd.js',
+        dest: 'test/html/js',
+        rename: 'uqrcode.style.words.js'
+      }, {
         src: 'dist/style/25d/uqrcode.style.25d.umd.js',
         dest: 'test/html/js',
         rename: 'uqrcode.style.25d.js'
