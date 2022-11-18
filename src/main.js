@@ -5,7 +5,7 @@ import {
 } from './util';
 import {
   getCanvasContext
-} from './canvas';
+} from './canvasHelper';
 import {
   paintData,
   paintPositionProbe,
@@ -75,7 +75,7 @@ function UQRCode(options, canvasContext) {
   var _base = this.base = undefined; // 二维码基本对象，通过实例化QRCode类并调用make后得到
   var _modules = this.modules = []; // 制作二维码主要模块数据，基于base的modules但数据格式不一致，这里的modules是定制过的
   var _moduleCount = this.moduleCount = 0; // 模块数量
-  var _drawModules = this.drawModules = []; // 绘制模块，层级：最底层 -> 绘制区域 -> 背景图片 -> 背景|前景 -> 前景图片 -> 最顶层
+  // var _drawModules = this.drawModules = []; // 绘制模块，层级：最底层 -> 绘制区域 -> 背景图片 -> 背景|前景 -> 前景图片 -> 最顶层
   var _isMaked = this.isMaked = false;
 
   /** 绘制模块 */
@@ -580,7 +580,8 @@ UQRCode.prototype.make = function() {
  */
 UQRCode.prototype.getDrawModules = function() {
   /* 层级：最底层 -> 绘制区域 -> 背景图片 -> 背景|前景 -> 前景图片 -> 最顶层 */
-  let drawModules = this.drawModules = [];
+  // let drawModules = this.drawModules = [];
+  let drawModules = [];
   let {
     modules,
     moduleCount,

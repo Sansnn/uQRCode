@@ -21,6 +21,10 @@ export default [{
         src: 'dist/style/25d/uqrcode.style.25d.umd.js',
         dest: 'test/html/js',
         rename: 'uqrcode.style.25d.js'
+      }, {
+        src: 'dist/style/art/uqrcode.style.art.umd.js',
+        dest: 'test/html/js',
+        rename: 'uqrcode.style.art.js'
       }]
     })
   ]

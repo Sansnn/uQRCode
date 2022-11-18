@@ -40,5 +40,6 @@ export default [
   new buildMain(),
   new buildStyle('round', 'UQRCodeStyleRound'),
   new buildStyle('liquid', 'UQRCodeStyleLiquid'),
-  new buildStyle('25d', 'UQRCodeStyle25D')
+  new buildStyle('25d', 'UQRCodeStyle25D'),
+  new buildStyle('art', 'UQRCodeStyleArt')
 ];

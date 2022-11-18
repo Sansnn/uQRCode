@@ -80,6 +80,8 @@
     cacheImageList
   } from '../../common/cache';
 
+  let instance = null;
+
   export default {
     name: 'uqrcode',
     props: {
@@ -436,7 +438,7 @@
         // #endif
 
         /* 获取uQRCode实例 */
-        const qr = new UQRCode();
+        const qr = instance = new UQRCode();
         /* 注册扩展 */
         this.plugins.forEach(p => qr.register(p.plugin));
         /* 设置uQRCode选项 */
@@ -874,6 +876,12 @@
        */
       onClick(e) {
         this.$emit('click', e);
+      },
+      /**
+       * 获取实例
+       */
+      getInstance() {
+        return instance;
       },
       /**
        * 注册扩展，组件仅支持注册type为style的drawCanvas扩展
