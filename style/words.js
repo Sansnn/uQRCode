@@ -1,5 +1,5 @@
 function Plugin(UQRCode, options) {
-  options.words = true; // 文字内容
+  options.words = undefined; // 文字内容
 
   options.drawWordsCanvas = function() {
     let {
@@ -17,7 +17,7 @@ function Plugin(UQRCode, options) {
     }
 
     let drawModules = this.getDrawModules();
-    let wordArr = words.split('');
+    let wordArr = words ? words.split('') : [];
     let pointer = 0;
 
     let draw = async (resolve, reject) => {
@@ -35,7 +35,7 @@ function Plugin(UQRCode, options) {
               break;
             case 'tile':
               /* 绘制码点 */
-              if (drawModule.name === 'foreground') {
+              if (wordArr.length > 0 && drawModule.name === 'foreground') {
                 var x = drawModule.x;
                 var y = drawModule.y;
                 var w = drawModule.width;
@@ -49,6 +49,21 @@ function Plugin(UQRCode, options) {
                 if (pointer >= wordArr.length) {
                   pointer = 0;
                 }
+              } else {
+                var x = drawModule.x;
+                var y = drawModule.y;
+                var w = drawModule.width;
+                var h = drawModule.height;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.arcTo(x + w, y, x + w, y + h, 0);
+                ctx.arcTo(x + w, y + h, x, y + h, 0);
+                ctx.arcTo(x, y + h, x, y, 0);
+                ctx.arcTo(x, y, x + w, y, 0);
+                ctx.closePath();
+                ctx.fillStyle = drawModule.color;
+                ctx.fill();
+                ctx.clip();
               }
               break;
             case 'image':
