@@ -741,38 +741,24 @@
         // #ifndef APP-NVUE
         if (this.type === '2d') {
           // #ifdef MP-WEIXIN
-          /* 需要将 data:image/png;base64, 这段去除 writeFile 才能正常打开文件，否则是损坏文件，无法打开 */
-          const reg = new RegExp('^data:image/png;base64,', 'g');
-          // #ifdef VUE3
-          const dataURL = toRaw(this.canvas)
-            .toDataURL()
-            .replace(reg, '');
-          // #endif
-          // #ifndef VUE3
-          const dataURL = this.canvas.toDataURL().replace(reg, '');
-          // #endif
-          const fs = wx.getFileSystemManager();
-          const tempFilePath = `${wx.env.USER_DATA_PATH}/${new Date().getTime()}${
-          Math.random()
-            .toString()
-            .split('.')[1]
-        }.png`;
-          fs.writeFile({
-            filePath: tempFilePath, // 要写入的文件路径 (本地路径)
-            data: dataURL, // base64图片
-            encoding: 'base64',
-            success: res => {
-              callback.success({
-                tempFilePath
-              });
-            },
-            fail: err => {
-              callback.fail(err);
-            },
-            complete: () => {
-              callback.complete();
-            }
-          });
+          try {
+            // #ifdef VUE3
+            const dataURL = toRaw(this.canvas)
+              .toDataURL();
+            // #endif
+            // #ifndef VUE3
+            const dataURL = this.canvas.toDataURL();
+            // #endif
+            callback.success({
+              tempFilePath: dataURL
+            });
+            callback.complete({
+              tempFilePath: dataURL
+            });
+          } catch (e) {
+            callback.fail(e);
+            callback.complete(e);
+          }
           // #endif
         } else {
           uni.canvasToTempFilePath({
@@ -831,18 +817,57 @@
         this.toTempFilePath({
           success: res => {
             // #ifndef H5
-            uni.saveImageToPhotosAlbum({
-              filePath: res.tempFilePath,
-              success: res1 => {
-                callback.success(res1);
-              },
-              fail: err1 => {
-                callback.fail(err1);
-              },
-              complete: () => {
-                callback.complete();
-              }
-            });
+            if (this.type === '2d') {
+              // #ifdef MP-WEIXIN
+              /* 需要将 data:image/png;base64, 这段去除 writeFile 才能正常打开文件，否则是损坏文件，无法打开 */
+              const reg = new RegExp('^data:image/png;base64,', 'g');
+              const dataURL = res.tempFilePath.replace(reg, '');
+              const fs = wx.getFileSystemManager();
+              const tempFilePath = `${wx.env.USER_DATA_PATH}/${new Date().getTime()}${
+                Math.random()
+                  .toString()
+                  .split('.')[1]
+              }.png`;
+              fs.writeFile({
+                filePath: tempFilePath, // 要写入的文件路径 (本地路径)
+                data: dataURL, // base64图片
+                encoding: 'base64',
+                success: res1 => {
+                  uni.saveImageToPhotosAlbum({
+                    filePath: tempFilePath,
+                    success: res2 => {
+                      callback.success(res2);
+                    },
+                    fail: err2 => {
+                      callback.fail(err2);
+                    },
+                    complete: () => {
+                      callback.complete();
+                    }
+                  });
+                },
+                fail: err => {
+                  callback.fail(err);
+                },
+                complete: () => {
+                  callback.complete();
+                }
+              });
+              // #endif
+            } else {
+              uni.saveImageToPhotosAlbum({
+                filePath: res.tempFilePath,
+                success: res1 => {
+                  callback.success(res1);
+                },
+                fail: err1 => {
+                  callback.fail(err1);
+                },
+                complete: () => {
+                  callback.complete();
+                }
+              });
+            }
             // #endif
 
             // #ifdef H5
