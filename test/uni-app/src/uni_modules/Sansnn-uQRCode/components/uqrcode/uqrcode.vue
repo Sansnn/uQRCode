@@ -99,6 +99,15 @@
         type: [String, Number]
       },
       /**
+       * 选项
+       */
+      options: {
+        type: Object,
+        default: () => {
+          return {};
+        }
+      },
+      /**
        * 二维码大小
        */
       size: {
@@ -111,15 +120,6 @@
       sizeUnit: {
         type: String,
         default: 'px'
-      },
-      /**
-       * 选项
-       */
-      options: {
-        type: Object,
-        default: () => {
-          return {};
-        }
       },
       /**
        * 导出的文件类型

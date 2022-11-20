@@ -76,11 +76,12 @@ function UQRCode(options, canvasContext) {
   var _modules = this.modules = []; // 制作二维码主要模块数据，基于base的modules但数据格式不一致，这里的modules是定制过的
   var _moduleCount = this.moduleCount = 0; // 模块数量
   // var _drawModules = this.drawModules = []; // 绘制模块，层级：最底层 -> 绘制区域 -> 背景图片 -> 背景|前景 -> 前景图片 -> 最顶层
-  var _isMaked = this.isMaked = false;
 
   /** 绘制模块 */
   var _canvasContext = this.canvasContext = undefined; // canvas上下文
   var _drawReserve = this.drawReserve = false; // ctx.draw保留绘制，本次绘制是否接着上一次绘制，2d没有draw方法，所以2d该属性对2d无效
+  
+  var _isMaked = this.isMaked = false;
 
   /* 属性设置 */
   Object.defineProperties(this, {
