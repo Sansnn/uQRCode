@@ -21,8 +21,8 @@ yarn-error.log*
 *.sln
 *.sw*
 
-style/25d.js
-style/art.js
+style/25d/
+style/art/
 dist/style/25d/
 dist/style/art/
 test/html/js/uqrcode.style.25d.js

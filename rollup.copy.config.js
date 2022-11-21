@@ -2,7 +2,7 @@ import copy from 'rollup-plugin-copy';
 import packageConfig from './package.json';
 
 export default [{
-  input: 'dist/uqrcode.umd.js',
+  input: 'dist/main/uqrcode.umd.js',
   output: {
     file: 'test/html/js/uqrcode.js',
     compact: true
@@ -34,7 +34,7 @@ export default [{
     })
   ]
 }, {
-  input: 'dist/uqrcode.es.js',
+  input: 'dist/main/uqrcode.es.js',
   output: {
     file: 'test/uni-app/src/uni_modules/Sansnn-uQRCode/js_sdk/uqrcode/uqrcode.js',
     compact: true
@@ -58,24 +58,58 @@ export default [{
         dest: 'test/uni-app/src/uni_modules/Sansnn-uQRCode'
       }, {
         src: 'dist/style/round/uqrcode.style.round.es.js',
-        dest: 'test/uni-app/src/uni_modules/Sansnn-uQRCode/js_sdk/uqrcode',
+        dest: 'test/uni-app/src/plugins/uqrcode/round',
         rename: 'uqrcode.style.round.js'
       }, {
+        src: 'LICENSE.md',
+        dest: 'test/uni-app/src/plugins/uqrcode/round'
+      }, {
+        src: 'dist/style/round/README.md',
+        dest: 'test/uni-app/src/plugins/uqrcode/round'
+      }, {
         src: 'dist/style/liquid/uqrcode.style.liquid.es.js',
-        dest: 'test/uni-app/src/uni_modules/Sansnn-uQRCode/js_sdk/uqrcode',
+        dest: 'test/uni-app/src/plugins/uqrcode/liquid',
         rename: 'uqrcode.style.liquid.js'
+      }, {
+        src: 'LICENSE.md',
+        dest: 'test/uni-app/src/plugins/uqrcode/liquid'
+      }, {
+        src: 'dist/style/liquid/README.md',
+        dest: 'test/uni-app/src/plugins/uqrcode/liquid'
+      }, {
+        src: 'dist/style/words/uqrcode.style.words.es.js',
+        dest: 'test/uni-app/src/plugins/uqrcode/words',
+        rename: 'uqrcode.style.words.js'
+      }, {
+        src: 'LICENSE.md',
+        dest: 'test/uni-app/src/plugins/uqrcode/words'
+      }, {
+        src: 'dist/style/words/README.md',
+        dest: 'test/uni-app/src/plugins/uqrcode/words'
       }],
       verbose: true
     })
   ]
 }, {
-  input: 'dist/uqrcode.umd.js',
+  input: 'dist/main/uqrcode.umd.js',
   output: {
-    file: 'publish/browser/uqrcode.js',
+    file: 'publish/browser/uqrcode/uqrcode.js',
     compact: true
-  }
+  },
+  plugins: [
+    copy({
+      targets: [{
+        src: 'LICENSE.md',
+        dest: 'publish/browser/uqrcode'
+      }, {
+        src: 'README.md',
+        dest: 'publish/browser/uqrcode'
+      }],
+      verbose: true
+    })
+  ]
 }, {
-  input: 'dist/uqrcode.es.js',
+  input: 'dist/main/uqrcode.umd.js',
   output: {
     file: 'publish/npm/uqrcodejs/uqrcode.js',
     compact: true
@@ -98,7 +132,7 @@ export default [{
     })
   ]
 }, {
-  input: 'dist/uqrcode.es.js',
+  input: 'dist/main/uqrcode.umd.js',
   output: {
     file: 'publish/npm/@uqrcode/js/uqrcode.js',
     compact: true
@@ -121,7 +155,7 @@ export default [{
     })
   ]
 }, {
-  input: 'dist/uqrcode.es.js',
+  input: 'dist/main/uqrcode.es.js',
   output: {
     file: 'publish/npm/@uqrcode/uni-app/js_sdk/uqrcode/uqrcode.js',
     compact: true
@@ -141,7 +175,7 @@ export default [{
     })
   ]
 }, {
-  input: 'dist/uqrcode.es.js',
+  input: 'dist/main/uqrcode.es.js',
   output: {
     file: 'publish/uni-app/Sansnn-uQRCode/js_sdk/uqrcode/uqrcode.js',
     compact: true

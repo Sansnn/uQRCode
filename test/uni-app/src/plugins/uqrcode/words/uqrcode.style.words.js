@@ -32,17 +32,15 @@
 //---------------------------------------------------------------------
 
 function Plugin(UQRCode, options) {
-  options.backgroundRadius = 1.0; // 背景码点圆角半径，系数：0.0-1.0
-  options.foregroundRadius = 1.0; // 前景码点圆角半径，0.0-1.0
+  options.words = undefined; // 文字内容
 
-  options.drawRoundCanvas = function() {
+  options.drawWordsCanvas = function() {
     let {
       isMaked,
       canvasContext: ctx,
       dynamicSize: size,
-      foregroundRadius,
       backgroundColor,
-      backgroundRadius,
+      words,
       drawReserve
     } = this;
 
@@ -52,6 +50,8 @@ function Plugin(UQRCode, options) {
     }
 
     let drawModules = this.getDrawModules();
+    let wordArr = words ? words.split('') : [];
+    let pointer = 0;
 
     let draw = async (resolve, reject) => {
       try {
@@ -68,26 +68,36 @@ function Plugin(UQRCode, options) {
               break;
             case 'tile':
               /* 绘制码点 */
-              var x = drawModule.x;
-              var y = drawModule.y;
-              var w = drawModule.width;
-              var h = drawModule.height;
-              var r = 0;
-              if (drawModule.name == 'foreground' && foregroundRadius > 0) {
-                r = w / 2 * foregroundRadius;
-              } else if (drawModule.name == 'background' && backgroundRadius > 0) {
-                r = w / 2 * backgroundRadius;
+              if (wordArr.length > 0 && drawModule.name === 'foreground') {
+                var x = drawModule.x;
+                var y = drawModule.y;
+                var w = drawModule.width;
+                var h = drawModule.height;
+                ctx.font = `normal bold ${w}px sans-serif`;
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                ctx.setFillStyle(drawModule.color);
+                ctx.fillText(wordArr[pointer], x, y);
+                pointer++;
+                if (pointer >= wordArr.length) {
+                  pointer = 0;
+                }
+              } else {
+                var x = drawModule.x;
+                var y = drawModule.y;
+                var w = drawModule.width;
+                var h = drawModule.height;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.arcTo(x + w, y, x + w, y + h, 0);
+                ctx.arcTo(x + w, y + h, x, y + h, 0);
+                ctx.arcTo(x, y + h, x, y, 0);
+                ctx.arcTo(x, y, x + w, y, 0);
+                ctx.closePath();
+                ctx.fillStyle = drawModule.color;
+                ctx.fill();
+                ctx.clip();
               }
-              ctx.beginPath();
-              ctx.moveTo(x + r, y);
-              ctx.arcTo(x + w, y, x + w, y + h, r);
-              ctx.arcTo(x + w, y + h, x, y + h, r);
-              ctx.arcTo(x, y + h, x, y, r);
-              ctx.arcTo(x, y, x + w, y, r);
-              ctx.closePath();
-              ctx.fillStyle = drawModule.color;
-              ctx.fill();
-              ctx.clip();
               break;
             case 'image':
               /* 绘制图像 */
@@ -231,6 +241,6 @@ function Plugin(UQRCode, options) {
 }
 
 Plugin.Type = 'style'; // 如果需要组件可用此扩展，那么该属性必需
-Plugin.Name = 'round'; // 如果需要组件可用此扩展，那么该属性必需
-Plugin.DrawCanvas = 'drawRoundCanvas'; // 如果需要组件可用此扩展，那么该属性必需
+Plugin.Name = 'words'; // 如果需要组件可用此扩展，那么该属性必需
+Plugin.DrawCanvas = 'drawWordsCanvas'; // 如果需要组件可用此扩展，那么该属性必需
 export{Plugin as default};

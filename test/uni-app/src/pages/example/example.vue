@@ -422,8 +422,8 @@
 </template>
 
 <script>
-import uQRCodeStyleRound from '../../uni_modules/Sansnn-uQRCode/js_sdk/uqrcode/uqrcode.style.round.js';
-import uQRCodeStyleLiquid from '../../uni_modules/Sansnn-uQRCode/js_sdk/uqrcode/uqrcode.style.liquid.js';
+import uQRCodeStyleRound from '../../plugins/uqrcode/round/uqrcode.style.round.js';
+import uQRCodeStyleLiquid from '../../plugins/uqrcode/liquid/uqrcode.style.liquid.js';
 
 export default {
   data() {

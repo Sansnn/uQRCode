@@ -41,9 +41,9 @@ ${formats.map(f => `// ${f.name} - ${f.description}`).join('\n')}
 let buildMain = function() {
   return formats.map(format => {
     var option = {
-      input: `dist/uqrcode.${format.name}.js`,
+      input: `dist/main/uqrcode.${format.name}.js`,
       output: {
-        file: `dist/uqrcode.${format.name}.js`,
+        file: `dist/main/uqrcode.${format.name}.js`,
         banner: getBannerMain() + '\n' + getBannerFormat(format),
         compact: true
       }
