@@ -8,16 +8,12 @@
     "uQRCode",
     "qrcode",
     "qr"
-  ],
+],
   "repository": "https://github.com/Sansnn/uQRCode",
   "engines": {
     "HBuilderX": "^3.1.0"
   },
-  "dcloudext": {
-    "category": [
-      "JS SDK",
-      "通用 SDK"
-    ],
+"dcloudext": {
     "sale": {
       "regular": {
         "price": "0.00"
@@ -34,7 +30,8 @@
       "data": "无",
       "permissions": "无"
     },
-    "npmurl": "https://www.npmjs.com/package/uqrcodejs"
+    "npmurl": "https://www.npmjs.com/package/uqrcodejs",
+    "type": "sdk-js"
   },
   "uni_modules": {
     "dependencies": [],
