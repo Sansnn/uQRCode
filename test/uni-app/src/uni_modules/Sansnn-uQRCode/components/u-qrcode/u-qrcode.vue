@@ -19,20 +19,6 @@
       <!-- #endif -->
     </view>
 
-    <!-- H5保存提示 -->
-    <!-- #ifdef H5 -->
-    <view class="uqrcode-h5-save" v-if="isH5Save">
-      <slot name="h5save" :tempFilePath="tempFilePath">
-        <image class="uqrcode-h5-save-image" :src="tempFilePath"></image>
-        <text class="uqrcode-h5-save-text">{{ h5SaveIsDownload ? '若保存失败，' : '' }}请长按二维码进行保存</text>
-      </slot>
-      <view class="uqrcode-h5-save-close" @click.stop="isH5Save = false">
-        <view class="uqrcode-h5-save-close-before"></view>
-        <view class="uqrcode-h5-save-close-after"></view>
-      </view>
-    </view>
-    <!-- #endif -->
-
     <!-- 加载效果 -->
     <view class="uqrcode-makeing" v-if="loading === undefined ? makeing : loading">
       <slot name="loading">
@@ -48,6 +34,20 @@
         <text class="uqrcode-error-message">{{ error.errMsg }}</text>
       </slot>
     </view>
+
+    <!-- H5保存提示 -->
+    <!-- #ifdef H5 -->
+    <view class="uqrcode-h5-save" v-if="isH5Save">
+      <slot name="h5save" :tempFilePath="tempFilePath">
+        <image class="uqrcode-h5-save-image" :src="tempFilePath"></image>
+        <text class="uqrcode-h5-save-text">{{ h5SaveIsDownload ? '若保存失败，' : '' }}请长按二维码进行保存</text>
+      </slot>
+      <view class="uqrcode-h5-save-close" @click.stop="isH5Save = false">
+        <view class="uqrcode-h5-save-close-before"></view>
+        <view class="uqrcode-h5-save-close-after"></view>
+      </view>
+    </view>
+    <!-- #endif -->
   </view>
 </template>
 
