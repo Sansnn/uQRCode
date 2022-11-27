@@ -1,22 +1,27 @@
 {
   "name": "uQRCode",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "",
   "main": "dist/uqrcode.es.js",
   "type": "module",
-  "formats": [{
-    "name": "amd",
-    "description": "异步模块定义，适用于 RequireJS 等模块加载器"
-  }, {
-    "name": "cjs",
-    "description": "CommonJS，适用于 Node 环境和其他打包工具（别名：commonjs）"
-  }, {
-    "name": "es",
-    "description": "将 bundle 保留为 ES 模块文件，适用于其他打包工具以及支持 <script type=module> 标签的浏览器（别名: esm，module）"
-  }, {
-    "name": "umd",
-    "description": "通用模块定义，生成的包同时支持 amd、cjs 和 iife 三种格式"
-  }],
+  "formats": [
+    {
+      "name": "amd",
+      "description": "异步模块定义，适用于 RequireJS 等模块加载器"
+    },
+    {
+      "name": "cjs",
+      "description": "CommonJS，适用于 Node 环境和其他打包工具（别名：commonjs）"
+    },
+    {
+      "name": "es",
+      "description": "将 bundle 保留为 ES 模块文件，适用于其他打包工具以及支持 <script type=module> 标签的浏览器（别名: esm，module）"
+    },
+    {
+      "name": "umd",
+      "description": "通用模块定义，生成的包同时支持 amd、cjs 和 iife 三种格式"
+    }
+  ],
   "scripts": {
     "dev": "rollup -c -w",
     "build:amd": "rollup ./src/main.js -f amd -o ./dist/uqrcode.amd.js",
@@ -33,6 +38,7 @@
     "test:uni-app:h5": "cd test/uni-app && npm run dev:h5",
     "test:uni-app:mp-weixin": "cd test/uni-app && npm run dev:mp-weixin",
     "test:uni-app:app": "cd test/uni-app && npm run dev:app-plus",
+    "test:node": "cd test/node && node index.js",
     "test": "npm run test:html"
   },
   "keywords": [],
@@ -41,6 +47,7 @@
   "devDependencies": {
     "@rollup/plugin-replace": "^5.0.1",
     "live-server": "^1.2.2",
+    "rollup": "^2.79.1",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-watch": "^4.3.1"

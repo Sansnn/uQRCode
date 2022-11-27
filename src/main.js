@@ -80,7 +80,7 @@ function UQRCode(options, canvasContext) {
   /** 绘制模块 */
   var _canvasContext = this.canvasContext = undefined; // canvas上下文
   var _drawReserve = this.drawReserve = false; // ctx.draw保留绘制，本次绘制是否接着上一次绘制，2d没有draw方法，所以2d该属性对2d无效
-  
+
   var _isMaked = this.isMaked = false;
 
   /* 属性设置 */
@@ -485,6 +485,51 @@ UQRCode.prototype.setOptions = function(options) {
       this[k] = options[k];
     });
     /* 其中包含了兼容v3.2.0-v3.4.5的写法 */
+    // deepReplace(this, {
+    //   data: options.data || options.text,
+    //   size: options.size,
+    //   useDynamicSize: options.useDynamicSize,
+    //   typeNumber: options.typeNumber,
+    //   errorCorrectLevel: options.errorCorrectLevel,
+    //   margin: options.margin,
+    //   areaColor: options.areaColor,
+    //   backgroundColor: options.backgroundColor || options.background?.color,
+    //   backgroundImageSrc: options.backgroundImageSrc || options.background?.image?.src,
+    //   backgroundImageWidth: options.backgroundImageWidth || options.background?.image?.width,
+    //   backgroundImageHeight: options.backgroundImageHeight || options.background?.image?.height,
+    //   backgroundImageX: options.backgroundImageX || options.background?.image?.x,
+    //   backgroundImageY: options.backgroundImageY || options.background?.image?.y,
+    //   backgroundImageAlpha: options.backgroundImageAlpha || options.background?.image?.alpha,
+    //   backgroundImageBorderRadius: options.backgroundImageBorderRadius || options.background?.image?.borderRadius,
+    //   backgroundPadding: options.backgroundPadding,
+    //   foregroundColor: options.foregroundColor || options.foreground?.color,
+    //   foregroundImageSrc: options.foregroundImageSrc || options.foreground?.image?.src,
+    //   foregroundImageWidth: options.foregroundImageWidth || options.foreground?.image?.width,
+    //   foregroundImageHeight: options.foregroundImageHeight || options.foreground?.image?.height,
+    //   foregroundImageX: options.foregroundImageX || options.foreground?.image?.x,
+    //   foregroundImageY: options.foregroundImageY || options.foreground?.image?.y,
+    //   foregroundImagePadding: options.foregroundImagePadding || options.foreground?.image?.padding,
+    //   foregroundImageBackgroundColor: options.foregroundImageBackgroundColor || options.foreground?.image?.backgroundColor,
+    //   foregroundImageBorderRadius: options.foregroundImageBorderRadius || options.foreground?.image?.borderRadius,
+    //   foregroundImageShadowOffsetX: options.foregroundImageShadowOffsetX || options.foreground?.image?.shadowOffsetX,
+    //   foregroundImageShadowOffsetY: options.foregroundImageShadowOffsetY || options.foreground?.image?.shadowOffsetY,
+    //   foregroundImageShadowBlur: options.foregroundImageShadowBlur || options.foreground?.image?.shadowBlur,
+    //   foregroundImageShadowColor: options.foregroundImageShadowColor || options.foreground?.image?.shadowColor,
+    //   foregroundPadding: options.foregroundPadding,
+    //   positionProbeBackgroundColor: options.positionProbeBackgroundColor || options.positionProbe?.backgroundColor || options.positionDetection?.backgroundColor,
+    //   positionProbeForegroundColor: options.positionProbeForegroundColor || options.positionProbe?.foregroundColor || options.positionDetection?.foregroundColor,
+    //   separatorColor: options.separatorColor || options.separator?.color,
+    //   positionAdjustBackgroundColor: options.positionAdjustBackgroundColor || options.positionAdjust?.backgroundColor || options.alignment?.backgroundColor,
+    //   positionAdjustForegroundColor: options.positionAdjustForegroundColor || options.positionAdjust?.foregroundColor || options.alignment?.foregroundColor,
+    //   timingBackgroundColor: options.timingBackgroundColor || options.timing?.backgroundColor,
+    //   timingForegroundColor: options.timingForegroundColor || options.timing?.foregroundColor,
+    //   typeNumberBackgroundColor: options.typeNumberBackgroundColor || options.typeNumber?.backgroundColor || options.versionInformation?.backgroundColor,
+    //   typeNumberForegroundColor: options.typeNumberForegroundColor || options.typeNumber?.foregroundColor || options.versionInformation?.foregroundColor,
+    //   darkBlockColor: options.darkBlockColor || options.darkBlock?.color
+    // }, true);
+    
+    /* rollup配置es6转es5后并未进行转换，故通过babel在线转换后替换 */
+    var _options$background, _options$background2, _options$background2$, _options$background3, _options$background3$, _options$background4, _options$background4$, _options$background5, _options$background5$, _options$background6, _options$background6$, _options$background7, _options$background7$, _options$background8, _options$background8$, _options$foreground, _options$foreground2, _options$foreground2$, _options$foreground3, _options$foreground3$, _options$foreground4, _options$foreground4$, _options$foreground5, _options$foreground5$, _options$foreground6, _options$foreground6$, _options$foreground7, _options$foreground7$, _options$foreground8, _options$foreground8$, _options$foreground9, _options$foreground9$, _options$foreground10, _options$foreground11, _options$foreground12, _options$foreground13, _options$foreground14, _options$foreground15, _options$foreground16, _options$foreground17, _options$positionProb, _options$positionDete, _options$positionProb2, _options$positionDete2, _options$separator, _options$positionAdju, _options$alignment, _options$positionAdju2, _options$alignment2, _options$timing, _options$timing2, _options$typeNumber, _options$versionInfor, _options$typeNumber2, _options$versionInfor2, _options$darkBlock;
     deepReplace(this, {
       data: options.data || options.text,
       size: options.size,
@@ -493,39 +538,39 @@ UQRCode.prototype.setOptions = function(options) {
       errorCorrectLevel: options.errorCorrectLevel,
       margin: options.margin,
       areaColor: options.areaColor,
-      backgroundColor: options.backgroundColor || options.background?.color,
-      backgroundImageSrc: options.backgroundImageSrc || options.background?.image?.src,
-      backgroundImageWidth: options.backgroundImageWidth || options.background?.image?.width,
-      backgroundImageHeight: options.backgroundImageHeight || options.background?.image?.height,
-      backgroundImageX: options.backgroundImageX || options.background?.image?.x,
-      backgroundImageY: options.backgroundImageY || options.background?.image?.y,
-      backgroundImageAlpha: options.backgroundImageAlpha || options.background?.image?.alpha,
-      backgroundImageBorderRadius: options.backgroundImageBorderRadius || options.background?.image?.borderRadius,
+      backgroundColor: options.backgroundColor || ((_options$background = options.background) === null || _options$background === void 0 ? void 0 : _options$background.color),
+      backgroundImageSrc: options.backgroundImageSrc || ((_options$background2 = options.background) === null || _options$background2 === void 0 ? void 0 : (_options$background2$ = _options$background2.image) === null || _options$background2$ === void 0 ? void 0 : _options$background2$.src),
+      backgroundImageWidth: options.backgroundImageWidth || ((_options$background3 = options.background) === null || _options$background3 === void 0 ? void 0 : (_options$background3$ = _options$background3.image) === null || _options$background3$ === void 0 ? void 0 : _options$background3$.width),
+      backgroundImageHeight: options.backgroundImageHeight || ((_options$background4 = options.background) === null || _options$background4 === void 0 ? void 0 : (_options$background4$ = _options$background4.image) === null || _options$background4$ === void 0 ? void 0 : _options$background4$.height),
+      backgroundImageX: options.backgroundImageX || ((_options$background5 = options.background) === null || _options$background5 === void 0 ? void 0 : (_options$background5$ = _options$background5.image) === null || _options$background5$ === void 0 ? void 0 : _options$background5$.x),
+      backgroundImageY: options.backgroundImageY || ((_options$background6 = options.background) === null || _options$background6 === void 0 ? void 0 : (_options$background6$ = _options$background6.image) === null || _options$background6$ === void 0 ? void 0 : _options$background6$.y),
+      backgroundImageAlpha: options.backgroundImageAlpha || ((_options$background7 = options.background) === null || _options$background7 === void 0 ? void 0 : (_options$background7$ = _options$background7.image) === null || _options$background7$ === void 0 ? void 0 : _options$background7$.alpha),
+      backgroundImageBorderRadius: options.backgroundImageBorderRadius || ((_options$background8 = options.background) === null || _options$background8 === void 0 ? void 0 : (_options$background8$ = _options$background8.image) === null || _options$background8$ === void 0 ? void 0 : _options$background8$.borderRadius),
       backgroundPadding: options.backgroundPadding,
-      foregroundColor: options.foregroundColor || options.foreground?.color,
-      foregroundImageSrc: options.foregroundImageSrc || options.foreground?.image?.src,
-      foregroundImageWidth: options.foregroundImageWidth || options.foreground?.image?.width,
-      foregroundImageHeight: options.foregroundImageHeight || options.foreground?.image?.height,
-      foregroundImageX: options.foregroundImageX || options.foreground?.image?.x,
-      foregroundImageY: options.foregroundImageY || options.foreground?.image?.y,
-      foregroundImagePadding: options.foregroundImagePadding || options.foreground?.image?.padding,
-      foregroundImageBackgroundColor: options.foregroundImageBackgroundColor || options.foreground?.image?.backgroundColor,
-      foregroundImageBorderRadius: options.foregroundImageBorderRadius || options.foreground?.image?.borderRadius,
-      foregroundImageShadowOffsetX: options.foregroundImageShadowOffsetX || options.foreground?.image?.shadowOffsetX,
-      foregroundImageShadowOffsetY: options.foregroundImageShadowOffsetY || options.foreground?.image?.shadowOffsetY,
-      foregroundImageShadowBlur: options.foregroundImageShadowBlur || options.foreground?.image?.shadowBlur,
-      foregroundImageShadowColor: options.foregroundImageShadowColor || options.foreground?.image?.shadowColor,
+      foregroundColor: options.foregroundColor || ((_options$foreground = options.foreground) === null || _options$foreground === void 0 ? void 0 : _options$foreground.color),
+      foregroundImageSrc: options.foregroundImageSrc || ((_options$foreground2 = options.foreground) === null || _options$foreground2 === void 0 ? void 0 : (_options$foreground2$ = _options$foreground2.image) === null || _options$foreground2$ === void 0 ? void 0 : _options$foreground2$.src),
+      foregroundImageWidth: options.foregroundImageWidth || ((_options$foreground3 = options.foreground) === null || _options$foreground3 === void 0 ? void 0 : (_options$foreground3$ = _options$foreground3.image) === null || _options$foreground3$ === void 0 ? void 0 : _options$foreground3$.width),
+      foregroundImageHeight: options.foregroundImageHeight || ((_options$foreground4 = options.foreground) === null || _options$foreground4 === void 0 ? void 0 : (_options$foreground4$ = _options$foreground4.image) === null || _options$foreground4$ === void 0 ? void 0 : _options$foreground4$.height),
+      foregroundImageX: options.foregroundImageX || ((_options$foreground5 = options.foreground) === null || _options$foreground5 === void 0 ? void 0 : (_options$foreground5$ = _options$foreground5.image) === null || _options$foreground5$ === void 0 ? void 0 : _options$foreground5$.x),
+      foregroundImageY: options.foregroundImageY || ((_options$foreground6 = options.foreground) === null || _options$foreground6 === void 0 ? void 0 : (_options$foreground6$ = _options$foreground6.image) === null || _options$foreground6$ === void 0 ? void 0 : _options$foreground6$.y),
+      foregroundImagePadding: options.foregroundImagePadding || ((_options$foreground7 = options.foreground) === null || _options$foreground7 === void 0 ? void 0 : (_options$foreground7$ = _options$foreground7.image) === null || _options$foreground7$ === void 0 ? void 0 : _options$foreground7$.padding),
+      foregroundImageBackgroundColor: options.foregroundImageBackgroundColor || ((_options$foreground8 = options.foreground) === null || _options$foreground8 === void 0 ? void 0 : (_options$foreground8$ = _options$foreground8.image) === null || _options$foreground8$ === void 0 ? void 0 : _options$foreground8$.backgroundColor),
+      foregroundImageBorderRadius: options.foregroundImageBorderRadius || ((_options$foreground9 = options.foreground) === null || _options$foreground9 === void 0 ? void 0 : (_options$foreground9$ = _options$foreground9.image) === null || _options$foreground9$ === void 0 ? void 0 : _options$foreground9$.borderRadius),
+      foregroundImageShadowOffsetX: options.foregroundImageShadowOffsetX || ((_options$foreground10 = options.foreground) === null || _options$foreground10 === void 0 ? void 0 : (_options$foreground11 = _options$foreground10.image) === null || _options$foreground11 === void 0 ? void 0 : _options$foreground11.shadowOffsetX),
+      foregroundImageShadowOffsetY: options.foregroundImageShadowOffsetY || ((_options$foreground12 = options.foreground) === null || _options$foreground12 === void 0 ? void 0 : (_options$foreground13 = _options$foreground12.image) === null || _options$foreground13 === void 0 ? void 0 : _options$foreground13.shadowOffsetY),
+      foregroundImageShadowBlur: options.foregroundImageShadowBlur || ((_options$foreground14 = options.foreground) === null || _options$foreground14 === void 0 ? void 0 : (_options$foreground15 = _options$foreground14.image) === null || _options$foreground15 === void 0 ? void 0 : _options$foreground15.shadowBlur),
+      foregroundImageShadowColor: options.foregroundImageShadowColor || ((_options$foreground16 = options.foreground) === null || _options$foreground16 === void 0 ? void 0 : (_options$foreground17 = _options$foreground16.image) === null || _options$foreground17 === void 0 ? void 0 : _options$foreground17.shadowColor),
       foregroundPadding: options.foregroundPadding,
-      positionProbeBackgroundColor: options.positionProbeBackgroundColor || options.positionProbe?.backgroundColor || options.positionDetection?.backgroundColor,
-      positionProbeForegroundColor: options.positionProbeForegroundColor || options.positionProbe?.foregroundColor || options.positionDetection?.foregroundColor,
-      separatorColor: options.separatorColor || options.separator?.color,
-      positionAdjustBackgroundColor: options.positionAdjustBackgroundColor || options.positionAdjust?.backgroundColor || options.alignment?.backgroundColor,
-      positionAdjustForegroundColor: options.positionAdjustForegroundColor || options.positionAdjust?.foregroundColor || options.alignment?.foregroundColor,
-      timingBackgroundColor: options.timingBackgroundColor || options.timing?.backgroundColor,
-      timingForegroundColor: options.timingForegroundColor || options.timing?.foregroundColor,
-      typeNumberBackgroundColor: options.typeNumberBackgroundColor || options.typeNumber?.backgroundColor || options.versionInformation?.backgroundColor,
-      typeNumberForegroundColor: options.typeNumberForegroundColor || options.typeNumber?.foregroundColor || options.versionInformation?.foregroundColor,
-      darkBlockColor: options.darkBlockColor || options.darkBlock?.color
+      positionProbeBackgroundColor: options.positionProbeBackgroundColor || ((_options$positionProb = options.positionProbe) === null || _options$positionProb === void 0 ? void 0 : _options$positionProb.backgroundColor) || ((_options$positionDete = options.positionDetection) === null || _options$positionDete === void 0 ? void 0 : _options$positionDete.backgroundColor),
+      positionProbeForegroundColor: options.positionProbeForegroundColor || ((_options$positionProb2 = options.positionProbe) === null || _options$positionProb2 === void 0 ? void 0 : _options$positionProb2.foregroundColor) || ((_options$positionDete2 = options.positionDetection) === null || _options$positionDete2 === void 0 ? void 0 : _options$positionDete2.foregroundColor),
+      separatorColor: options.separatorColor || ((_options$separator = options.separator) === null || _options$separator === void 0 ? void 0 : _options$separator.color),
+      positionAdjustBackgroundColor: options.positionAdjustBackgroundColor || ((_options$positionAdju = options.positionAdjust) === null || _options$positionAdju === void 0 ? void 0 : _options$positionAdju.backgroundColor) || ((_options$alignment = options.alignment) === null || _options$alignment === void 0 ? void 0 : _options$alignment.backgroundColor),
+      positionAdjustForegroundColor: options.positionAdjustForegroundColor || ((_options$positionAdju2 = options.positionAdjust) === null || _options$positionAdju2 === void 0 ? void 0 : _options$positionAdju2.foregroundColor) || ((_options$alignment2 = options.alignment) === null || _options$alignment2 === void 0 ? void 0 : _options$alignment2.foregroundColor),
+      timingBackgroundColor: options.timingBackgroundColor || ((_options$timing = options.timing) === null || _options$timing === void 0 ? void 0 : _options$timing.backgroundColor),
+      timingForegroundColor: options.timingForegroundColor || ((_options$timing2 = options.timing) === null || _options$timing2 === void 0 ? void 0 : _options$timing2.foregroundColor),
+      typeNumberBackgroundColor: options.typeNumberBackgroundColor || ((_options$typeNumber = options.typeNumber) === null || _options$typeNumber === void 0 ? void 0 : _options$typeNumber.backgroundColor) || ((_options$versionInfor = options.versionInformation) === null || _options$versionInfor === void 0 ? void 0 : _options$versionInfor.backgroundColor),
+      typeNumberForegroundColor: options.typeNumberForegroundColor || ((_options$typeNumber2 = options.typeNumber) === null || _options$typeNumber2 === void 0 ? void 0 : _options$typeNumber2.foregroundColor) || ((_options$versionInfor2 = options.versionInformation) === null || _options$versionInfor2 === void 0 ? void 0 : _options$versionInfor2.foregroundColor),
+      darkBlockColor: options.darkBlockColor || ((_options$darkBlock = options.darkBlock) === null || _options$darkBlock === void 0 ? void 0 : _options$darkBlock.color)
     }, true);
   }
 }

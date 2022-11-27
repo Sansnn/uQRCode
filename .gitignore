@@ -1,6 +1,7 @@
 .DS_Store
 node_modules/
 unpackage/
+package-lock.json
 
 # local env files
 .env.local
@@ -29,3 +30,5 @@ test/html/js/uqrcode.style.25d.js
 test/html/js/uqrcode.style.art.js
 test/html/25d.html
 test/html/art.html
+test/node/js/uqrcode.style.25d.js
+test/node/js/uqrcode.style.art.js

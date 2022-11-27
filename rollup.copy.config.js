@@ -34,6 +34,38 @@ export default [{
     })
   ]
 }, {
+  input: 'dist/main/uqrcode.cjs.js',
+  output: {
+    file: 'test/node/js/uqrcode.js',
+    compact: true
+  },
+  plugins: [
+    copy({
+      targets: [{
+        src: 'dist/style/round/uqrcode.style.round.cjs.js',
+        dest: 'test/node/js',
+        rename: 'uqrcode.style.round.js'
+      }, {
+        src: 'dist/style/liquid/uqrcode.style.liquid.cjs.js',
+        dest: 'test/node/js',
+        rename: 'uqrcode.style.liquid.js'
+      }, {
+        src: 'dist/style/words/uqrcode.style.words.cjs.js',
+        dest: 'test/node/js',
+        rename: 'uqrcode.style.words.js'
+      }, {
+        src: 'dist/style/25d/uqrcode.style.25d.cjs.js',
+        dest: 'test/node/js',
+        rename: 'uqrcode.style.25d.js'
+      }, {
+        src: 'dist/style/art/uqrcode.style.art.cjs.js',
+        dest: 'test/node/js',
+        rename: 'uqrcode.style.art.js'
+      }],
+      verbose: true
+    })
+  ]
+}, {
   input: 'dist/main/uqrcode.es.js',
   output: {
     file: 'test/uni-app/src/uni_modules/Sansnn-uQRCode/js_sdk/uqrcode/uqrcode.js',
