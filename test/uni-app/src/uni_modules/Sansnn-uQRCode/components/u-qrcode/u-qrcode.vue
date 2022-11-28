@@ -754,12 +754,13 @@
         if (this.canvasType === '2d') {
           // #ifdef MP-WEIXIN
           try {
+            let dataURL = null;
             // #ifdef VUE3
-            const dataURL = toRaw(this.canvas)
+            dataURL = toRaw(this.canvas)
               .toDataURL();
             // #endif
             // #ifndef VUE3
-            const dataURL = this.canvas.toDataURL();
+            dataURL = this.canvas.toDataURL();
             // #endif
             callback.success({
               tempFilePath: dataURL
