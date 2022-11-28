@@ -3,7 +3,7 @@
     <view class="uqrcode-canvas-wrapper">
       <!-- 画布 -->
       <!-- #ifndef APP-NVUE -->
-      <canvas class="uqrcode-canvas" :id="canvasId" :canvas-id="canvasId" :type="type" :style="{
+      <canvas class="uqrcode-canvas" :id="canvasId" :canvas-id="canvasId" :type="canvasType" :style="{
           width: `${templateOptions.canvasWidth}px`,
           height: `${templateOptions.canvasHeight}px`,
           transform: templateOptions.canvasTransform
@@ -160,7 +160,7 @@
           return '2d';
           // #endif
           // #ifndef MP-WEIXIN
-          return undefined;
+          return 'normal';
           // #endif
         }
       },
@@ -203,6 +203,7 @@
     data() {
       return {
         canvas: undefined,
+        canvasType: undefined,
         canvasContext: undefined,
         makeDelegate: undefined,
         drawDelegate: undefined,
@@ -280,6 +281,17 @@
       };
     },
     watch: {
+      type: {
+        handler(val) {
+          const types = ['2d'];
+          if (types.includes(val)) {
+            this.canvasType = val;
+          } else {
+            this.canvasType = undefined;
+          }
+        },
+        immediate: true
+      },
       value: {
         handler() {
           if (this.auto) {
@@ -318,7 +330,7 @@
       this.templateOptions.height = this.templateOptions.size;
       this.templateOptions.canvasWidth = this.templateOptions.size;
       this.templateOptions.canvasHeight = this.templateOptions.size;
-      if (this.type == '2d') {
+      if (this.canvasType == '2d') {
         // #ifndef MP-WEIXIN
         this.templateOptions.canvasTransform = `scale(${this.templateOptions.size / this.templateOptions.canvasWidth}, ${this.templateOptions.size /
         this.templateOptions.canvasHeight})`;
@@ -449,7 +461,7 @@
         /* 获取canvas上下文 */
         let canvasContext = null;
         // #ifndef APP-NVUE
-        if (this.type === '2d') {
+        if (this.canvasType === '2d') {
           // #ifdef MP-WEIXIN
           /* 微信小程序获取canvas2d上下文方式 */
           const canvas = (this.canvas = await new Promise(resolve => {
@@ -739,7 +751,7 @@
         }
 
         // #ifndef APP-NVUE
-        if (this.type === '2d') {
+        if (this.canvasType === '2d') {
           // #ifdef MP-WEIXIN
           try {
             // #ifdef VUE3
@@ -817,7 +829,7 @@
         this.toTempFilePath({
           success: res => {
             // #ifndef H5
-            if (this.type === '2d') {
+            if (this.canvasType === '2d') {
               // #ifdef MP-WEIXIN
               /* 需要将 data:image/png;base64, 这段去除 writeFile 才能正常打开文件，否则是损坏文件，无法打开 */
               const reg = new RegExp('^data:image/png;base64,', 'g');
