@@ -23,12 +23,19 @@ yarn-error.log*
 *.sw*
 
 style/25d/
-style/art/
 dist/style/25d/
-dist/style/art/
 test/html/js/uqrcode.style.25d.js
-test/html/js/uqrcode.style.art.js
 test/html/25d.html
-test/html/art.html
 test/node/js/uqrcode.style.25d.js
+
+style/art/
+dist/style/art/
+test/html/js/uqrcode.style.art.js
+test/html/art.html
 test/node/js/uqrcode.style.art.js
+
+style/colorful/
+dist/style/colorful/
+test/html/js/uqrcode.style.colorful.js
+test/html/colorful.html
+test/node/js/uqrcode.style.colorful.js

@@ -23,6 +23,8 @@
     }
   ],
   "scripts": {
+    "install:test:node": "cd test/node && npm install",
+    "install:test:uni-app": "cd test/uni-app && npm install",
     "dev": "rollup -c -w",
     "build:amd": "rollup ./src/main.js -f amd -o ./dist/uqrcode.amd.js",
     "build:cjs": "rollup ./src/main.js -f cjs -o ./dist/uqrcode.cjs.js",

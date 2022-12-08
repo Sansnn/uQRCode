@@ -307,8 +307,8 @@
         }
       },
       options: {
-        handler() {
-          if (this.auto) {
+        handler(newVal, oldVal) {
+          if (this.auto && JSON.stringify(newVal) != JSON.stringify(oldVal)) {
             this.remake();
           }
         },

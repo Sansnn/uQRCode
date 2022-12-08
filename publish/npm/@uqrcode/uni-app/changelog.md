@@ -1,3 +1,8 @@
+## 4.0.1（2022-11-28）
+优化组件loading属性的表现；  
+新增组件type选项normal，以便于在某些条件编译初始为type=2d时还可以选择使用非2d组件类型；  
+修复组件条件编译在其他编辑器语法提示报错；  
+修复原生对es5的支持。
 ## 4.0.0（2022-11-21）
 v4版本源代码全面开放，开源地址：[https://github.com/Sansnn/uQRCode](https://github.com/Sansnn/uQRCode)；  
 

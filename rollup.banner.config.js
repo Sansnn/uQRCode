@@ -1,6 +1,8 @@
+import fs from 'fs';
 import packageConfig from './package.json';
 
-const formats = packageConfig.formats;
+let formats = packageConfig.formats;
+let builds = [];
 
 let getBannerMain = function() {
   return `//---------------------------------------------------------------------
@@ -39,8 +41,8 @@ ${formats.map(f => `// ${f.name} - ${f.description}`).join('\n')}
 }
 
 let buildMain = function() {
-  return formats.map(format => {
-    var option = {
+  formats.map(format => {
+    let option = {
       input: `dist/main/uqrcode.${format.name}.js`,
       output: {
         file: `dist/main/uqrcode.${format.name}.js`,
@@ -51,14 +53,18 @@ let buildMain = function() {
     if (format.name === 'umd') {
       option.context = 'window';
     }
-    return option;
+    builds.push(option);
   });
 }
 
 let buildStyle = function(name, title) {
-  return formats.map(format => {
-    var option = {
-      input: `dist/style/${name}/uqrcode.style.${name}.${format.name}.js`,
+  formats.forEach(format => {
+    let input = `dist/style/${name}/uqrcode.style.${name}.${format.name}.js`;
+    if (!fs.existsSync(input)) {
+      return;
+    }
+    let option = {
+      input,
       output: {
         file: `dist/style/${name}/uqrcode.style.${name}.${format.name}.js`,
         banner: getBannerMain() + '\n' + getBannerFormat(format),
@@ -68,15 +74,16 @@ let buildStyle = function(name, title) {
     if (format.name === 'umd') {
       option.context = 'window';
     }
-    return option;
+    builds.push(option);
   });
 }
 
-export default [
-  ...buildMain(),
-  ...buildStyle('round', '圆点码'),
-  ...buildStyle('liquid', '液态码'),
-  ...buildStyle('words', '文字码'),
-  ...buildStyle('25d', '2.5D码'),
-  ...buildStyle('art', '艺术码')
-];
+buildMain();
+buildStyle('round', '圆点码');
+buildStyle('liquid', '液态码');
+buildStyle('words', '文字码');
+buildStyle('25d', '2.5D码');
+buildStyle('art', '艺术码');
+buildStyle('colorful', '炫彩码');
+
+export default builds;

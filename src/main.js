@@ -75,7 +75,7 @@ function UQRCode(options, canvasContext) {
   var _base = this.base = undefined; // 二维码基本对象，通过实例化QRCode类并调用make后得到
   var _modules = this.modules = []; // 制作二维码主要模块数据，基于base的modules但数据格式不一致，这里的modules是定制过的
   var _moduleCount = this.moduleCount = 0; // 模块数量
-  // var _drawModules = this.drawModules = []; // 绘制模块，层级：最底层 -> 绘制区域 -> 背景图片 -> 背景|前景 -> 前景图片 -> 最顶层
+  var _drawModules = this.drawModules = []; // 绘制模块，层级：最底层 -> 绘制区域 -> 背景图片 -> 背景|前景 -> 前景图片 -> 最顶层
 
   /** 绘制模块 */
   var _canvasContext = this.canvasContext = undefined; // canvas上下文
@@ -527,7 +527,7 @@ UQRCode.prototype.setOptions = function(options) {
     //   typeNumberForegroundColor: options.typeNumberForegroundColor || options.typeNumber?.foregroundColor || options.versionInformation?.foregroundColor,
     //   darkBlockColor: options.darkBlockColor || options.darkBlock?.color
     // }, true);
-    
+
     /* rollup配置es6转es5后并未进行转换，故通过babel在线转换后替换 */
     var _options$background, _options$background2, _options$background2$, _options$background3, _options$background3$, _options$background4, _options$background4$, _options$background5, _options$background5$, _options$background6, _options$background6$, _options$background7, _options$background7$, _options$background8, _options$background8$, _options$foreground, _options$foreground2, _options$foreground2$, _options$foreground3, _options$foreground3$, _options$foreground4, _options$foreground4$, _options$foreground5, _options$foreground5$, _options$foreground6, _options$foreground6$, _options$foreground7, _options$foreground7$, _options$foreground8, _options$foreground8$, _options$foreground9, _options$foreground9$, _options$foreground10, _options$foreground11, _options$foreground12, _options$foreground13, _options$foreground14, _options$foreground15, _options$foreground16, _options$foreground17, _options$positionProb, _options$positionDete, _options$positionProb2, _options$positionDete2, _options$separator, _options$positionAdju, _options$alignment, _options$positionAdju2, _options$alignment2, _options$timing, _options$timing2, _options$typeNumber, _options$versionInfor, _options$typeNumber2, _options$versionInfor2, _options$darkBlock;
     deepReplace(this, {
@@ -619,15 +619,19 @@ UQRCode.prototype.make = function() {
   paintTypeNumber(this);
 
   this.isMaked = true;
+  this.drawModules = [];
 }
 
 /**
  * 获取绘制模块
  */
 UQRCode.prototype.getDrawModules = function() {
+  if (this.drawModules && this.drawModules.length > 0) {
+    return this.drawModules;
+  }
+
   /* 层级：最底层 -> 绘制区域 -> 背景图片 -> 背景|前景 -> 前景图片 -> 最顶层 */
-  // let drawModules = this.drawModules = [];
-  let drawModules = [];
+  let drawModules = this.drawModules = [];
   let {
     modules,
     moduleCount,

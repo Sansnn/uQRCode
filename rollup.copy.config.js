@@ -21,14 +21,6 @@ export default [{
         src: 'dist/style/words/uqrcode.style.words.umd.js',
         dest: 'test/html/js',
         rename: 'uqrcode.style.words.js'
-      }, {
-        src: 'dist/style/25d/uqrcode.style.25d.umd.js',
-        dest: 'test/html/js',
-        rename: 'uqrcode.style.25d.js'
-      }, {
-        src: 'dist/style/art/uqrcode.style.art.umd.js',
-        dest: 'test/html/js',
-        rename: 'uqrcode.style.art.js'
       }],
       verbose: true
     })
@@ -53,14 +45,6 @@ export default [{
         src: 'dist/style/words/uqrcode.style.words.cjs.js',
         dest: 'test/node/js',
         rename: 'uqrcode.style.words.js'
-      }, {
-        src: 'dist/style/25d/uqrcode.style.25d.cjs.js',
-        dest: 'test/node/js',
-        rename: 'uqrcode.style.25d.js'
-      }, {
-        src: 'dist/style/art/uqrcode.style.art.cjs.js',
-        dest: 'test/node/js',
-        rename: 'uqrcode.style.art.js'
       }],
       verbose: true
     })
