@@ -24,9 +24,11 @@ function Plugin(UQRCode, options) {
       try {
         ctx.clearRect(0, 0, size, size);
         ctx.draw(false);
+        
         for (var i = 0; i < drawModules.length; i++) {
           var drawModule = drawModules[i];
           ctx.save();
+          
           switch (drawModule.type) {
             case 'area':
               /* 绘制区域 */
@@ -45,25 +47,35 @@ function Plugin(UQRCode, options) {
               } else if (drawModule.name == 'background' && backgroundRadius > 0) {
                 r = w / 2 * backgroundRadius;
               }
-              ctx.beginPath();
-              ctx.moveTo(x + r, y);
-              ctx.arcTo(x + w, y, x + w, y + h, r);
-              ctx.arcTo(x + w, y + h, x, y + h, r);
-              ctx.arcTo(x, y + h, x, y, r);
-              ctx.arcTo(x, y, x + w, y, r);
-              ctx.closePath();
-              ctx.fillStyle = drawModule.color;
-              ctx.fill();
-              ctx.clip();
-              break;
-            case 'image':
-              /* 绘制图像 */
-              if (drawModule.name === 'backgroundImage') {
+              if (r > 0) {
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.arcTo(x + w, y, x + w, y + h, r);
+                ctx.arcTo(x + w, y + h, x, y + h, r);
+                ctx.arcTo(x, y + h, x, y, r);
+                ctx.arcTo(x, y, x + w, y, r);
+                ctx.closePath();
+                ctx.setFillStyle(drawModule.color);
+                ctx.fill();
+                // ctx.clip();
+              } else {
                 var x = drawModule.x;
                 var y = drawModule.y;
                 var w = drawModule.width;
                 var h = drawModule.height;
-                var r = drawModule.borderRadius;
+                ctx.setFillStyle(drawModule.color);
+                ctx.fillRect(x, y, w, h);
+              }
+              break;
+            case 'image':
+              /* 绘制图像 */
+              if (drawModule.name === 'backgroundImage') {
+                /* 安卓微信小程序带小数操作旧版Canvas会出问题，而且很多地方都有问题，尽量保持整数 */
+                var x = Math.round(drawModule.x);
+                var y = Math.round(drawModule.y);
+                var w = Math.round(drawModule.width);
+                var h = Math.round(drawModule.height);
+                var r = Math.round(drawModule.borderRadius);
                 if (w < 2 * r) {
                   r = w / 2;
                 }
@@ -72,45 +84,49 @@ function Plugin(UQRCode, options) {
                 }
 
                 /* 设置透明度 */
-                ctx.globalAlpha = drawModule.alpha;
+                ctx.setGlobalAlpha(drawModule.alpha);
 
                 /* 绘制圆角 */
-                ctx.beginPath();
-                ctx.moveTo(x + r, y);
-                ctx.arcTo(x + w, y, x + w, y + h, r);
-                ctx.arcTo(x + w, y + h, x, y + h, r);
-                ctx.arcTo(x, y + h, x, y, r);
-                ctx.arcTo(x, y, x + w, y, r);
-                ctx.closePath();
-                ctx.strokeStyle = 'rgba(0,0,0,0)';
-                ctx.stroke();
-                ctx.clip();
+                if (r > 0) {
+                  ctx.beginPath();
+                  ctx.moveTo(x + r, y);
+                  ctx.arcTo(x + w, y, x + w, y + h, r);
+                  ctx.arcTo(x + w, y + h, x, y + h, r);
+                  ctx.arcTo(x, y + h, x, y, r);
+                  ctx.arcTo(x, y, x + w, y, r);
+                  ctx.closePath();
+                  ctx.setStrokeStyle('rgba(0,0,0,0)');
+                  ctx.stroke();
+                  ctx.clip(); // 注意安卓微信小程序旧版Canvas坑，ctx.clip()前面的arcTo，R不能为0，不然绘制不出东西
+                }
 
                 try {
                   /* 绘制图片前需要先加载图片，因为图片可能是异步资源，如果没有设置loadImage方法，则需要在上层先获取到图片再传入 */
                   var img = await this.loadImage(drawModule.imageSrc);
-                  ctx.drawImage(img, drawModule.x, drawModule.y, drawModule.width, drawModule.height);
+                  ctx.drawImage(img, x, y, w, h);
                 } catch (e) {
                   console.error(`[uQRCode]: ${drawModule.mappingName} invalid!`);
                   throw new UQRCode.Error(`${drawModule.mappingName} invalid!`);
                 }
               } else if (drawModule.name === 'foregroundImage') {
-                var x = drawModule.x;
-                var y = drawModule.y;
-                var w = drawModule.width;
-                var h = drawModule.height;
-                var r = drawModule.borderRadius;
+                /* 安卓微信小程序带小数操作旧版Canvas会出问题，而且很多地方都有问题，尽量保持整数 */
+                var x = Math.round(drawModule.x);
+                var y = Math.round(drawModule.y);
+                var w = Math.round(drawModule.width);
+                var h = Math.round(drawModule.height);
+                var p = Math.round(drawModule.padding);
+                var r = Math.round(drawModule.borderRadius);
                 if (w < 2 * r) {
                   r = w / 2;
                 }
                 if (h < 2 * r) {
                   r = h / 2;
                 }
-                var bx = drawModule.x - drawModule.padding;
-                var by = drawModule.y - drawModule.padding;
-                var bw = drawModule.width + drawModule.padding * 2;
-                var bh = drawModule.height + drawModule.padding * 2;
-                var br = (bw / w) * r;
+                var bx = x - p;
+                var by = y - p;
+                var bw = w + p * 2;
+                var bh = h + p * 2;
+                var br = Math.round((bw / w) * r);
                 if (bw < 2 * br) {
                   br = bw / 2;
                 }
@@ -120,49 +136,60 @@ function Plugin(UQRCode, options) {
 
                 /* 绘制阴影 */
                 ctx.save();
-                ctx.shadowOffsetX = drawModule.shadowOffsetX;
-                ctx.shadowOffsetY = drawModule.shadowOffsetY;
-                ctx.shadowBlur = drawModule.shadowBlur;
-                ctx.shadowColor = drawModule.shadowColor;
+                ctx.setShadow(drawModule.shadowOffsetX, drawModule.shadowOffsetY, drawModule.shadowBlur, drawModule.shadowColor);
                 /* 阴影需要一个填充块作为载体 */
-                ctx.beginPath();
-                ctx.moveTo(bx + br, by);
-                ctx.arcTo(bx + bw, by, bx + bw, by + bh, br);
-                ctx.arcTo(bx + bw, by + bh, bx, by + bh, br);
-                ctx.arcTo(bx, by + bh, bx, by, br);
-                ctx.arcTo(bx, by, bx + bw, by, br);
-                ctx.closePath();
-                ctx.setFillStyle(drawModule.backgroundColor);
-                ctx.fill();
+                if (br > 0) {
+                  ctx.beginPath();
+                  ctx.moveTo(bx + br, by);
+                  ctx.arcTo(bx + bw, by, bx + bw, by + bh, br);
+                  ctx.arcTo(bx + bw, by + bh, bx, by + bh, br);
+                  ctx.arcTo(bx, by + bh, bx, by, br);
+                  ctx.arcTo(bx, by, bx + bw, by, br);
+                  ctx.closePath();
+                  ctx.setFillStyle(drawModule.backgroundColor);
+                  ctx.fill();
+                } else {
+                  ctx.setFillStyle(drawModule.backgroundColor);
+                  ctx.fillRect(bx, by, bw, bh);
+                }
                 ctx.restore();
 
                 /* 绘制Padding */
-                ctx.beginPath();
-                ctx.moveTo(bx + br, by);
-                ctx.arcTo(bx + bw, by, bx + bw, by + bh, br);
-                ctx.arcTo(bx + bw, by + bh, bx, by + bh, br);
-                ctx.arcTo(bx, by + bh, bx, by, br);
-                ctx.arcTo(bx, by, bx + bw, by, br);
-                ctx.closePath();
-                ctx.setFillStyle(drawModule.padding > 0 ? drawModule.backgroundColor : 'rgba(0,0,0,0)');
-                ctx.fill();
+                ctx.save();
+                if (br > 0) {
+                  ctx.beginPath();
+                  ctx.moveTo(bx + br, by);
+                  ctx.arcTo(bx + bw, by, bx + bw, by + bh, br);
+                  ctx.arcTo(bx + bw, by + bh, bx, by + bh, br);
+                  ctx.arcTo(bx, by + bh, bx, by, br);
+                  ctx.arcTo(bx, by, bx + bw, by, br);
+                  ctx.closePath();
+                  ctx.setFillStyle(p > 0 ? drawModule.backgroundColor : 'rgba(0,0,0,0)');
+                  ctx.fill();
+                } else {
+                  ctx.setFillStyle(p > 0 ? drawModule.backgroundColor : 'rgba(0,0,0,0)');
+                  ctx.fillRect(bx, by, bw, bh);
+                }
+                ctx.restore();
 
                 /* 绘制圆角 */
-                ctx.beginPath();
-                ctx.moveTo(x + r, y);
-                ctx.arcTo(x + w, y, x + w, y + h, r);
-                ctx.arcTo(x + w, y + h, x, y + h, r);
-                ctx.arcTo(x, y + h, x, y, r);
-                ctx.arcTo(x, y, x + w, y, r);
-                ctx.closePath();
-                ctx.strokeStyle = 'rgba(0,0,0,0)';
-                ctx.stroke();
-                ctx.clip();
+                if (r > 0) {
+                  ctx.beginPath();
+                  ctx.moveTo(x + r, y);
+                  ctx.arcTo(x + w, y, x + w, y + h, r);
+                  ctx.arcTo(x + w, y + h, x, y + h, r);
+                  ctx.arcTo(x, y + h, x, y, r);
+                  ctx.arcTo(x, y, x + w, y, r);
+                  ctx.closePath();
+                  ctx.setStrokeStyle('rgba(0,0,0,0)');
+                  ctx.stroke();
+                  ctx.clip(); // 注意安卓微信小程序旧版Canvas坑，ctx.clip()前面的arcTo，R不能为0，不然绘制不出东西
+                }
 
                 try {
                   /* 绘制图片前需要先加载图片，因为图片可能是异步资源，如果没有设置loadImage方法，则需要在上层先获取到图片再传入 */
                   var img = await this.loadImage(drawModule.imageSrc);
-                  ctx.drawImage(img, drawModule.x, drawModule.y, drawModule.width, drawModule.height);
+                  ctx.drawImage(img, x, y, w, h);
                 } catch (e) {
                   console.error(`[uQRCode]: ${drawModule.mappingName} invalid!`);
                   throw new UQRCode.Error(`${drawModule.mappingName} invalid!`);
@@ -178,6 +205,7 @@ function Plugin(UQRCode, options) {
 
           ctx.restore();
         }
+        
         ctx.draw(true);
         /* 某些平台的draw回调不一定会触发，故resolve不放在draw回调中 */
         setTimeout(resolve, 150);
