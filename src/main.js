@@ -851,7 +851,7 @@ UQRCode.prototype.drawCanvas = function() {
                 ctx.closePath();
                 ctx.setStrokeStyle('rgba(0,0,0,0)');
                 ctx.stroke();
-                ctx.clip(); // 注意安卓微信小程序旧版Canvas坑，ctx.clip()前面的arcTo，R不能为0，不然绘制不出东西
+                ctx.clip();
               }
 
               try {
@@ -937,7 +937,7 @@ UQRCode.prototype.drawCanvas = function() {
                 ctx.closePath();
                 ctx.setStrokeStyle('rgba(0,0,0,0)');
                 ctx.stroke();
-                ctx.clip(); // 注意安卓微信小程序旧版Canvas坑，ctx.clip()前面的arcTo，R不能为0，不然绘制不出东西
+                ctx.clip();
               }
 
               try {
