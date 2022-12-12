@@ -10,25 +10,25 @@
 
 uQRCode发布了配套的可视化设计器，可根据自己喜好在设计器中设计二维码样式，一键生成配置代码复制到项目中，详情请在微信小程序搜索“柚子二维码”，或扫描下方小程序码体验。
 
-![uQRCode设计器](https://doc.uqrcode.cn/mp_weixin_code.jpg)
+![uQRCode设计器](https://uqrcode.cn/mp_weixin_code.jpg)
 
 ## 设计器模板示例
 
-![uQRCode设计器](https://doc.uqrcode.cn/yz_1.png)
-![uQRCode设计器](https://doc.uqrcode.cn/yz_2.png)
-![uQRCode设计器](https://doc.uqrcode.cn/yz_3.png)
-![uQRCode设计器](https://doc.uqrcode.cn/yz_4.png)
-![uQRCode设计器](https://doc.uqrcode.cn/yz_5.png)
-![uQRCode设计器](https://doc.uqrcode.cn/yz_6.png)
-![uQRCode设计器](https://doc.uqrcode.cn/yz_7.png)
-![uQRCode设计器](https://doc.uqrcode.cn/yz_8.png)
-![uQRCode设计器](https://doc.uqrcode.cn/yz_9.png)
+![uQRCode设计器](https://uqrcode.cn/yz_1.png)
+![uQRCode设计器](https://uqrcode.cn/yz_2.png)
+![uQRCode设计器](https://uqrcode.cn/yz_3.png)
+![uQRCode设计器](https://uqrcode.cn/yz_4.png)
+![uQRCode设计器](https://uqrcode.cn/yz_5.png)
+![uQRCode设计器](https://uqrcode.cn/yz_6.png)
+![uQRCode设计器](https://uqrcode.cn/yz_7.png)
+![uQRCode设计器](https://uqrcode.cn/yz_8.png)
+![uQRCode设计器](https://uqrcode.cn/yz_9.png)
 
 # 快速上手
 
 > 在`uni-app`中，我们更推荐使用组件方式来生成二维码，组件方式大大提高了页面的可读性以及避开了一些平台容易出问题的地方，当组件无法满足需求的时候，再考虑切换成原生方式。
 
-官方文档：[https://doc.uqrcode.cn](https://doc.uqrcode.cn)。
+官方文档：[https://uqrcode.cn/doc](https://uqrcode.cn/doc)。
 
 github地址：[https://github.com/Sansnn/uQRCode](https://github.com/Sansnn/uQRCode)。
 
@@ -38,7 +38,7 @@ uni-app插件市场地址：[https://ext.dcloud.net.cn/plugin?id=1287](https://e
 
 ## 原生方式
 
-原生方式仅需要获取`uqrcode.js`文件便可使用。详细配置请移步到：文档 > [原生](https://doc.uqrcode.cn/document/native.html)。
+原生方式仅需要获取`uqrcode.js`文件便可使用。详细配置请移步到：文档 > [原生](https://uqrcode.cn/doc/document/native.html)。
 
 ### 安装
 
@@ -82,36 +82,108 @@ const UQRCode = require('@uqrcode/js'); // npm install @uqrcode/js
 
 `uQRCode`基于`Canvas API`封装了一套方法，建议开发者使用`canvas`生成，一键调用，非常方便。以下是示例：
 
-- HTML部分
-``` html
-<canvas id="qrcode" width="200" height="200"></canvas>
-```
+- HTML示例
+  - DOM部分
+  ``` html
+  <canvas id="qrcode" width="200" height="200"></canvas>
+  ```
 
-- JS部分
-``` javascript
-// 获取uQRCode实例
-var qr = new UQRCode();
-// 设置二维码内容
-qr.data = "https://doc.uqrcode.cn";
-// 设置二维码大小，必须与canvas设置的宽高一致
-qr.size = 200;
-// 调用制作二维码方法
-qr.make();
-// 获取canvas元素
-var canvas = document.getElementById("qrcode");
-// 获取canvas上下文
-var canvasContext = canvas.getContext("2d");
-// 设置uQRCode实例的canvas上下文
-qr.canvasContext = canvasContext;
-// 调用绘制方法将二维码图案绘制到canvas上
-qr.drawCanvas();
-```
+  - JS部分
+  ``` javascript
+  // 获取uQRCode实例
+  var qr = new UQRCode();
+  // 设置二维码内容
+  qr.data = "https://uqrcode.cn/doc";
+  // 设置二维码大小，必须与canvas设置的宽高一致
+  qr.size = 200;
+  // 调用制作二维码方法
+  qr.make();
+  // 获取canvas元素
+  var canvas = document.getElementById("qrcode");
+  // 获取canvas上下文
+  var canvasContext = canvas.getContext("2d");
+  // 设置uQRCode实例的canvas上下文
+  qr.canvasContext = canvasContext;
+  // 调用绘制方法将二维码图案绘制到canvas上
+  qr.drawCanvas();
+  ```
+
+- uni-app示例
+  - Template部分
+  ``` html
+  <canvas id="qrcode" canvas-id="qrcode" style="width: 200px;height: 200px;"></canvas>
+  ```
+  
+  - JS部分
+  ``` javascript
+  onReady() {
+    // 获取uQRCode实例
+    var qr = new UQRCode();
+    // 设置二维码内容
+    qr.data = "https://uqrcode.cn/doc";
+    // 设置二维码大小，必须与canvas设置的宽高一致
+    qr.size = 200;
+    // 调用制作二维码方法
+    qr.make();
+    // 获取canvas上下文
+    var canvasContext = uni.createCanvasContext('qrcode', this); // 如果是组件，this必须传入
+    // 设置uQRCode实例的canvas上下文
+    qr.canvasContext = canvasContext;
+    // 调用绘制方法将二维码图案绘制到canvas上
+    qr.drawCanvas();
+  }
+  ```
+  
+- 微信小程序，推荐使用Canvas 2D，关于Canvas 2D的使用请参考微信开放文档。
 
 ### 高级用法
 
 考虑到部分平台可能不支持`canvas`，所以`uQRCode`并没有强制要求和`canvas`一起使用，您还可以选择其他方式来生成二维码，例如使用`js`操作`dom`进行绘制或是使用`svg`绘制等。以下是示例：
 
+- uni-app v-for+view
+
+```html
+<template>
+  <view>
+    <view class="qrcode">
+      <view v-for="(row, rowI) in modules" :key="rowI" style="display: flex;flex-direction: row;">
+        <view v-for="(col, colI) in row" :key="colI">
+          <view v-if="col.isBlack" style="width: 10px;height: 10px;background-color: black;">
+            <!-- 黑色码点 -->
+          </view>
+          <view v-else style="width: 10px;height: 10px;background-color: white;">
+            <!-- 白色码点 -->
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import UQRCode from '../../uni_modules/Sansnn-uQRCode/js_sdk/uqrcode/uqrcode.js';
+
+  export default {
+    data() {
+      return {
+        modules: []
+      }
+    },
+    onLoad() {
+      const qr = new UQRCode();
+      qr.data = 'uQRCode';
+      qr.make();
+      this.modules = qr.modules;
+    },
+    methods: {
+
+    }
+  }
+</script>
+```
+
 - js操作dom
+
 ``` html
 <!DOCTYPE html>
 <html>
@@ -128,7 +200,7 @@ qr.drawCanvas();
     // 获取uQRCode实例
     var qr = new UQRCode();
     // 设置二维码内容
-    qr.data = "https://doc.uqrcode.cn";
+    qr.data = "https://uqrcode.cn/doc";
     // 设置二维码大小，必须与canvas设置的宽高一致
     qr.size = 200;
     // 设置二维码前景图，可以是路径
@@ -137,10 +209,11 @@ qr.drawCanvas();
     // 调用制作二维码方法
     qr.make();
 
+    var drawModules = qr.getDrawModules();
     // 遍历drawModules创建dom元素
     var qrHtml = '';
-    for (var i = 0; i < qr.drawModules.length; i++) {
-        var drawModule = qr.drawModules[i];
+    for (var i = 0; i < drawModules.length; i++) {
+        var drawModule = drawModules[i];
         switch (drawModule.type) {
         case 'block':
             /* 绘制小块 */
@@ -175,7 +248,7 @@ qr.drawCanvas();
     // 获取uQRCode实例
     var qr = new UQRCode();
     // 设置二维码内容
-    qr.data = "https://doc.uqrcode.cn";
+    qr.data = "https://uqrcode.cn/doc";
     // 设置二维码大小，必须与canvas设置的宽高一致
     qr.size = 200;
     // 设置二维码前景图，可以是路径
@@ -184,10 +257,11 @@ qr.drawCanvas();
     // 调用制作二维码方法
     qr.make();
 
+    var drawModules = qr.getDrawModules();
     // 遍历drawModules创建svg元素
     var qrHtml = '';
-    for (var i = 0; i < qr.drawModules.length; i++) {
-        var drawModule = qr.drawModules[i];
+    for (var i = 0; i < drawModules.length; i++) {
+        var drawModule = drawModules[i];
         switch (drawModule.type) {
         case 'block':
             /* 绘制小块 */
@@ -272,7 +346,7 @@ aEle.remove(); // 下载之后把创建的元素删除
 
 ### 安装
 
-通过uni-app插件市场地址安装：[https://ext.dcloud.net.cn/plugin?id=1287](https://ext.dcloud.net.cn/plugin?id=1287)。详细配置请移步到：文档 > [uni-app组件](https://doc.uqrcode.cn/document/uni-app.html)。
+通过uni-app插件市场地址安装：[https://ext.dcloud.net.cn/plugin?id=1287](https://ext.dcloud.net.cn/plugin?id=1287)。详细配置请移步到：文档 > [uni-app组件](https://uqrcode.cn/doc/document/uni-app.html)。
 
 ### 引入
 
@@ -280,15 +354,15 @@ uni-app默认为easycom模式，可直接键入`<uqrcode>`标签。
 
 ### 简单用法
 
-安装`uqrcode`组件后，在`template`中键入`<uqrcode/>`。设置`ref`属性可使用组件内部方法，`canvas-id`属性为组件内部的canvas组件标识，`value`属性为二维码生成对应内容，`options`为配置选项，可配置二维码样式，绘制Logo等，详见：[options](https://doc.uqrcode.cn/document/uni-app.html#options) 。
+安装`uqrcode`组件后，在`template`中键入`<uqrcode/>`。设置`ref`属性可使用组件内部方法，`canvas-id`属性为组件内部的canvas组件标识，`value`属性为二维码生成对应内容，`options`为配置选项，可配置二维码样式，绘制Logo等，详见：[options](https://uqrcode.cn/doc/document/uni-app.html#options) 。
 
 ``` html
-<uqrcode ref="uqrcode" canvas-id="qrcode" value="https://doc.uqrcode.cn" :options="{ margin: 10 }"></uqrcode>
+<uqrcode ref="uqrcode" canvas-id="qrcode" value="https://uqrcode.cn/doc" :options="{ margin: 10 }"></uqrcode>
 ```
 
 ### 导出临时文件路径
 
-为了保证方法调用成功，请在 [complete](https://doc.uqrcode.cn/document/uni-app.html#complete) 事件返回`success=true`后调用。
+为了保证方法调用成功，请在 [complete](https://uqrcode.cn/doc/document/uni-app.html#complete) 事件返回`success=true`后调用。
 
 ```javascript
 // uqrcode为组件的ref名称
@@ -301,7 +375,7 @@ this.$refs.uqrcode.toTempFilePath({
 
 ### 保存二维码到本地相册
 
-为了保证方法调用成功，请在 [complete](https://doc.uqrcode.cn/document/uni-app.html#complete) 事件返回`success=true`后调用。
+为了保证方法调用成功，请在 [complete](https://uqrcode.cn/doc/document/uni-app.html#complete) 事件返回`success=true`后调用。
 
 ```javascript
 // uqrcode为组件的ref名称
@@ -315,4 +389,4 @@ this.$refs.uqrcode.save({
 });
 ```
 
-## 更多使用说明请前往官方文档查看：[https://doc.uqrcode.cn](https://doc.uqrcode.cn)。
+## 更多使用说明请前往官方文档查看：[https://uqrcode.cn/doc](https://uqrcode.cn/doc)。
