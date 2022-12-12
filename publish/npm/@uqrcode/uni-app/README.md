@@ -215,7 +215,7 @@ const UQRCode = require('@uqrcode/js'); // npm install @uqrcode/js
     for (var i = 0; i < drawModules.length; i++) {
         var drawModule = drawModules[i];
         switch (drawModule.type) {
-        case 'block':
+        case 'tile':
             /* 绘制小块 */
             qrHtml += `<div style="position: absolute;left: ${drawModule.x}px;top: ${drawModule.y}px;width: ${drawModule.width}px;height: ${drawModule.height}px;background: ${drawModule.color};"></div>`;
             break;
@@ -263,7 +263,7 @@ const UQRCode = require('@uqrcode/js'); // npm install @uqrcode/js
     for (var i = 0; i < drawModules.length; i++) {
         var drawModule = drawModules[i];
         switch (drawModule.type) {
-        case 'block':
+        case 'tile':
             /* 绘制小块 */
             qrHtml += `<rect x="${drawModule.x}" y="${drawModule.y}" width="${drawModule.width}" height="${drawModule.height}" style="fill: ${drawModule.color};" />`;
             break;
