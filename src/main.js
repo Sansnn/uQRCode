@@ -79,6 +79,7 @@ function UQRCode(options, canvasContext) {
 
   /** 绘制模块 */
   var _canvasContext = this.canvasContext = undefined; // canvas上下文
+  var _loadImage = this.loadImage;
   var _drawReserve = this.drawReserve = false; // ctx.draw保留绘制，本次绘制是否接着上一次绘制，2d没有draw方法，所以2d该属性对2d无效
 
   var _isMaked = this.isMaked = false;
