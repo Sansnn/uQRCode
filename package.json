@@ -23,8 +23,6 @@
     }
   ],
   "scripts": {
-    "install:test:node": "cd test/node && npm install",
-    "install:test:uni-app": "cd test/uni-app && npm install",
     "dev": "rollup -c -w",
     "build:amd": "rollup ./src/main.js -f amd -o ./dist/uqrcode.amd.js",
     "build:cjs": "rollup ./src/main.js -f cjs -o ./dist/uqrcode.cjs.js",
@@ -36,6 +34,8 @@
     "build:banner": "rollup -c --configBanner",
     "build:copy": "rollup -c --configCopy",
     "build": "npm run build:default && npm run build:banner && npm run build:copy",
+    "install:test:node": "cd test/node && npm install",
+    "install:test:uni-app": "cd test/uni-app && npm install",
     "test:html": "live-server --port=9999 --open=test/html",
     "test:uni-app:h5": "cd test/uni-app && npm run dev:h5",
     "test:uni-app:mp-weixin": "cd test/uni-app && npm run dev:mp-weixin",
