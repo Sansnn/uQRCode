@@ -6,38 +6,11 @@ const {
 } = require('canvas');
 // 引入uQRCode
 const UQRCode = require('./js/uqrcode');
-const plugins = [];
-// 引入扩展
-try {
-  const UQRCodeStyle25D = require('./js/uqrcode.style.25d');
-  UQRCode.use(UQRCodeStyle25D);
-  plugins.push(UQRCodeStyle25D.DrawCanvas);
-} catch (e) {}
-try {
-  const UQRCodeStyleArt = require('./js/uqrcode.style.art');
-  UQRCode.use(UQRCodeStyleArt);
-  plugins.push(UQRCodeStyleArt.DrawCanvas);
-} catch (e) {}
-try {
-  const UQRCodeStyleLiquid = require('./js/uqrcode.style.liquid');
-  UQRCode.use(UQRCodeStyleLiquid);
-  plugins.push(UQRCodeStyleLiquid.DrawCanvas);
-} catch (e) {}
-try {
-  const UQRCodeStyleRound = require('./js/uqrcode.style.round');
-  UQRCode.use(UQRCodeStyleRound);
-  plugins.push(UQRCodeStyleRound.DrawCanvas);
-} catch (e) {}
-try {
-  const UQRCodeStyleWords = require('./js/uqrcode.style.words');
-  UQRCode.use(UQRCodeStyleWords);
-  plugins.push(UQRCodeStyleWords.DrawCanvas);
-} catch (e) {}
 // 后续要绘制图片，需要设置加载图片方法
 UQRCode.prototype.loadImage = loadImage;
 
 const server = http.createServer(function(request, response) {
-  console.log('QR Code drawing...');
+  console.log('drawing...');
 
   // 获取uQRCode实例
   const qr = new UQRCode();

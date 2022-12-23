@@ -34,19 +34,21 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.UQRCodeStyleWords = factory());
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.UQRCodePluginLiquid = factory());
 })(window, (function () {
   function Plugin(UQRCode, options) {
-    options.words = undefined; // 文字内容
+    options.foregroundRadius = 1.0; // 前景码点圆角半径，0.0-1.0
 
-    options.drawWordsCanvas = function() {
+    options.drawLiquidCanvas = function() {
       let {
         isMaked,
         canvasContext: ctx,
         dynamicSize: size,
+        foregroundColor,
+        foregroundRadius,
         backgroundColor,
-        words,
-        drawReserve
+        drawReserve,
+        margin
       } = this;
 
       if (!isMaked) {
@@ -55,8 +57,101 @@
       }
 
       let drawModules = this.getDrawModules();
-      let wordArr = words ? words.split('') : [];
-      let pointer = 0;
+
+      function drawLiquidBasic(ctx, x, y, w, h, ri, ci, c, e) {
+        var f, g;
+        switch (e) {
+          case 0:
+            f = ci * w + margin;
+            g = ri * h + margin;
+            ctx.lineTo(f, g);
+            break;
+          case 1:
+            f = ci * w + w + margin;
+            g = ri * h + margin;
+            ctx.lineTo(f, g);
+            break;
+          case 2:
+            f = ci * w + w + margin;
+            g = ri * h + h + margin;
+            ctx.lineTo(f, g);
+            break;
+          case 3:
+            f = ci * w + margin;
+            g = ri * h + h + margin;
+            ctx.lineTo(f, g);
+            break;
+        }
+      }
+
+      function drawLiquidRound(ctx, x, y, w, h, ri, ci, c, e) {
+        var r = w / 2 * foregroundRadius;
+        var f, g;
+        switch (e) {
+          case 0:
+            f = ci * w + r + margin;
+            g = ri * h + r + margin;
+            ctx.arc(f, g, r, Math.PI, 1.5 * Math.PI, false);
+            break;
+          case 1:
+            f = ci * w + w - r + margin;
+            g = ri * h + r + margin;
+            ctx.arc(f, g, r, 1.5 * Math.PI, 2 * Math.PI, false);
+            break;
+          case 2:
+            f = ci * w + w - r + margin;
+            g = ri * h + h - r + margin;
+            ctx.arc(f, g, r, 0, Math.PI / 2, false);
+            break;
+          case 3:
+            f = ci * w + r + margin;
+            g = ri * h + h - r + margin;
+            ctx.arc(f, g, r, Math.PI / 2, Math.PI, false);
+        }
+      }
+
+      function drawLiquidAngle(ctx, x, y, w, h, ri, ci, c, e) {
+        ctx.beginPath();
+        var r = w / 2 * foregroundRadius;
+        var f, g;
+        switch (e) {
+          case 0:
+            f = ci * w + r + margin;
+            g = ri * h + r + margin;
+            ctx.arc(f, g, r, Math.PI, 1.5 * Math.PI, false);
+            f = ci * w + margin;
+            g = ri * h + margin;
+            ctx.lineTo(f - 0.5, g - 0.5);
+            break;
+          case 1:
+            f = ci * w + w - r + margin;
+            g = ri * h + r + margin;
+            ctx.arc(f, g, r, 1.5 * Math.PI, 2 * Math.PI, false);
+            f = ci * w + w + margin;
+            g = ri * h + margin;
+            ctx.lineTo(f + 0.5, g - 0.5);
+            break;
+          case 2:
+            f = ci * w + w - r + margin;
+            g = ri * h + h - r + margin;
+            ctx.arc(f, g, r, 0, Math.PI / 2, false);
+            f = ci * w + w + margin;
+            g = ri * h + h + margin;
+            ctx.lineTo(f + 0.5, g + 0.5);
+            break;
+          case 3:
+            f = ci * w + r + margin;
+            g = ri * h + h - r + margin;
+            ctx.arc(f, g, r, Math.PI / 2, Math.PI, false);
+            f = ci * w + margin;
+            g = ri * h + h + margin;
+            ctx.lineTo(f - 0.5, g + 0.5);
+        }
+        ctx.closePath();
+        ctx.setFillStyle(c);
+        ctx.fill();
+      }
+
 
       let draw = async (resolve, reject) => {
         try {
@@ -74,29 +169,45 @@
                 ctx.fillRect(drawModule.x, drawModule.y, drawModule.width, drawModule.height);
                 break;
               case 'tile':
-                /* 绘制码点 */
-                if (wordArr.length > 0 && drawModule.name === 'foreground') {
-                  var x = drawModule.x;
-                  var y = drawModule.y;
-                  var w = drawModule.width;
-                  var h = drawModule.height;
-                  ctx.setFontSize(w);
-                  ctx.font = `normal bold ${w}px sans-serif`;
-                  ctx.setTextAlign('left');
-                  ctx.setTextBaseline('top');
-                  ctx.setFillStyle(drawModule.color);
-                  ctx.fillText(wordArr[pointer], x, y);
-                  pointer++;
-                  if (pointer >= wordArr.length) {
-                    pointer = 0;
+                /* 绘制小块 */
+                if (drawModule.name == 'foreground') {
+                  if (foregroundRadius > 0) {
+                    var x = drawModule.destX;
+                    var y = drawModule.destY;
+                    var w = drawModule.destWidth;
+                    var h = drawModule.destHeight;
+                    var ri = drawModule.rowIndex;
+                    var ci = drawModule.colIndex;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y + h / 2);
+                    this.isBlack(ri, ci - 1) || this.isBlack(ri - 1, ci) || this.isBlack(ri - 1, ci - 1) ? drawLiquidBasic(ctx, x, y, w, h, ri, ci, foregroundColor, 0) : drawLiquidRound(ctx, x, y, w, h, ri, ci, foregroundColor, 0);
+                    this.isBlack(ri - 1, ci) || this.isBlack(ri, ci + 1) || this.isBlack(ri - 1, ci + 1) ? drawLiquidBasic(ctx, x, y, w, h, ri, ci, foregroundColor, 1) : drawLiquidRound(ctx, x, y, w, h, ri, ci, foregroundColor, 1);
+                    this.isBlack(ri + 1, ci) || this.isBlack(ri, ci + 1) || this.isBlack(ri + 1, ci + 1) ? drawLiquidBasic(ctx, x, y, w, h, ri, ci, foregroundColor, 2) : drawLiquidRound(ctx, x, y, w, h, ri, ci, foregroundColor, 2);
+                    this.isBlack(ri + 1, ci) || this.isBlack(ri, ci - 1) || this.isBlack(ri + 1, ci - 1) ? drawLiquidBasic(ctx, x, y, w, h, ri, ci, foregroundColor, 3) : drawLiquidRound(ctx, x, y, w, h, ri, ci, foregroundColor, 3);
+                    ctx.closePath();
+                    ctx.setFillStyle(foregroundColor);
+                    ctx.fill();
+                  } else {
+                    var x = drawModule.x;
+                    var y = drawModule.y;
+                    var w = drawModule.width;
+                    var h = drawModule.height;
+                    ctx.setFillStyle(drawModule.color);
+                    ctx.fillRect(x, y, w, h);
                   }
-                } else {
-                  var x = drawModule.x;
-                  var y = drawModule.y;
-                  var w = drawModule.width;
-                  var h = drawModule.height;
-                  ctx.setFillStyle(drawModule.color);
-                  ctx.fillRect(x, y, w, h);
+                } else if (drawModule.name == 'background') {
+                  if (foregroundRadius > 0) {
+                    var x = drawModule.destX;
+                    var y = drawModule.destY;
+                    var w = drawModule.destWidth;
+                    var h = drawModule.destHeight;
+                    var ri = drawModule.rowIndex;
+                    var ci = drawModule.colIndex;
+                    this.isBlack(ri - 1, ci) && this.isBlack(ri, ci - 1) && drawLiquidAngle(ctx, x, y, w, h, ri, ci, foregroundColor, 0);
+                    this.isBlack(ri - 1, ci) && this.isBlack(ri, ci + 1) && drawLiquidAngle(ctx, x, y, w, h, ri, ci, foregroundColor, 1);
+                    this.isBlack(ri + 1, ci) && this.isBlack(ri, ci + 1) && drawLiquidAngle(ctx, x, y, w, h, ri, ci, foregroundColor, 2);
+                    this.isBlack(ri + 1, ci) && this.isBlack(ri, ci - 1) && drawLiquidAngle(ctx, x, y, w, h, ri, ci, foregroundColor, 3);
+                  }
                 }
                 break;
               case 'image':
@@ -258,8 +369,8 @@
   }
 
   Plugin.Type = 'style'; // 如果需要组件可用此扩展，那么该属性必需
-  Plugin.Name = 'words'; // 如果需要组件可用此扩展，那么该属性必需
-  Plugin.DrawCanvas = 'drawWordsCanvas'; // 如果需要组件可用此扩展，那么该属性必需
+  Plugin.Name = 'liquid'; // 如果需要组件可用此扩展，那么该属性必需
+  Plugin.DrawCanvas = 'drawLiquidCanvas'; // 如果需要组件可用此扩展，那么该属性必需
 
   return Plugin;
 

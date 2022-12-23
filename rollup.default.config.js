@@ -37,14 +37,14 @@ let buildMain = function() {
     ] // 压缩代码，压缩后banner也会被移除，重新写个bannerConfig再次buildBanner
   });
 }
-let buildStyle = function(name, moduleName) {
-  let input = `style/${name}/style.js`;
+let buildPlugin = function(name, moduleName) {
+  let input = `plugin/${name}/plugin.js`;
   if (!fs.existsSync(input)) {
     return;
   }
   let output = formats.map(format => {
     var option = {
-      file: `dist/style/${name}/uqrcode.style.${name}.${format.name}.js`,
+      file: `dist/plugin/${name}/uqrcode.plugin.${name}.${format.name}.js`,
       format: format.name,
       exports: 'auto'
     }
@@ -56,11 +56,11 @@ let buildStyle = function(name, moduleName) {
   let plugins = [
     copy({
       targets: [{
-        src: `style/${name}/README.md`,
-        dest: `dist/style/${name}`
+        src: `plugin/${name}/README.md`,
+        dest: `dist/plugin/${name}`
       }, {
         src: `LICENSE.md`,
-        dest: `dist/style/${name}`
+        dest: `dist/plugin/${name}`
       }],
       verbose: true
     })
@@ -73,11 +73,12 @@ let buildStyle = function(name, moduleName) {
 }
 
 buildMain();
-buildStyle('round', 'UQRCodeStyleRound');
-buildStyle('liquid', 'UQRCodeStyleLiquid');
-buildStyle('words', 'UQRCodeStyleWords');
-buildStyle('25d', 'UQRCodeStyle25D');
-buildStyle('art', 'UQRCodeStyleArt');
-buildStyle('colorful', 'UQRCodeStyleColorful');
+buildPlugin('round', 'UQRCodePluginRound');
+buildPlugin('liquid', 'UQRCodePluginLiquid');
+buildPlugin('words', 'UQRCodePluginWords');
+buildPlugin('25d', 'UQRCodePlugin25D');
+buildPlugin('art', 'UQRCodePluginArt');
+buildPlugin('colorful', 'UQRCodePluginColorful');
+buildPlugin('poster', 'UQRCodePluginPoster');
 
 export default builds;

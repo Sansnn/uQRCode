@@ -39,7 +39,7 @@ export function deepReplace(o = {}, r = {}, c = false) {
       ...o
     }
   }
-  for (let k in r) {
+  for (var k in r) {
     var vr = r[k];
     if (vr != undefined) {
       if (vr.constructor == Object) {

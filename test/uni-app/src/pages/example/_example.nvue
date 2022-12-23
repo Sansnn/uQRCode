@@ -422,8 +422,8 @@
 </template>
 
 <script>
-import uQRCodeStyleRound from '../../plugins/uqrcode/round/uqrcode.style.round.js';
-import uQRCodeStyleLiquid from '../../plugins/uqrcode/liquid/uqrcode.style.liquid.js';
+import uQRCodePluginRound from '../../plugins/uqrcode/round/uqrcode.plugin.round.js';
+import uQRCodePluginLiquid from '../../plugins/uqrcode/liquid/uqrcode.plugin.liquid.js';
 
 export default {
   data() {
@@ -456,8 +456,8 @@ export default {
   },
   onReady() {
     /* 注册扩展插件 */
-    this.$refs.qr16.registerStyle(uQRCodeStyleRound);
-    this.$refs.qr16.registerStyle(uQRCodeStyleLiquid);
+    this.$refs.qr16.registerStyle(uQRCodePluginRound);
+    this.$refs.qr16.registerStyle(uQRCodePluginLiquid);
     /* 注册扩展插件后再执行make生成二维码 */
     this.$refs.qr16.make();
 

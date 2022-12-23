@@ -24,6 +24,7 @@ import {
 function UQRCode(options, canvasContext) {
   /** 基本属性 */
   var _data = this.data = ''; // 二维码对应内容
+  var _dataEncode = this.dataEncode = true; // 数据编码，默认utf16to8，设为false则传入原始data，如有特殊的编码需求，可以将其设为false，再将数据编码后传入data
   var _size = this.size = 200; // 二维码大小
   var _useDynamicSize = this.useDynamicSize = false; // 使用动态尺寸，自动计算每一个小方块尺寸为整数，因为canvas特性，小数点部分会被绘制为透明渐变色，绘制后看起来像是有白色细线，计算为整数则可以解决这个问题，但是实际尺寸已不是原尺寸，canvas的尺寸需要通过获取dynamicSize后重新设置
   var _dynamicSize = this.dynamicSize = _size; // 动态尺寸
@@ -488,6 +489,7 @@ UQRCode.prototype.setOptions = function(options) {
     /* 其中包含了兼容v3.2.0-v3.4.5的写法 */
     // deepReplace(this, {
     //   data: options.data || options.text,
+    //   dataEncode: options.dataEncode,
     //   size: options.size,
     //   useDynamicSize: options.useDynamicSize,
     //   typeNumber: options.typeNumber,
@@ -533,6 +535,7 @@ UQRCode.prototype.setOptions = function(options) {
     var _options$background, _options$background2, _options$background2$, _options$background3, _options$background3$, _options$background4, _options$background4$, _options$background5, _options$background5$, _options$background6, _options$background6$, _options$background7, _options$background7$, _options$background8, _options$background8$, _options$foreground, _options$foreground2, _options$foreground2$, _options$foreground3, _options$foreground3$, _options$foreground4, _options$foreground4$, _options$foreground5, _options$foreground5$, _options$foreground6, _options$foreground6$, _options$foreground7, _options$foreground7$, _options$foreground8, _options$foreground8$, _options$foreground9, _options$foreground9$, _options$foreground10, _options$foreground11, _options$foreground12, _options$foreground13, _options$foreground14, _options$foreground15, _options$foreground16, _options$foreground17, _options$positionProb, _options$positionDete, _options$positionProb2, _options$positionDete2, _options$separator, _options$positionAdju, _options$alignment, _options$positionAdju2, _options$alignment2, _options$timing, _options$timing2, _options$typeNumber, _options$versionInfor, _options$typeNumber2, _options$versionInfor2, _options$darkBlock;
     deepReplace(this, {
       data: options.data || options.text,
+      dataEncode: options.dataEncode,
       size: options.size,
       useDynamicSize: options.useDynamicSize,
       typeNumber: options.typeNumber,
@@ -586,6 +589,7 @@ UQRCode.prototype.make = function() {
     typeNumber,
     errorCorrectLevel,
     data,
+    dataEncode,
     size,
     margin,
     useDynamicSize
@@ -596,8 +600,12 @@ UQRCode.prototype.make = function() {
     throw new UQRCode.Error('foregroundColor and backgroundColor cannot be the same!');
   }
 
+  if (dataEncode) {
+    data = utf16To8(data);
+  }
+  
   var qrc = new QRCode(typeNumber, errorCorrectLevel);
-  qrc.addData(utf16To8(data));
+  qrc.addData(data);
   qrc.make();
 
   this.base = qrc;
@@ -800,8 +808,8 @@ UQRCode.prototype.drawCanvas = function() {
 
   let draw = async (resolve, reject) => {
     try {
-      ctx.clearRect(0, 0, size, size);
-      ctx.draw(false);
+      // ctx.clearRect(0, 0, size, size);
+      // ctx.draw(false);
 
       for (var i = 0; i < drawModules.length; i++) {
         var drawModule = drawModules[i];

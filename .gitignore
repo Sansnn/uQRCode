@@ -22,20 +22,14 @@ yarn-error.log*
 *.sln
 *.sw*
 
-style/25d/
-dist/style/25d/
-test/html/js/uqrcode.style.25d.js
-test/html/25d.html
-test/node/js/uqrcode.style.25d.js
+plugin/25d/
+dist/plugin/25d/
 
-style/art/
-dist/style/art/
-test/html/js/uqrcode.style.art.js
-test/html/art.html
-test/node/js/uqrcode.style.art.js
+plugin/art/
+dist/plugin/art/
 
-style/colorful/
-dist/style/colorful/
-test/html/js/uqrcode.style.colorful.js
-test/html/colorful.html
-test/node/js/uqrcode.style.colorful.js
+plugin/colorful/
+dist/plugin/colorful/
+
+plugin/poster/
+dist/plugin/poster/

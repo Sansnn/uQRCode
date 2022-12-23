@@ -57,16 +57,16 @@ let buildMain = function() {
   });
 }
 
-let buildStyle = function(name, title) {
+let buildPlugin = function(name, title) {
   formats.forEach(format => {
-    let input = `dist/style/${name}/uqrcode.style.${name}.${format.name}.js`;
+    let input = `dist/plugin/${name}/uqrcode.plugin.${name}.${format.name}.js`;
     if (!fs.existsSync(input)) {
       return;
     }
     let option = {
       input,
       output: {
-        file: `dist/style/${name}/uqrcode.style.${name}.${format.name}.js`,
+        file: `dist/plugin/${name}/uqrcode.plugin.${name}.${format.name}.js`,
         banner: getBannerMain() + '\n' + getBannerFormat(format),
         compact: true
       }
@@ -79,11 +79,12 @@ let buildStyle = function(name, title) {
 }
 
 buildMain();
-buildStyle('round', '圆点码');
-buildStyle('liquid', '液态码');
-buildStyle('words', '文字码');
-buildStyle('25d', '2.5D码');
-buildStyle('art', '艺术码');
-buildStyle('colorful', '炫彩码');
+buildPlugin('round', '圆点码');
+buildPlugin('liquid', '液态码');
+buildPlugin('words', '文字码');
+buildPlugin('25d', '2.5D码');
+buildPlugin('art', '艺术码');
+buildPlugin('colorful', '炫彩码');
+buildPlugin('poster', '海报');
 
 export default builds;

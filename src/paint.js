@@ -1,3 +1,5 @@
+/* 第一次深受const、let混淆其害，果然还是不能随便使用const、let搭配混淆食用，特别是解构赋值（解构赋值最好使用let），它俩会影响压缩混淆的代码，导致异常。 */
+
 export function paintData(instance) {
   let {
     dynamicSize: size,
@@ -10,16 +12,16 @@ export function paintData(instance) {
     moduleCount
   } = instance;
 
-  let destSize = (size - margin * 2) / moduleCount;
+  var destSize = (size - margin * 2) / moduleCount;
 
-  let tileBackgroundSize = destSize;
-  let tileBackgroundPadding = 0;
+  var tileBackgroundSize = destSize;
+  var tileBackgroundPadding = 0;
   if (backgroundPadding > 0) {
     tileBackgroundPadding = (tileBackgroundSize * backgroundPadding) / 2;
     tileBackgroundSize -= tileBackgroundPadding * 2;
   }
-  let tileForegroundSize = destSize;
-  let tileForegroundPadding = 0;
+  var tileForegroundSize = destSize;
+  var tileForegroundPadding = 0;
   if (foregroundPadding > 0) {
     tileForegroundPadding = (tileForegroundSize * foregroundPadding) / 2;
     tileForegroundSize -= tileForegroundPadding * 2;
@@ -91,7 +93,7 @@ export function paintPositionProbe(instance) {
     positionProbeForegroundColor
   } = instance;
 
-  let basePart = [
+  var basePart = [
     [0, 0, 1],
     [1, 0, 1],
     [2, 0, 1],
@@ -142,7 +144,7 @@ export function paintPositionProbe(instance) {
     [5, 6, 1],
     [6, 6, 1]
   ];
-  let disc = moduleCount - 7;
+  var disc = moduleCount - 7;
   basePart.forEach(d => {
     var ltItem = modules[d[0]][d[1]];
     var rtItem = modules[d[0] + disc][d[1]];
@@ -166,7 +168,7 @@ export function paintSeparator(instance) {
     separatorColor
   } = instance;
 
-  let basePart = [
+  var basePart = [
     [7, 0],
     [7, 1],
     [7, 2],
@@ -213,7 +215,7 @@ export function paintPositionAdjust(instance) {
   } = instance;
 
   /* 不同版本的对齐图案组合位置 */
-  const ALIGNMENT_OF_VERSION = [
+  var ALIGNMENT_OF_VERSION = [
     [],
     [6, 18],
     [6, 22],
@@ -256,9 +258,9 @@ export function paintPositionAdjust(instance) {
     [6, 30, 58, 86, 114, 142, 170]
   ];
   /* 对齐图案数量和中心位置根据版本定义 */
-  const alignments = ALIGNMENT_OF_VERSION[typeNumber - 1];
+  var alignments = ALIGNMENT_OF_VERSION[typeNumber - 1];
   if (alignments) {
-    const calcMatrix = [
+    var calcMatrix = [
       [-2, -2, 1],
       [-1, -2, 1],
       [0, -2, 1],
@@ -285,11 +287,11 @@ export function paintPositionAdjust(instance) {
       [1, 2, 1],
       [2, 2, 1]
     ];
-    const group_len = alignments.length;
-    for (let i = 0; i < group_len; i++) {
-      for (let j = 0; j < group_len; j++) {
+    var group_len = alignments.length;
+    for (var i = 0; i < group_len; i++) {
+      for (var j = 0; j < group_len; j++) {
         /* 对齐图案不能污染定位器和分隔器 */
-        let {
+        var {
           x,
           y
         } = {
@@ -337,8 +339,8 @@ export function paintTiming(instance) {
     timingBackgroundColor
   } = instance;
 
-  let timingPartLen = moduleCount - 16;
-  for (let i = 0; i < timingPartLen; i++) {
+  var timingPartLen = moduleCount - 16;
+  for (var i = 0; i < timingPartLen; i++) {
     var xItem = modules[6][8 + i];
     var yItem = modules[8 + i][6];
     xItem.type.push('timing');
@@ -373,7 +375,7 @@ export function paintTypeNumber(instance) {
     return modules;
   }
   /* 预留版本信息，0为补位，从索引7开始 */
-  const VERSIONS = [
+  var VERSIONS = [
     0,
     0,
     0,
@@ -418,12 +420,12 @@ export function paintTypeNumber(instance) {
   ];
 
   /* 两种方式获取预留格式信息，临时计算或者查字典 */
-  //let version_codes = _v.correctVersionData(_v.version);
-  let version_codes = VERSIONS[typeNumber] + VERSIONS[typeNumber];
+  //var version_codes = _v.correctVersionData(_v.version);
+  var version_codes = VERSIONS[typeNumber] + VERSIONS[typeNumber];
   /* 创建预留版本信息 */
-  let disc = [moduleCount - 11, moduleCount - 10, moduleCount - 9];
+  var disc = [moduleCount - 11, moduleCount - 10, moduleCount - 9];
   /* 左+右 */
-  let version_cells = [
+  var version_cells = [
     /* 左 */
     [5, disc[2]],
     [5, disc[1]],

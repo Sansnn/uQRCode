@@ -6,49 +6,13 @@ export default [{
   output: {
     file: 'test/html/js/uqrcode.js',
     compact: true
-  },
-  plugins: [
-    copy({
-      targets: [{
-        src: 'dist/style/round/uqrcode.style.round.umd.js',
-        dest: 'test/html/js',
-        rename: 'uqrcode.style.round.js'
-      }, {
-        src: 'dist/style/liquid/uqrcode.style.liquid.umd.js',
-        dest: 'test/html/js',
-        rename: 'uqrcode.style.liquid.js'
-      }, {
-        src: 'dist/style/words/uqrcode.style.words.umd.js',
-        dest: 'test/html/js',
-        rename: 'uqrcode.style.words.js'
-      }],
-      verbose: true
-    })
-  ]
+  }
 }, {
   input: 'dist/main/uqrcode.cjs.js',
   output: {
     file: 'test/node/js/uqrcode.js',
     compact: true
-  },
-  plugins: [
-    copy({
-      targets: [{
-        src: 'dist/style/round/uqrcode.style.round.cjs.js',
-        dest: 'test/node/js',
-        rename: 'uqrcode.style.round.js'
-      }, {
-        src: 'dist/style/liquid/uqrcode.style.liquid.cjs.js',
-        dest: 'test/node/js',
-        rename: 'uqrcode.style.liquid.js'
-      }, {
-        src: 'dist/style/words/uqrcode.style.words.cjs.js',
-        dest: 'test/node/js',
-        rename: 'uqrcode.style.words.js'
-      }],
-      verbose: true
-    })
-  ]
+  }
 }, {
   input: 'dist/main/uqrcode.es.js',
   output: {
@@ -73,34 +37,34 @@ export default [{
         src: 'README.md',
         dest: 'test/uni-app/src/uni_modules/Sansnn-uQRCode'
       }, {
-        src: 'dist/style/round/uqrcode.style.round.es.js',
+        src: 'dist/plugin/round/uqrcode.plugin.round.es.js',
         dest: 'test/uni-app/src/plugins/uqrcode/round',
-        rename: 'uqrcode.style.round.js'
+        rename: 'uqrcode.plugin.round.js'
       }, {
         src: 'LICENSE.md',
         dest: 'test/uni-app/src/plugins/uqrcode/round'
       }, {
-        src: 'dist/style/round/README.md',
+        src: 'dist/plugin/round/README.md',
         dest: 'test/uni-app/src/plugins/uqrcode/round'
       }, {
-        src: 'dist/style/liquid/uqrcode.style.liquid.es.js',
+        src: 'dist/plugin/liquid/uqrcode.plugin.liquid.es.js',
         dest: 'test/uni-app/src/plugins/uqrcode/liquid',
-        rename: 'uqrcode.style.liquid.js'
+        rename: 'uqrcode.plugin.liquid.js'
       }, {
         src: 'LICENSE.md',
         dest: 'test/uni-app/src/plugins/uqrcode/liquid'
       }, {
-        src: 'dist/style/liquid/README.md',
+        src: 'dist/plugin/liquid/README.md',
         dest: 'test/uni-app/src/plugins/uqrcode/liquid'
       }, {
-        src: 'dist/style/words/uqrcode.style.words.es.js',
+        src: 'dist/plugin/words/uqrcode.plugin.words.es.js',
         dest: 'test/uni-app/src/plugins/uqrcode/words',
-        rename: 'uqrcode.style.words.js'
+        rename: 'uqrcode.plugin.words.js'
       }, {
         src: 'LICENSE.md',
         dest: 'test/uni-app/src/plugins/uqrcode/words'
       }, {
-        src: 'dist/style/words/README.md',
+        src: 'dist/plugin/words/README.md',
         dest: 'test/uni-app/src/plugins/uqrcode/words'
       }],
       verbose: true
