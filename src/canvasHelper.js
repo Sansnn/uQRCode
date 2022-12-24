@@ -44,8 +44,5 @@ export function getCanvasContext(ctx) {
   ctx.draw = ctx.draw || function(reserve, callback) {
     callback && callback();
   }
-  ctx.clearRect = ctx.clearRect || function(x, y, width, height) {
-    ctx.draw(false);
-  }
   return ctx;
 }

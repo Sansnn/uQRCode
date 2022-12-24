@@ -39,7 +39,7 @@
   function Plugin(UQRCode, options) {
     options.words = undefined; // 文字内容
 
-    options.drawWordsCanvas = function() {
+    options.drawWordsCanvas = function(reserve) {
       let {
         isMaked,
         canvasContext: ctx,
@@ -60,8 +60,7 @@
 
       let draw = async (resolve, reject) => {
         try {
-          ctx.clearRect(0, 0, size, size);
-          ctx.draw(false);
+          ctx.draw(reserve);
           
           for (var i = 0; i < drawModules.length; i++) {
             var drawModule = drawModules[i];
@@ -81,7 +80,7 @@
                   var w = drawModule.width;
                   var h = drawModule.height;
                   ctx.setFontSize(w);
-                  ctx.font = `normal bold ${w}px sans-serif`;
+                  ctx.font = `bold ${w}px`;
                   ctx.setTextAlign('left');
                   ctx.setTextBaseline('top');
                   ctx.setFillStyle(drawModule.color);

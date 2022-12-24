@@ -785,7 +785,7 @@ UQRCode.prototype.isBlack = function(rowI, colI) {
 /**
  * 绘制canvas方法
  */
-UQRCode.prototype.drawCanvas = function() {
+UQRCode.prototype.drawCanvas = function(reserve) {
   let {
     isMaked,
     canvasContext: ctx,
@@ -808,8 +808,7 @@ UQRCode.prototype.drawCanvas = function() {
 
   let draw = async (resolve, reject) => {
     try {
-      // ctx.clearRect(0, 0, size, size);
-      // ctx.draw(false);
+      ctx.draw(reserve);
 
       for (var i = 0; i < drawModules.length; i++) {
         var drawModule = drawModules[i];
@@ -990,8 +989,8 @@ UQRCode.prototype.drawCanvas = function() {
 /**
  * 绘制canvas方法，兼容v3.2.0-v3.4.5版本的写法
  */
-UQRCode.prototype.draw = function() {
-  return this.drawCanvas();
+UQRCode.prototype.draw = function(reserve) {
+  return this.drawCanvas(reserve);
 }
 
 /**

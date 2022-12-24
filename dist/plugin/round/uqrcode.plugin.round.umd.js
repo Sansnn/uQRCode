@@ -40,7 +40,7 @@
     options.backgroundRadius = 1.0; // 背景码点圆角半径，系数：0.0-1.0
     options.foregroundRadius = 1.0; // 前景码点圆角半径，0.0-1.0
 
-    options.drawRoundCanvas = function() {
+    options.drawRoundCanvas = function(reserve) {
       let {
         isMaked,
         canvasContext: ctx,
@@ -60,8 +60,7 @@
 
       let draw = async (resolve, reject) => {
         try {
-          ctx.clearRect(0, 0, size, size);
-          ctx.draw(false);
+          ctx.draw(reserve);
           
           for (var i = 0; i < drawModules.length; i++) {
             var drawModule = drawModules[i];

@@ -39,7 +39,7 @@
   function Plugin(UQRCode, options) {
     options.foregroundRadius = 1.0; // 前景码点圆角半径，0.0-1.0
 
-    options.drawLiquidCanvas = function() {
+    options.drawLiquidCanvas = function(reserve) {
       let {
         isMaked,
         canvasContext: ctx,
@@ -155,8 +155,7 @@
 
       let draw = async (resolve, reject) => {
         try {
-          ctx.clearRect(0, 0, size, size);
-          ctx.draw(false);
+          ctx.draw(reserve);
           
           for (var i = 0; i < drawModules.length; i++) {
             var drawModule = drawModules[i];
