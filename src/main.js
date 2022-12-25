@@ -972,11 +972,7 @@ UQRCode.prototype.drawCanvas = function(reserve) {
       /* 某些平台的draw回调不一定会触发，故resolve不放在draw回调中 */
       setTimeout(resolve, 150);
     } catch (e) {
-      if (e instanceof UQRCode.Error) {
-        reject(e);
-      } else {
-        throw e;
-      }
+      reject(e);
     }
   }
 
