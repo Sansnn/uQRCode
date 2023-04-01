@@ -35,7 +35,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.UQRCodePluginWords = factory());
-})(window, (function () {
+})(typeof window !== "undefined" ? window : global, (function () {
   function Plugin(UQRCode, options) {
     options.words = undefined; // 文字内容
 

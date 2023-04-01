@@ -35,7 +35,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.UQRCodePluginRound = factory());
-})(window, (function () {
+})(typeof window !== "undefined" ? window : global, (function () {
   function Plugin(UQRCode, options) {
     options.backgroundRadius = 1.0; // 背景码点圆角半径，系数：0.0-1.0
     options.foregroundRadius = 1.0; // 前景码点圆角半径，0.0-1.0

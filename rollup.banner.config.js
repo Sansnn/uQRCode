@@ -51,7 +51,7 @@ let buildMain = function() {
       }
     }
     if (format.name === 'umd') {
-      option.context = 'window';
+      option.context = 'typeof window !== "undefined" ? window : global';
     }
     builds.push(option);
   });
@@ -72,7 +72,7 @@ let buildPlugin = function(name, title) {
       }
     }
     if (format.name === 'umd') {
-      option.context = 'window';
+      option.context = 'typeof window !== "undefined" ? window : global';
     }
     builds.push(option);
   });
