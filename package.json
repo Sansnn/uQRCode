@@ -1,6 +1,6 @@
 {
   "name": "uQRCode",
-  "version": "4.0.6",
+  "version": "4.0.7",
   "description": "",
   "main": "dist/uqrcode.es.js",
   "type": "module",
