@@ -6,13 +6,11 @@
 
 欢迎加入群聊【uQRCode交流群】：[695070434](https://jq.qq.com/?_wv=1027&k=JRjzDqiw)。
 
-# 设计器
-
-uQRCode发布了配套的可视化设计器，可根据自己喜好在设计器中设计二维码样式，一键生成配置代码复制到项目中，详情请在微信小程序搜索“柚子二维码”，或扫描下方小程序码体验。
+微信小程序搜索“柚子二维码”，或扫描下方小程序码体验。
 
 ![uQRCode设计器](https://uqrcode.cn/mp_weixin_code.jpg)
 
-## 设计器模板示例
+## 示例
 
 ![uQRCode设计器](https://uqrcode.cn/yz_1.png)
 ![uQRCode设计器](https://uqrcode.cn/yz_2.png)
