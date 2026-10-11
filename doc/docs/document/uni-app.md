@@ -1,0 +1,303 @@
+---
+sidebarDepth: 1
+---
+
+# uni-app组件
+
+文档对应版本：v4.0.6
+
+## Props
+
+### canvasId
+
+- 类型：`String`
+- 默认值：`undefined`
+- 必填：`是`
+
+canvas组件id。
+
+### value
+
+- 类型：`String|Number`
+- 默认值：`undefined`
+- 必填：`否`
+
+二维码内容。[start](#start) 为`true`时必填。
+
+### options
+
+- 类型：`Object`
+- 默认值：`{}`
+- 必填：`否`
+
+二维码配置选项。与`原生`中 [基本配置](native.md#基本配置) 一致，数据格式与 [setOptions](native.md#setoptions) 传入参数一致。
+
+### size
+
+- 类型：`Number`
+- 默认值：`200`
+- 必填：`否`
+
+二维码大小。
+
+### sizeUnit
+
+- 类型：`String`
+- 默认值：`px`
+- 必填：`否`
+- 可选：`px`, `rpx`
+
+二维码尺寸单位。
+
+### fileType
+
+- 类型：`String`
+- 默认值：`png`
+- 必填：`否`
+
+导出的文件类型。可选`jpg`、`png`。
+
+### start
+
+- 类型：`Boolean`
+- 默认值：`true`
+- 必填：`否`
+
+是否初始化组件后就开始生成。
+
+### auto
+
+- 类型：`Boolean`
+- 默认值：`false`
+- 必填：`否`
+
+是否数据发生改变自动重绘。
+
+### hide
+
+- 类型：`Boolean`
+- 默认值：`false`
+- 必填：`否`
+
+隐藏组件。如果只需要导出二维码作为图片使用，可设置为`true`，不能在组件或组件父级元素设置`v-if="false"`、`v-show="false"`、`style="display:none;"`等实现隐藏效果，这样会导致导出二维码空白。
+
+### type
+
+- 类型：`String`
+- 默认值：`undefined`
+- 必填：`否`
+
+canvas组件类型。微信小程序默认`2d`。
+
+### queue
+
+- 类型：`Boolean`
+- 默认值：`false`
+- 必填：`否`
+
+队列绘制。
+
+### isQueueLoadImage
+
+- 类型：`Boolean`
+- 默认值：`false`
+- 必填：`否`
+
+是否队列加载图片，选择`true`将通过队列缓存所需要加载的图片。优点是加载重复资源可减少资源请求次数，节省网络资源，缺点是会转化为同步请求，资源不重复且多的情况下，等待时间会更久。总之，请求重复资源较多则选择`true`，请求不重复资源较多则选择`false`。
+
+### loading
+
+- 类型：`Boolean`
+- 默认值：`false`
+- 必填：`否`
+
+loading态。
+
+### h5SaveIsDownload
+
+- 类型：`Boolean`
+- 默认值：`false`
+- 必填：`否`
+
+H5保存即自动下载（在支持的环境下），默认false为仅弹层提示用户需要长按图片保存，不会自动下载。
+
+### h5DownloadName
+
+- 类型：`String`
+- 默认值：`uQRCode`
+- 必填：`否`
+
+H5下载名称。
+
+## Events
+
+### complete
+
+- 类型：`EventHandle`
+
+生成完成时触发，返回结果`{ success: true | false }`。
+
+### click
+
+- 类型：`EventHandle`
+
+点击组件时触发。
+
+### change
+
+- 类型：`EventHandle`
+
+重绘时触发。
+
+## Methods
+
+### make
+
+生成二维码。
+
+**使用方法：**
+
+```javascript
+// qrcode为组件的ref名称
+this.$refs.qrcode.make({
+  success: () => {
+    console.log('生成成功');
+  },
+  fail: err => {
+    console.log(err)
+  }
+});
+```
+
+### remake
+
+重新生成二维码。
+
+**使用方法：**
+
+```javascript
+// qrcode为组件的ref名称
+this.$refs.qrcode.remake({
+  success: () => {
+    console.log('生成成功');
+  },
+  fail: err => {
+    console.log(err)
+  }
+});
+```
+
+### toTempFilePath
+
+导出临时文件路径。  
+为了保证方法调用成功，请在 [complete](#complete) 事件返回`success=true`后调用。
+
+**使用方法：**
+
+```javascript
+// qrcode为组件的ref名称
+this.$refs.qrcode.toTempFilePath({
+  success: res => {
+    console.log(res);
+  }
+});
+```
+
+### save
+
+保存二维码到本地相册。  
+为了保证方法调用成功，请在 [complete](#complete) 事件返回`success=true`后调用。
+
+**使用方法：**
+
+```javascript
+// qrcode为组件的ref名称
+this.$refs.qrcode.save({
+  success: () => {
+    uni.showToast({
+      icon: 'success',
+      title: '保存成功'
+    });
+  }
+});
+```
+
+### getInstance
+
+获取uQRCode JS实例。
+
+### registerStyle
+
+- 参数：
+  - plugin：`Function` 插件回调函数
+
+注册扩展插件，组件仅支持注册type为style的drawCanvas扩展。
+
+**使用方法：**
+
+```javascript
+import UQRCodeStyleRound from '../../uni_modules/Sansnn-uQRCode/js_sdk/uqrcode/uqrcode.style.round.js';
+
+export default {
+  onReady() {
+    /* 注册扩展插件 */
+    this.$refs.qrcode.registerStyle(UQRCodeStyleRound); // qrcode为组件的ref名称
+  }
+}
+```
+
+**自定义扩展请参考：[register](native.md#register)**
+
+## Slots
+
+### loading
+
+自定义加载效果。
+
+**示例：**
+
+```html
+<uqrcode ref="qrcode" canvas-id="qrcode" value="uQRCode" size="200">
+  <template v-slot:loading>
+    <text style="color: green;">loading...</text>
+  </template>
+</uqrcode>
+```
+
+### error
+
+- 返回值：`Object`
+  - error：`Object` 错误信息
+    - errMsg `String` 错误消息
+
+自定义错误处理。
+
+**示例：**
+
+```html
+<uqrcode ref="qrcode" canvas-id="qrcode" value="uQRCode" size="200">
+  <template v-slot:error="{ error }">
+    <text style="color: red;">{{ error.errMsg }}</text>
+  </template>
+</uqrcode>
+```
+
+### h5save
+
+- 返回值：`Object`
+  - tempFilePath：`String` 临时文件路径
+
+自定义H5保存提示。
+
+**示例：**
+
+```html
+<uqrcode ref="qrcode" canvas-id="qrcode" value="uQRCode" size="200">
+  <template v-slot:h5save="{ tempFilePath }">
+    <view style="display: flex;flex-direction: column;align-items: center;width: 700rpx;padding: 30px 0;background-color: #ffffff;">
+      <text style="font-size: 14px;color: #9a9b9c;">若保存失败，请长按二维码进行保存</text>
+      <image style="width: 500rpx;height: 500rpx;margin-top: 20px;" :src="tempFilePath"></image>
+    </view>
+  </template>
+</uqrcode>
+```
