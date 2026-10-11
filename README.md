@@ -4,29 +4,11 @@
 
 `uQRCode`可扩展性高，它支持自定义渲染二维码，可通过`uQRCode API`得到二维码绘制关键信息后，使用`canvas`、`svg`或`js`操作`dom`的方式绘制二维码图案。还可自定义二维码样式，如随机颜色、圆点、方块、块与块之间的间距等。
 
-欢迎加入群聊【uQRCode交流群】：[695070434](https://jq.qq.com/?_wv=1027&k=JRjzDqiw)。
-
-微信小程序搜索“柚子二维码”，或扫描下方小程序码体验。
-
-![uQRCode设计器](https://uqrcode.cn/mp_weixin_code.jpg)
-
-## 示例
-
-![uQRCode设计器](https://uqrcode.cn/yz_1.png)
-![uQRCode设计器](https://uqrcode.cn/yz_2.png)
-![uQRCode设计器](https://uqrcode.cn/yz_3.png)
-![uQRCode设计器](https://uqrcode.cn/yz_4.png)
-![uQRCode设计器](https://uqrcode.cn/yz_5.png)
-![uQRCode设计器](https://uqrcode.cn/yz_6.png)
-![uQRCode设计器](https://uqrcode.cn/yz_7.png)
-![uQRCode设计器](https://uqrcode.cn/yz_8.png)
-![uQRCode设计器](https://uqrcode.cn/yz_9.png)
-
 # 快速上手
 
 > 在`uni-app`中，我们更推荐使用组件方式来生成二维码，组件方式大大提高了页面的可读性以及避开了一些平台容易出问题的地方，当组件无法满足需求的时候，再考虑切换成原生方式。
 
-官方文档：[https://uqrcode.cn/doc](https://uqrcode.cn/doc)。
+文档：[https://github.com/Sansnn/uQRCode/tree/main/doc](https://github.com/Sansnn/uQRCode/tree/main/doc)。
 
 github地址：[https://github.com/Sansnn/uQRCode](https://github.com/Sansnn/uQRCode)。
 
@@ -36,7 +18,7 @@ uni-app插件市场地址：[https://ext.dcloud.net.cn/plugin?id=1287](https://e
 
 ## 原生方式
 
-原生方式仅需要获取`uqrcode.js`文件便可使用。详细配置请移步到：文档 > [原生](https://uqrcode.cn/doc/document/native.html)。
+原生方式仅需要获取`uqrcode.js`文件便可使用。详细配置请移步到：`文档` > `/doc/document/native.html`。
 
 ### 安装
 
@@ -344,7 +326,7 @@ aEle.remove(); // 下载之后把创建的元素删除
 
 ### 安装
 
-通过uni-app插件市场地址安装：[https://ext.dcloud.net.cn/plugin?id=1287](https://ext.dcloud.net.cn/plugin?id=1287)。详细配置请移步到：文档 > [uni-app组件](https://uqrcode.cn/doc/document/uni-app.html)。
+通过uni-app插件市场地址安装：[https://ext.dcloud.net.cn/plugin?id=1287](https://ext.dcloud.net.cn/plugin?id=1287)。详细配置请移步到：`文档` > `/doc/document/uni-app.html`。
 
 ### 引入
 
@@ -352,7 +334,7 @@ uni-app默认为easycom模式，可直接键入`<uqrcode>`标签。
 
 ### 简单用法
 
-安装`uqrcode`组件后，在`template`中键入`<uqrcode/>`。设置`ref`属性可使用组件内部方法，`canvas-id`属性为组件内部的canvas组件标识，`value`属性为二维码生成对应内容，`options`为配置选项，可配置二维码样式，绘制Logo等，详见：[options](https://uqrcode.cn/doc/document/uni-app.html#options) 。
+安装`uqrcode`组件后，在`template`中键入`<uqrcode/>`。设置`ref`属性可使用组件内部方法，`canvas-id`属性为组件内部的canvas组件标识，`value`属性为二维码生成对应内容，`options`为配置选项，可配置二维码样式，绘制Logo等，详见：`options`(/doc/document/uni-app.html#options) 。
 
 ``` html
 <uqrcode ref="uqrcode" canvas-id="qrcode" value="https://uqrcode.cn/doc" :options="{ margin: 10 }"></uqrcode>
@@ -360,7 +342,7 @@ uni-app默认为easycom模式，可直接键入`<uqrcode>`标签。
 
 ### 导出临时文件路径
 
-为了保证方法调用成功，请在 [complete](https://uqrcode.cn/doc/document/uni-app.html#complete) 事件返回`success=true`后调用。
+为了保证方法调用成功，请在 `complete`(/doc/document/uni-app.html#complete) 事件返回`success=true`后调用。
 
 ```javascript
 // uqrcode为组件的ref名称
@@ -373,7 +355,7 @@ this.$refs.uqrcode.toTempFilePath({
 
 ### 保存二维码到本地相册
 
-为了保证方法调用成功，请在 [complete](https://uqrcode.cn/doc/document/uni-app.html#complete) 事件返回`success=true`后调用。
+为了保证方法调用成功，请在 `complete`(/doc/document/uni-app.html#complete) 事件返回`success=true`后调用。
 
 ```javascript
 // uqrcode为组件的ref名称
@@ -387,4 +369,4 @@ this.$refs.uqrcode.save({
 });
 ```
 
-## 更多使用说明请前往官方文档查看：[https://uqrcode.cn/doc](https://uqrcode.cn/doc)。
+## 更多使用说明请前往GitHub查看：[https://github.com/Sansnn/uQRCode](https://github.com/Sansnn/uQRCode)。
